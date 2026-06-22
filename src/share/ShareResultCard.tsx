@@ -40,19 +40,19 @@ export function ShareResultCard({ data }: ShareResultCardProps) {
         <ul>{data.options.map((option) => <li key={option}>{option}</li>)}</ul>
       </section>
       <section>
-        <h3>The Machine Played:</h3>
+        <h3>The Machine Played Protocol:</h3>
         <p>{gameLabels[data.selectedGameId] ?? data.selectedGameId}</p>
       </section>
       <section>
         <h3>The Decision:</h3>
-        <p>{data.finalAnswer}</p>
+        <p className="share-result-card__decision">{data.finalAnswer}</p>
       </section>
       <section>
         <h3>Status:</h3>
         <p>{data.isSuddenDeath ? 'Sudden Death' : statusLabels[data.decisionStatus]}</p>
       </section>
       <section>
-        <h3>Machine says:</h3>
+        <h3>The machine says:</h3>
         <p>{data.machineQuote}</p>
       </section>
     </article>

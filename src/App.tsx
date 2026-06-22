@@ -11,7 +11,7 @@ import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from '.
 import { getEligibleGames, runGame } from './services/gameRunner';
 import './styles/base.css';
 
-export const screens = ['setup', 'home', 'options', 'game-selection', 'result', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner'] as const;
+export const screens = ['setup', 'home', 'options', 'game-selection', 'result', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner', 'about-machine'] as const;
 export type AppScreen = (typeof screens)[number];
 
 const storageService = createLocalStorageService();
@@ -253,25 +253,27 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <section className="screen-card">
+      <section className="screen-card machine-frame">
         <p className="eyebrow">Let&apos;s Underthink This</p>
-        <h1 id="app-title">OVERTHINK-O-MATIC</h1>
+        <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
+        <p className="machine-subtitle">Powered by Barry the Honey Badger 🐾</p>
 
-        {error && <p role="alert">{error}</p>}
+        {error && <p className="error-alert" role="alert">⚠ {error}</p>}
 
         {adminTestMode && currentScreen !== 'share-result' && (
-          <section aria-label="Admin Test Controls">
+          <section className="admin-panel" aria-label="Admin Test Controls">
             <h2>Admin Test Controls</h2>
             <button type="button" onClick={handleClearActiveDecision}>Clear active decision / lockdown</button>
             <button type="button" onClick={handleClearPreviousOverthinks}>Clear previous overthinks</button>
             <button type="button" onClick={handleClearAllAppData}>Clear all local app data</button>
             <button type="button" onClick={() => setCurrentScreen('admin-qa-runner')}>Admin QA Runner</button>
+            <button type="button" onClick={() => setCurrentScreen('about-machine')}>About The Machine</button>
           </section>
         )}
 
 
         {adminTestMode && currentScreen === 'admin-qa-runner' && (
-          <section aria-label="Admin QA Runner">
+          <section className="admin-panel" aria-label="Admin QA Runner">
             <h2>Admin QA Runner</h2>
             <button type="button" onClick={handleRunAdminQaSimulation}>Run Full QA Simulation</button>
             <button type="button" onClick={handleResetAdminQaData}>Reset Test Data</button>
@@ -291,26 +293,27 @@ export function App() {
 
         {currentScreen === 'setup' && (
           <form onSubmit={saveSetup}>
-            <h2>Setup</h2>
+            <h2>Operator Setup</h2><p>Barry is thinking... please identify yourself before touching the glowing buttons.</p>
             <label>User name<input value={userName} onChange={(event: Event) => setUserName((event.target as HTMLInputElement).value)} /></label>
             <label>Optional reality checker name<input value={realityCheckerName} onChange={(event: Event) => setRealityCheckerName((event.target as HTMLInputElement).value)} /></label>
-            <button type="submit">Save setup</button>
+            <button type="submit">Save setup / Power Up Machine</button>
           </form>
         )}
 
         {currentScreen === 'home' && appState.user && (
           <form onSubmit={submitProblem}>
-            <h2>Hi {appState.user.name}, what are we overthinking today?</h2>
+            <h2>Hi {appState.user.name}, what are we overthinking today?</h2><p className="quote-panel">The machine says... feed me one decision. Barry promises not to be normal about it.</p>
             <label>Problem or decision<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
             <button type="submit">Next</button>
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>
+            <button type="button" onClick={() => setCurrentScreen('about-machine')}>About The Machine</button>
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>Share Result</button>}
           </form>
         )}
 
         {currentScreen === 'options' && (
           <form onSubmit={lockOptions}>
-            <h2>What are our options?</h2>
+            <h2>Load the Options</h2><p>What are our options?</p><p>Insert at least two possible futures into the brass decision hopper.</p>
             {optionRows.map((option, index) => (
               <div key={option.id}>
                 <label>{option.label}<input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} /></label>
@@ -324,9 +327,9 @@ export function App() {
 
         {currentScreen === 'game-selection' && decision && (
           <section>
-            <h2>Choose a game</h2>
+            <h2>Choose your protocol</h2><p>Barry is thinking... each protocol spends one precious anti-overthinking credit.</p>
             {appState.goalpostWarning?.hasShift && (
-              <section aria-label="Goalpost warning">
+              <section className="warning-panel" aria-label="Goalpost warning">
                 <p>{appState.goalpostWarning.message}</p>
                 <p>Repeated option: {appState.goalpostWarning.repeatedOptions.join(', ')}</p>
                 {appState.goalpostWarning.previousFinalAnswer && <p>The last decision landed on: {appState.goalpostWarning.previousFinalAnswer}.</p>}
@@ -340,30 +343,32 @@ export function App() {
             )}
             <p>Decision: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
-            <p>Credits remaining: {creditsRemaining}</p>
-            {eligibleGames.map((game) => <article key={game.id}><h3>{game.name}</h3><p>{game.description}</p><button type="button" onClick={() => runSelectedGame(game.id)}>Select {game.name}</button></article>)}
+            <div className="stat-chip">Credits remaining: {creditsRemaining}</div>
+            <div className="protocol-grid">{eligibleGames.map((game) => <article className="protocol-card" key={game.id}><h3>{game.name} Protocol</h3><p>{game.description}</p><button type="button" onClick={() => runSelectedGame(game.id)}>Select {game.name}</button></article>)}</div>
           </section>
         )}
 
         {currentScreen === 'result' && latestResult && decision && (
           <section>
-            <h2>{latestGame?.name ?? latestResult.gameId}</h2>
+            <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
+            <p>The Machine Played: {latestGame?.name ?? latestResult.gameId} Protocol</p>
             <p>Selected answer: {latestResult.selectedOption}</p>
-            <p>{latestResult.machineQuote}</p>
-            <p>Credits remaining: {creditsRemaining}</p>
+            <p className="quote-panel">{latestResult.machineQuote}</p>
+            <div className="stat-chip">Credits remaining: {creditsRemaining}</div>
             <p>{getEscalationMessage(decision)}</p>
             <button type="button" onClick={acceptLatestDecision}>Accept Decision</button>
-            <button type="button" onClick={() => setCurrentScreen('game-selection')} disabled={!canTryAgain}>Try Another Game</button>
+            <button type="button" onClick={() => setCurrentScreen('game-selection')} disabled={!canTryAgain}>Try Another Protocol</button>
           </section>
         )}
 
         {currentScreen === 'lockdown' && decision?.lockdown && (
-          <section>
-            <h2>Decision Locked</h2>
-            <p>Lockdown active. Sudden Death made the call. Affectionately final.</p>
+          <section className="lockdown-panel">
+            <h2>BARRY HAS TAKEN CONTROL</h2>
+            <p>Decision Locked</p>
+            <p>Lockdown active. DECISION LOCKED. Sudden Death made the call. Affectionately final.</p>
             <p>Final answer: {decision.lockdown.finalAnswer}</p>
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            <p>Countdown: {formatCountdown(lockdownRemainingMs)}</p>
+            <p>Emergency cooling-off countdown</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>Countdown: {formatCountdown(lockdownRemainingMs)}</p>
             <p>{getLockdownMessage(decision, now)}</p>
             {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>Share Result</button>}
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>
@@ -373,16 +378,16 @@ export function App() {
 
         {currentScreen === 'previous-overthinks' && (
           <section>
-            <h2>Previous Overthinks</h2>
+            <h2>Your Overthink Spiral</h2>
             {appState.previousDecisions.length === 0 ? <p>No previous overthinks yet.</p> : appState.previousDecisions.map((previous) => {
               const summary = formatPreviousOverthinkSummary(previous);
               return (
-                <article key={previous.id}>
+                <article className="history-card" key={previous.id}>
                   <h3>{summary.problem}</h3>
                   <p>Final answer: {summary.finalAnswer}</p>
                   <p>Options: {summary.options.join(', ')}</p>
-                  <p>Games played: {summary.gamesPlayedCount}</p>
-                  <p>Attempts used: {summary.attemptsUsed}</p>
+                  <p>Protocols played: {summary.gamesPlayedCount}</p>
+                  <p>Attempt number: {summary.attemptsUsed}</p>
                   <p>Created: {formatDate(summary.createdDate)}</p>
                   {summary.lockdownStatus && <p>Lockdown status: {summary.lockdownStatus}</p>}
                   {summary.machineQuote && <p>Machine quote: {summary.machineQuote}</p>}
@@ -396,7 +401,7 @@ export function App() {
 
         {currentScreen === 'share-result' && shareData && (
           <section>
-            <h2>Share Result</h2>
+            <h2>Share Result</h2><p className="quote-panel">The machine says... publish this questionable wisdom responsibly.</p>
             <div ref={(element: HTMLDivElement | null) => { shareCardElement = element; }}>
               <ShareResultCard data={shareData} />
             </div>
@@ -408,6 +413,19 @@ export function App() {
             <p>Copy/share fallback: {shareFallbackMessage}.</p>
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Back to Previous Overthinks</button>
             {!activeLockdown && <button type="button" onClick={goHome}>New Overthink</button>}
+          </section>
+        )}
+
+        {currentScreen === 'about-machine' && (
+          <section className="about-lore">
+            <h2>About The Machine</h2>
+            <p>The Overthink-O-Matic 5000 was discovered behind an arcade in 1987.</p>
+            <p>Inside was Barry.</p>
+            <p>Nobody knows how long he had been there.</p>
+            <p>Nobody has successfully counted the number of energy drinks consumed.</p>
+            <p>Scientific accuracy: somewhere between a fortune cookie and a very confident pigeon.</p>
+            <p>Independent testing shows the machine is approximately 14% more accurate than Facebook, 22% more accurate than asking the group chat, and 37% more accurate than changing your mind six times.</p>
+            <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>Back to Home</button>
           </section>
         )}
       </section>
