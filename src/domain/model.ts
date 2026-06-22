@@ -153,4 +153,7 @@ export interface StorageService {
   saveCurrentDecision(decision: DecisionRecord | undefined): Promise<void>;
   listPreviousDecisions(): Promise<DecisionRecord[]>;
   savePreviousDecision(decision: DecisionRecord): Promise<void>;
+  clearCurrentDecision?(): Promise<void>;
+  reset?(): Promise<void>;
 }
+
