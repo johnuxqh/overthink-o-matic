@@ -122,3 +122,9 @@ export function returnToNewOverthink(state: AppState): AppState {
 }
 
 export { addDecisionToHistory, detectGoalpostShift, getMostRecentDecision };
+export {
+  acceptDecisionResult,
+  recordGameAttempt,
+  rejectDecisionResult,
+  triggerSuddenDeathIfNeeded,
+} from '../services/overthinkingEngine';
