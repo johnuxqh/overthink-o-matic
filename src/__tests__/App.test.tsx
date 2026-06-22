@@ -211,7 +211,7 @@ describe('P6 text user journey', () => {
     await clickButton(container, 'Accept Decision');
     const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
     expect(history).toHaveLength(1);
-    expect(container.textContent).toContain('Lockdown');
+    expect(container.textContent).toContain('Hi Alex, what are we overthinking today?');
     act(() => root.unmount());
   });
 
@@ -242,7 +242,7 @@ describe('P6 text user journey', () => {
     await changeField(container, 'Option 2', 'Tacos');
     await clickButton(container, 'Lock it in');
 
-    expect(container.textContent).toContain('moving the goal posts has been detected');
+    expect(container.textContent).toContain('Hmm. This feels familiar.');
     expect(container.textContent).toContain('The last decision landed on: Soup.');
     expect(container.textContent).toContain('Select Coin Toss');
     await clickButton(container, 'Select Coin Toss');
