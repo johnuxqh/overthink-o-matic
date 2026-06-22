@@ -7,10 +7,11 @@ import { SHARE_EXPORT_FALLBACK, downloadShareCardImage, isShareImageExportSuppor
 import { addDecisionToHistory, clearActiveDecision, clearAllAppData, clearPreviousOverthinks, createInitialAppState, hydrateAppState, saveAppState } from './state/appState';
 import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, getCreditsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs } from './services/overthinkingEngine';
+import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
 import './styles/base.css';
 
-export const screens = ['setup', 'home', 'options', 'game-selection', 'result', 'lockdown', 'previous-overthinks', 'share-result'] as const;
+export const screens = ['setup', 'home', 'options', 'game-selection', 'result', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner'] as const;
 export type AppScreen = (typeof screens)[number];
 
 const storageService = createLocalStorageService();
@@ -41,6 +42,7 @@ export function App() {
   const [latestResult, setLatestResult] = useState<GameResult | undefined>(undefined);
   const [shareDecision, setShareDecision] = useState<DecisionRecord | undefined>(undefined);
   const [shareFallbackMessage, setShareFallbackMessage] = useState(SHARE_EXPORT_FALLBACK);
+  const [adminQaResults, setAdminQaResults] = useState<AdminQaResult[]>([]);
   let shareCardElement: HTMLElement | null = null;
   const [error, setError] = useState('');
   const [now, setNow] = useState(() => new Date());
@@ -115,6 +117,15 @@ export function App() {
     setShareDecision(undefined);
     setError('');
     setCurrentScreen(nextState.user ? 'home' : 'setup');
+  }
+
+  async function handleRunAdminQaSimulation() {
+    setAdminQaResults([{ testName: 'Admin QA Runner', passed: true, notes: 'Running full QA simulation...' }]);
+    setAdminQaResults(await runFullAdminQaSimulation());
+  }
+
+  async function handleResetAdminQaData() {
+    setAdminQaResults(await resetAdminQaTestData());
   }
 
   async function handleClearAllAppData() {
@@ -195,6 +206,16 @@ export function App() {
     setOptionTexts((current) => (current.length > 2 ? current.filter((_, optionIndex) => optionIndex !== index) : current));
   }
 
+  function resumeMostRecentPreviousDecision() {
+    const previous = getMostRecentDecision(appState);
+    if (!previous || isLockdownActive(previous, now)) return;
+    persist({ ...appState, currentDecision: previous, goalpostWarning: undefined });
+    setLatestResult(undefined);
+    setShareDecision(undefined);
+    setError('');
+    setCurrentScreen('game-selection');
+  }
+
   function runSelectedGame(gameId: GameId) {
     if (activeLockdown) {
       setCurrentScreen('lockdown');
@@ -217,9 +238,13 @@ export function App() {
     const lockedDownState = acceptDecisionResult(appState, latestResult.selectedOption, acceptedAt);
     setNow(acceptedAt);
     const finalDecision = lockedDownState.currentDecision;
-    persist(finalDecision ? addDecisionToHistory(lockedDownState, finalDecision) : lockedDownState);
+    const historyState = finalDecision ? addDecisionToHistory(lockedDownState, finalDecision) : lockedDownState;
+    persist({ ...historyState, currentDecision: undefined, goalpostWarning: undefined });
     if (finalDecision) setShareDecision(finalDecision);
-    setCurrentScreen('lockdown');
+    setLatestResult(undefined);
+    setProblemText('');
+    setOptionTexts(['', '']);
+    setCurrentScreen('home');
   }
 
   if (!hasHydrated) {
@@ -240,6 +265,27 @@ export function App() {
             <button type="button" onClick={handleClearActiveDecision}>Clear active decision / lockdown</button>
             <button type="button" onClick={handleClearPreviousOverthinks}>Clear previous overthinks</button>
             <button type="button" onClick={handleClearAllAppData}>Clear all local app data</button>
+            <button type="button" onClick={() => setCurrentScreen('admin-qa-runner')}>Admin QA Runner</button>
+          </section>
+        )}
+
+
+        {adminTestMode && currentScreen === 'admin-qa-runner' && (
+          <section aria-label="Admin QA Runner">
+            <h2>Admin QA Runner</h2>
+            <button type="button" onClick={handleRunAdminQaSimulation}>Run Full QA Simulation</button>
+            <button type="button" onClick={handleResetAdminQaData}>Reset Test Data</button>
+            {adminQaResults.length > 0 && (
+              <div>
+                <p>Test name | Pass/fail | Notes | Failed state/branch</p>
+                <ul>{adminQaResults.map((result) => (
+                  <li key={result.testName}>
+                    {result.testName} | {result.passed ? 'PASS' : 'FAIL'} | {result.notes} | {result.failedBranch ?? ''}
+                  </li>
+                ))}</ul>
+              </div>
+            )}
+            <button type="button" onClick={() => setCurrentScreen('home')}>Back to Home</button>
           </section>
         )}
 
@@ -258,6 +304,7 @@ export function App() {
             <label>Problem or decision<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
             <button type="submit">Next</button>
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>
+            {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>Share Result</button>}
           </form>
         )}
 
@@ -283,6 +330,12 @@ export function App() {
                 <p>{appState.goalpostWarning.message}</p>
                 <p>Repeated option: {appState.goalpostWarning.repeatedOptions.join(', ')}</p>
                 {appState.goalpostWarning.previousFinalAnswer && <p>The last decision landed on: {appState.goalpostWarning.previousFinalAnswer}.</p>}
+                {(() => {
+                  const previous = getMostRecentDecision(appState);
+                  return previous && !isLockdownActive(previous, now) ? (
+                    <p><button type="button" onClick={resumeMostRecentPreviousDecision}>Resume previous decision tree if available</button></p>
+                  ) : null;
+                })()}
               </section>
             )}
             <p>Decision: {decision.problem}</p>

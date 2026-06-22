@@ -166,7 +166,7 @@ export function detectGoalpostShift(currentOptions: DecisionOption[], previousDe
     repeatedOptions,
     previousFinalAnswer,
     message: repeatedOptions.length > 0
-      ? 'Hold up. We have been here before. One of these options has mysteriously reappeared. Referee note: moving the goal posts has been detected. Proceed if this is genuinely new. The machine is watching.'
+      ? 'Hmm. This feels familiar. One of these options has mysteriously reappeared. Possible premature-decision-making oopsie detected. You can continue, but the machine is raising one eyebrow.'
       : noShiftMessage,
   };
 }

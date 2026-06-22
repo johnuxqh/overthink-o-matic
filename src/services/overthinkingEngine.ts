@@ -175,6 +175,32 @@ export function recordGameAttempt(state: AppState, gameRun: GameRun): AppState {
   };
 }
 
+export function completeDecision(decision: DecisionRecord, finalAnswer: string, now: Date, finalMachineQuote?: string): DecisionRecord {
+  const finalOption = decision.options.find((option) => option.text === finalAnswer) ?? decision.options.find((option) => option.id === decision.finalOptionId);
+  const completedAt = now.toISOString();
+  const machineQuote = finalMachineQuote ?? decision.finalMachineQuote ?? decision.gamesPlayed[decision.gamesPlayed.length - 1]?.machineQuote ?? 'The machine has made a tiny, firm decision.';
+
+  return withCredits({
+    ...decision,
+    status: DecisionStatus.Complete,
+    finalOptionId: finalOption?.id ?? decision.finalOptionId,
+    finalAnswer,
+    finalisedAt: completedAt,
+    finalMachineQuote: machineQuote,
+    completedAt,
+    events: [
+      ...decision.events,
+      {
+        id: createId('event'),
+        type: DecisionEventType.Completed,
+        createdAt: completedAt,
+        message: 'Final answer accepted. The machine is releasing you back into the world.',
+      },
+    ],
+    updatedAt: completedAt,
+  });
+}
+
 export function acceptDecisionResult(state: AppState, finalAnswer: string, now: Date): AppState {
   if (!state.currentDecision || state.currentDecision.status === DecisionStatus.Lockdown) {
     return state;
@@ -182,7 +208,7 @@ export function acceptDecisionResult(state: AppState, finalAnswer: string, now: 
 
   return {
     ...state,
-    currentDecision: startLockdown(state.currentDecision, finalAnswer, now),
+    currentDecision: completeDecision(state.currentDecision, finalAnswer, now),
   };
 }
 

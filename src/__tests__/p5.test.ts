@@ -149,3 +149,15 @@ describe('P8 automatic Sudden Death', () => {
     expect(outcome.state.currentDecision?.lockdown?.finalAnswer).toBe(finalAnswer);
   });
 });
+
+import { runFullAdminQaSimulation } from '../services/adminQaRunner';
+
+describe('Admin QA Runner service', () => {
+  it('runs the full deterministic branch simulation without failures', async () => {
+    const results = await runFullAdminQaSimulation();
+
+    expect(results.length).toBeGreaterThan(20);
+    expect(results.filter((result) => !result.passed)).toEqual([]);
+    expect(results.map((result) => result.testName)).toContain('5th attempt triggers Sudden Death / final answer / lockdown / blocks gameplay and New Overthink');
+  });
+});
