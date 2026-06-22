@@ -27,3 +27,11 @@ article { border-top: 1px solid #d1d5db; padding: 1rem 0; }
 h1 { margin: 0 0 1.5rem; font-size: clamp(2rem, 12vw, 3.5rem); line-height: 0.95; }
 h2 { margin-top: 0; }
 form, section { display: grid; gap: 0.75rem; }
+
+.share-result-card { display: grid; gap: 0.85rem; width: 100%; margin: 0; border: 2px solid #111827; border-radius: 1rem; padding: 1rem; background: #fff7ed; color: #111827; }
+.share-result-card > div, .share-result-card section { display: grid; gap: 0.25rem; }
+.share-result-card h2 { margin: 0; font-size: 1.6rem; line-height: 1; }
+.share-result-card h3 { margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.share-result-card p { margin: 0; }
+.share-result-card ul { margin: 0; padding-left: 1.25rem; }
+.share-result-card__tagline { margin: 0; font-weight: 700; }
