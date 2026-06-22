@@ -1,4 +1,7 @@
 import { useMemo, useState } from 'react';
+import { createDecisionOption, createLockedDecision } from './domain/helpers';
+import { AppState, GameId, GameRun } from './domain/model';
+import { getCreditsRemaining, getEscalationMessage, getLockdownMessage, recordGameAttempt, triggerSuddenDeathIfNeeded } from './services/overthinkingEngine';
 import './styles/base.css';
 
 export const screens = [
@@ -39,9 +42,39 @@ function getPreviousScreen(currentScreen: AppScreen): AppScreen {
 
 export function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('setup');
+  const [demoState, setDemoState] = useState<AppState>({
+    previousDecisions: [],
+    currentDecision: createLockedDecision('P4 placeholder decision', [
+      createDecisionOption('A', 'Option A'),
+      createDecisionOption('B', 'Option B'),
+    ]),
+  });
 
   const nextScreen = useMemo(() => getNextScreen(currentScreen), [currentScreen]);
   const previousScreen = useMemo(() => getPreviousScreen(currentScreen), [currentScreen]);
+  const demoDecision = demoState.currentDecision;
+  const creditsRemaining = demoDecision ? getCreditsRemaining(demoDecision) : 0;
+  const overthinkingMessage = demoDecision ? getEscalationMessage(demoDecision) : 'No overthink currently loaded.';
+  const lockdownMessage = demoDecision ? getLockdownMessage(demoDecision, new Date()) : '';
+
+  function recordFakeAttempt() {
+    if (!demoDecision) {
+      return;
+    }
+
+    const now = new Date();
+    const selectedOption = demoDecision.options[demoDecision.gamesPlayed.length % demoDecision.options.length];
+    const fakeRun: GameRun = {
+      id: `fake_run_${demoDecision.gamesPlayed.length + 1}`,
+      gameId: GameId.CoinToss,
+      selectedOptionId: selectedOption.id,
+      selectedOptionText: selectedOption.text,
+      machineQuote: 'Placeholder game says this one. Very official.',
+      createdAt: now.toISOString(),
+    };
+
+    setDemoState(triggerSuddenDeathIfNeeded(recordGameAttempt(demoState, fakeRun), now));
+  }
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
@@ -49,9 +82,20 @@ export function App() {
         <p className="eyebrow">Let&apos;s Underthink This</p>
         <h1 id="app-title">OVERTHINK-O-MATIC</h1>
         <p className="screen-name">Current screen: {screenLabels[currentScreen]}</p>
-        <p className="placeholder-copy">
-          Temporary P2 placeholder only. Game logic, visual polish, animations, and storage wiring arrive later.
-        </p>
+        <p className="placeholder-copy">Temporary P4 placeholder only. Game engines, visual polish, animations, and share rendering arrive later.</p>
+
+        {(currentScreen === 'game-play' || currentScreen === 'result' || currentScreen === 'lockdown') && (
+          <section aria-label="P4 overthinking status">
+            <p>Credits remaining: {creditsRemaining}</p>
+            <p>{overthinkingMessage}</p>
+            {currentScreen === 'lockdown' && <p>{lockdownMessage}</p>}
+            {currentScreen === 'game-play' && (
+              <button type="button" onClick={recordFakeAttempt} disabled={creditsRemaining === 0}>
+                Record fake attempt
+              </button>
+            )}
+          </section>
+        )}
 
         <nav className="screen-actions" aria-label="Placeholder navigation">
           <button type="button" onClick={() => setCurrentScreen(previousScreen)} disabled={currentScreen === screens[0]}>
