@@ -124,6 +124,30 @@ export function returnToNewOverthink(state: AppState): AppState {
   };
 }
 
+export async function clearActiveDecision(storageService: StorageService, state: AppState): Promise<AppState> {
+  await storageService.clearCurrentDecision?.();
+
+  return {
+    ...state,
+    currentDecision: undefined,
+    goalpostWarning: undefined,
+  };
+}
+
+export async function clearPreviousOverthinks(storageService: StorageService, state: AppState): Promise<AppState> {
+  await storageService.savePreviousDecisions?.([]);
+
+  return {
+    ...state,
+    previousDecisions: [],
+  };
+}
+
+export async function clearAllAppData(storageService: StorageService): Promise<AppState> {
+  await storageService.reset?.();
+  return createInitialAppState();
+}
+
 export { addDecisionToHistory, detectGoalpostShift, getMostRecentDecision };
 export {
   acceptDecisionResult,

@@ -1,10 +1,10 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { createDecisionOption, createLockedDecision, createUserSetup, detectGoalpostShift, formatPreviousOverthinkSummary, getMostRecentDecision, normaliseDecisionText, validateOptions, validateProblemText } from './domain/helpers';
+import { createDecisionOption, createLockedDecision, createUserSetup, detectGoalpostShift, formatPreviousOverthinkSummary, getMostRecentDecision, isAdminTestMode, normaliseDecisionText, validateOptions, validateProblemText } from './domain/helpers';
 import { AppState, DecisionRecord, GameId, GameResult } from './domain/model';
 import { ShareResultCard } from './share/ShareResultCard';
 import { buildShareResultData } from './share/shareResultBuilder';
 import { SHARE_EXPORT_FALLBACK, downloadShareCardImage, isShareImageExportSupported } from './share/shareImageExporter';
-import { addDecisionToHistory, createInitialAppState, hydrateAppState, saveAppState } from './state/appState';
+import { addDecisionToHistory, clearActiveDecision, clearAllAppData, clearPreviousOverthinks, createInitialAppState, hydrateAppState, saveAppState } from './state/appState';
 import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, getCreditsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs } from './services/overthinkingEngine';
 import { getEligibleGames, runGame } from './services/gameRunner';
@@ -72,6 +72,7 @@ export function App() {
   const canTryAgain = Boolean(decision && creditsRemaining > 0 && !activeLockdown);
   const shareData = shareDecision ? buildShareResultData(shareDecision, shareDecision.id === decision?.id ? latestResult : undefined) : undefined;
   const canDownloadShareImage = isShareImageExportSupported();
+  const adminTestMode = isAdminTestMode(appState.user);
 
   useEffect(() => {
     if (activeLockdown && !['lockdown', 'share-result', 'previous-overthinks'].includes(currentScreen)) {
@@ -95,6 +96,38 @@ export function App() {
   async function downloadShareImage() {
     const result = await downloadShareCardImage(shareCardElement);
     if (result.fallbackMessage) setShareFallbackMessage(result.fallbackMessage);
+  }
+
+  async function handleClearActiveDecision() {
+    const nextState = await clearActiveDecision(storageService, appState);
+    setAppState(nextState);
+    setProblemText('');
+    setOptionTexts(['', '']);
+    setLatestResult(undefined);
+    setShareDecision(undefined);
+    setError('');
+    setCurrentScreen(nextState.user ? 'home' : 'setup');
+  }
+
+  async function handleClearPreviousOverthinks() {
+    const nextState = await clearPreviousOverthinks(storageService, appState);
+    setAppState(nextState);
+    setShareDecision(undefined);
+    setError('');
+    setCurrentScreen(nextState.user ? 'home' : 'setup');
+  }
+
+  async function handleClearAllAppData() {
+    const nextState = await clearAllAppData(storageService);
+    setAppState(nextState);
+    setUserName('');
+    setRealityCheckerName('');
+    setProblemText('');
+    setOptionTexts(['', '']);
+    setLatestResult(undefined);
+    setShareDecision(undefined);
+    setError('');
+    setCurrentScreen('setup');
   }
 
   function goHome() {
@@ -200,6 +233,15 @@ export function App() {
         <h1 id="app-title">OVERTHINK-O-MATIC</h1>
 
         {error && <p role="alert">{error}</p>}
+
+        {adminTestMode && currentScreen !== 'share-result' && (
+          <section aria-label="Admin Test Controls">
+            <h2>Admin Test Controls</h2>
+            <button type="button" onClick={handleClearActiveDecision}>Clear active decision / lockdown</button>
+            <button type="button" onClick={handleClearPreviousOverthinks}>Clear previous overthinks</button>
+            <button type="button" onClick={handleClearAllAppData}>Clear all local app data</button>
+          </section>
+        )}
 
         {currentScreen === 'setup' && (
           <form onSubmit={saveSetup}>
