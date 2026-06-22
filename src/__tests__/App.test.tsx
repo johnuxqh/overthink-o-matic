@@ -1,56 +1,194 @@
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from '../App';
+import { createDecisionOption, createLockedDecision, createUserSetup } from '../domain/helpers';
+import { DecisionRecord, DecisionStatus } from '../domain/model';
 
-function renderApp() {
+async function renderApp() {
   const container = document.createElement('div');
   document.body.appendChild(container);
   const root = createRoot(container);
 
-  act(() => {
+  await act(async () => {
     root.render(<App />);
+  });
+
+  await act(async () => {
+    await Promise.resolve();
   });
 
   return { container, root };
 }
 
-function clickButton(container: HTMLElement, label: string) {
-  const button = Array.from(container.querySelectorAll('button')).find((candidate) => candidate.textContent === label);
-  if (!button) {
-    throw new Error(`Button not found: ${label}`);
-  }
+function button(container: HTMLElement, label: string) {
+  const found = Array.from(container.querySelectorAll('button')).find((candidate) => candidate.textContent === label || candidate.textContent?.startsWith(label));
+  if (!found) throw new Error(`Button not found: ${label}`);
+  return found;
+}
 
-  act(() => {
-    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+async function clickButton(container: HTMLElement, label: string) {
+  await act(async () => {
+    button(container, label).dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
 }
 
-describe('App shell', () => {
-  afterEach(() => {
-    document.body.innerHTML = '';
+async function changeField(container: HTMLElement, label: string, value: string) {
+  const labels = Array.from(container.querySelectorAll('label'));
+  const found = labels.find((candidate) => candidate.textContent?.startsWith(label));
+  const field = found?.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement | null;
+  if (!field) throw new Error(`Field not found: ${label}`);
+  await act(async () => {
+    const prototype = field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    const valueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
+    valueSetter?.call(field, value);
+    field.dispatchEvent(new Event('input', { bubbles: true }));
   });
+}
 
-  it('renders the mobile-first placeholder app shell', () => {
-    const { container, root } = renderApp();
+async function setupUser(container: HTMLElement) {
+  await changeField(container, 'User name', 'Alex');
+  await changeField(container, 'Optional reality checker name', 'Sam');
+  await clickButton(container, 'Save setup');
+}
 
-    expect(container.querySelector('h1')?.textContent).toBe('OVERTHINK-O-MATIC');
-    expect(container.textContent).toContain('Current screen: Setup screen');
+async function enterProblem(container: HTMLElement) {
+  await changeField(container, 'Problem or decision', 'Pick dinner');
+  await clickButton(container, 'Next');
+}
 
+async function lockTwoOptions(container: HTMLElement) {
+  await changeField(container, 'Option 1', 'Pizza');
+  await changeField(container, 'Option 2', 'Tacos');
+  await clickButton(container, 'Lock it in');
+}
+
+describe('P6 text user journey', () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => { document.body.innerHTML = ''; localStorage.clear(); });
+
+  it('setup flow saves user', async () => {
+    const { container, root } = await renderApp();
+    expect(container.textContent).toContain('Setup');
+    await setupUser(container);
+    expect(container.textContent).toContain('Hi Alex, what are we overthinking today?');
+    expect(JSON.parse(localStorage.getItem('overthink-o-matic:user-profile') ?? '{}').name).toBe('Alex');
     act(() => root.unmount());
   });
 
-  it('allows placeholder navigation between screens', () => {
-    const { container, root } = renderApp();
+  it('home validates problem', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await clickButton(container, 'Next');
+    expect(container.textContent).toContain('Please enter something to overthink.');
+    act(() => root.unmount());
+  });
 
-    clickButton(container, 'Forward');
-    expect(container.textContent).toContain('Current screen: Home / New Overthink screen');
+  it('options require at least 2 non-empty values', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await changeField(container, 'Option 1', 'Pizza');
+    await clickButton(container, 'Lock it in');
+    expect(container.textContent).toContain('Please enter at least 2 options.');
+    act(() => root.unmount());
+  });
 
-    clickButton(container, 'Game Selection screen');
-    expect(container.textContent).toContain('Current screen: Game Selection screen');
+  it('adding/removing options works', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await clickButton(container, 'Add another option');
+    expect(container.textContent).toContain('Option 3');
+    await clickButton(container, 'Remove');
+    expect(container.textContent).not.toContain('Option 3');
+    act(() => root.unmount());
+  });
 
-    clickButton(container, 'New Overthink');
-    expect(container.textContent).toContain('Current screen: Home / New Overthink screen');
+  it('locking decision creates active locked decision', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await lockTwoOptions(container);
+    const decision = JSON.parse(localStorage.getItem('overthink-o-matic:current-decision') ?? '{}') as DecisionRecord;
+    expect(decision.status).toBe(DecisionStatus.Locked);
+    expect(container.textContent).toContain('Choose a game');
+    act(() => root.unmount());
+  });
 
+  it('eligible games shown based on 2 vs 3+ options', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await lockTwoOptions(container);
+    expect(container.textContent).toContain('Coin Toss');
+    expect(container.textContent).not.toContain('Wheel of Fate');
+    act(() => root.unmount());
+
+    document.body.innerHTML = '';
+    localStorage.clear();
+    const second = await renderApp();
+    await setupUser(second.container);
+    await enterProblem(second.container);
+    await clickButton(second.container, 'Add another option');
+    await changeField(second.container, 'Option 1', 'Pizza');
+    await changeField(second.container, 'Option 2', 'Tacos');
+    await changeField(second.container, 'Option 3', 'Soup');
+    await clickButton(second.container, 'Lock it in');
+    expect(second.container.textContent).toContain('Wheel of Fate');
+    act(() => second.root.unmount());
+  });
+
+  it('running a game shows result and try another game decrements credits through attempts', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await lockTwoOptions(container);
+    await clickButton(container, 'Select Coin Toss');
+    expect(container.textContent).toContain('Selected answer:');
+    expect(container.textContent).toContain('Credits remaining: 4');
+    await clickButton(container, 'Try Another Game');
+    await clickButton(container, 'Select Coin Toss');
+    expect(container.textContent).toContain('Credits remaining: 3');
+    act(() => root.unmount());
+  });
+
+  it('accepting decision adds it to history', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await lockTwoOptions(container);
+    await clickButton(container, 'Select Coin Toss');
+    await clickButton(container, 'Accept Decision');
+    const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
+    expect(history).toHaveLength(1);
+    expect(container.textContent).toContain('Lockdown');
+    act(() => root.unmount());
+  });
+
+  it('lockdown screen blocks reroll', async () => {
+    const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    decision.status = DecisionStatus.Lockdown;
+    decision.lockdown = { startedAt: new Date().toISOString(), endsAt: new Date(Date.now() + 300000).toISOString(), finalOptionId: decision.options[0].id, finalAnswer: 'Pizza', rotatingMessageIndex: 0 };
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
+    localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
+    const { container, root } = await renderApp();
+    expect(container.textContent).toContain('Lockdown');
+    expect(container.textContent).not.toContain('Try Another Game');
+    expect(container.textContent).not.toContain('New Overthink');
+    act(() => root.unmount());
+  });
+
+  it('previous overthinks renders stored decisions', async () => {
+    const previous = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    previous.finalAnswer = 'Pizza';
+    previous.gamesPlayed = [{ id: 'run_1', gameId: 'coin_toss' as never, selectedOptionId: previous.options[0].id, selectedOptionText: 'Pizza', machineQuote: 'quote', createdAt: new Date().toISOString() }];
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
+    localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([previous]));
+    const { container, root } = await renderApp();
+    await clickButton(container, 'Previous Overthinks');
+    expect(container.textContent).toContain('Pick dinner');
+    expect(container.textContent).toContain('Final answer: Pizza');
+    expect(container.textContent).toContain('Attempts used: 1');
     act(() => root.unmount());
   });
 });

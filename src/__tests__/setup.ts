@@ -1,1 +1,2 @@
-// Vitest setup file reserved for future shared test configuration.
+// Vitest setup file for React act support.
+(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
