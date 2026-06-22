@@ -83,21 +83,26 @@ export function runSuddenDeath(decision: DecisionRecord, now: Date): GameRun {
   };
 }
 
-export function startLockdown(decision: DecisionRecord, finalAnswer: string, now: Date): DecisionRecord {
+export function startLockdown(decision: DecisionRecord, finalAnswer: string, now: Date, finalMachineQuote?: string): DecisionRecord {
   const finalOption = decision.options.find((option) => option.text === finalAnswer) ?? decision.options.find((option) => option.id === decision.finalOptionId);
   const startedAt = now.toISOString();
   const endsAt = new Date(now.getTime() + LOCKDOWN_DURATION_MS).toISOString();
+  const machineQuote = finalMachineQuote ?? decision.finalMachineQuote ?? decision.gamesPlayed[decision.gamesPlayed.length - 1]?.machineQuote ?? 'The machine has made a tiny, firm decision.';
 
   return withCredits({
     ...decision,
     status: DecisionStatus.Lockdown,
     finalOptionId: finalOption?.id ?? decision.finalOptionId,
     finalAnswer,
+    finalisedAt: startedAt,
+    finalMachineQuote: machineQuote,
     lockdown: {
       startedAt,
       endsAt,
+      lockdownUntil: endsAt,
       finalOptionId: finalOption?.id ?? decision.finalOptionId ?? '',
       finalAnswer,
+      finalMachineQuote: machineQuote,
       rotatingMessageIndex: getAttemptsUsed(decision) % LOCKDOWN_MESSAGES.length,
     },
     events: [
@@ -119,7 +124,7 @@ export function getLockdownRemainingMs(decision: DecisionRecord, now: Date): num
     return 0;
   }
 
-  return Math.max(0, new Date(decision.lockdown.endsAt).getTime() - now.getTime());
+  return Math.max(0, new Date(decision.lockdown.lockdownUntil ?? decision.lockdown.endsAt).getTime() - now.getTime());
 }
 
 export function getOverthinkingLevel(decision: DecisionRecord): OverthinkingLevel {
@@ -233,6 +238,6 @@ export function triggerSuddenDeathIfNeeded(state: AppState, now: Date): AppState
 
   return {
     ...state,
-    currentDecision: startLockdown(withSuddenDeathEvent, suddenDeathRun.selectedOptionText, now),
+    currentDecision: startLockdown(withSuddenDeathEvent, suddenDeathRun.selectedOptionText, now, suddenDeathRun.machineQuote),
   };
 }

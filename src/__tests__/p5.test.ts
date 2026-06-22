@@ -134,3 +134,18 @@ describe('P5 game logic modules', () => {
     expect(outcome.state.currentDecision?.gamesPlayed).toHaveLength(5);
   });
 });
+
+describe('P8 automatic Sudden Death', () => {
+  it('5th game attempt automatically locks down with an existing option as final answer', () => {
+    const currentDecision = decision(['Alpha', 'Beta']);
+    currentDecision.gamesPlayed = [fakeRun(0), fakeRun(1), fakeRun(2), fakeRun(3)];
+    const outcome = runGame({ currentDecision, previousDecisions: [] }, GameId.CoinToss, now);
+    const finalAnswer = outcome.state.currentDecision?.finalAnswer;
+
+    expect(outcome.suddenDeathTriggered).toBe(true);
+    expect(outcome.state.currentDecision?.status).toBe(DecisionStatus.Lockdown);
+    expect(Boolean(finalAnswer)).toBe(true);
+    expect(optionTexts(outcome.state)).toContain(finalAnswer!);
+    expect(outcome.state.currentDecision?.lockdown?.finalAnswer).toBe(finalAnswer);
+  });
+});

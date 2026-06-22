@@ -64,6 +64,12 @@ export function App() {
   const lockdownRemainingMs = decision ? getLockdownRemainingMs(decision, now) : 0;
   const activeLockdown = isLockdownActive(decision, now);
   const canTryAgain = Boolean(decision && creditsRemaining > 0 && !activeLockdown);
+
+  useEffect(() => {
+    if (activeLockdown && currentScreen !== 'lockdown') {
+      setCurrentScreen('lockdown');
+    }
+  }, [activeLockdown, currentScreen]);
   const optionRows = useMemo(() => optionTexts.map((value, index) => ({ id: `option-${index}`, label: `Option ${index + 1}`, value })), [optionTexts]);
 
   function persist(nextState: AppState) {
@@ -139,7 +145,9 @@ export function App() {
       setCurrentScreen('lockdown');
       return;
     }
-    const outcome = runGame(appState, gameId, new Date());
+    const runAt = new Date();
+    const outcome = runGame(appState, gameId, runAt);
+    setNow(runAt);
     const nextState = outcome.suddenDeathTriggered && outcome.state.currentDecision
       ? addDecisionToHistory(outcome.state, outcome.state.currentDecision)
       : outcome.state;
@@ -150,7 +158,9 @@ export function App() {
 
   function acceptLatestDecision() {
     if (!latestResult) return;
-    const lockedDownState = acceptDecisionResult(appState, latestResult.selectedOption, new Date());
+    const acceptedAt = new Date();
+    const lockedDownState = acceptDecisionResult(appState, latestResult.selectedOption, acceptedAt);
+    setNow(acceptedAt);
     const finalDecision = lockedDownState.currentDecision;
     persist(finalDecision ? addDecisionToHistory(lockedDownState, finalDecision) : lockedDownState);
     setCurrentScreen('lockdown');
@@ -231,8 +241,10 @@ export function App() {
 
         {currentScreen === 'lockdown' && decision?.lockdown && (
           <section>
-            <h2>Lockdown</h2>
-            <p>Final decision: {decision.lockdown.finalAnswer}</p>
+            <h2>Decision Locked</h2>
+            <p>Lockdown active. Sudden Death made the call. Affectionately final.</p>
+            <p>Final answer: {decision.lockdown.finalAnswer}</p>
+            {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
             <p>Countdown: {formatCountdown(lockdownRemainingMs)}</p>
             <p>{getLockdownMessage(decision, now)}</p>
             {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>New Overthink</button>}

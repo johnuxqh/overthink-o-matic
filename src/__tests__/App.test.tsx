@@ -213,6 +213,81 @@ describe('P6 text user journey', () => {
     act(() => root.unmount());
   });
 
+
+
+  it('5th completed game attempt automatically shows Decision Locked and saves history once', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await lockTwoOptions(container);
+
+    for (let index = 0; index < 4; index += 1) {
+      await clickButton(container, 'Select Coin Toss');
+      await clickButton(container, 'Try Another Game');
+    }
+    await clickButton(container, 'Select Coin Toss');
+
+    expect(container.textContent).toContain('Decision Locked');
+    expect(container.textContent).toContain('Sudden Death made the call');
+    expect(container.textContent).toContain('Countdown:');
+    expect(container.textContent).not.toContain('Try Another Game');
+    expect(container.textContent).not.toContain('New Overthink');
+
+    const current = JSON.parse(localStorage.getItem('overthink-o-matic:current-decision') ?? '{}') as DecisionRecord;
+    const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
+    expect(current.status).toBe(DecisionStatus.Lockdown);
+    expect(Boolean(current.finalAnswer)).toBe(true);
+    expect(current.options.map((option) => option.text)).toContain(current.finalAnswer!);
+    expect(history).toHaveLength(1);
+    expect(history[0].id).toBe(current.id);
+    act(() => root.unmount());
+  });
+
+  it('hydrates active lockdown back to Decision Locked', async () => {
+    const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    decision.status = DecisionStatus.Lockdown;
+    decision.finalAnswer = 'Pizza';
+    decision.finalOptionId = decision.options[0].id;
+    decision.finalisedAt = new Date().toISOString();
+    decision.finalMachineQuote = 'The tiny decision goblin has spoken.';
+    decision.lockdown = { startedAt: decision.finalisedAt, endsAt: new Date(Date.now() + 300000).toISOString(), lockdownUntil: new Date(Date.now() + 300000).toISOString(), finalOptionId: decision.options[0].id, finalAnswer: 'Pizza', finalMachineQuote: decision.finalMachineQuote, rotatingMessageIndex: 0 };
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
+    localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
+
+    const { container, root } = await renderApp();
+
+    expect(container.textContent).toContain('Decision Locked');
+    expect(container.textContent).toContain('Final answer: Pizza');
+    expect(container.textContent).not.toContain('Choose a game');
+    act(() => root.unmount());
+  });
+
+  it('shows New Overthink after hydrated lockdown expires without deleting history', async () => {
+    const previous = createLockedDecision('Old dinner', [createDecisionOption('Option', 'Soup'), createDecisionOption('Option', 'Salad')]);
+    previous.finalAnswer = 'Soup';
+    const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    decision.status = DecisionStatus.Lockdown;
+    decision.finalAnswer = 'Pizza';
+    decision.finalOptionId = decision.options[0].id;
+    decision.finalisedAt = new Date(Date.now() - 300001).toISOString();
+    decision.finalMachineQuote = 'Done means done, gently.';
+    decision.lockdown = { startedAt: decision.finalisedAt, endsAt: new Date(Date.now() - 1).toISOString(), lockdownUntil: new Date(Date.now() - 1).toISOString(), finalOptionId: decision.options[0].id, finalAnswer: 'Pizza', finalMachineQuote: decision.finalMachineQuote, rotatingMessageIndex: 0 };
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
+    localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
+    localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([previous]));
+
+    const { container, root } = await renderApp();
+    expect(container.textContent).toContain('Hi Alex');
+    expect(container.textContent).not.toContain('Decision Locked');
+
+    await enterProblem(container);
+    expect(container.textContent).toContain('What are our options?');
+    const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
+    expect(history).toHaveLength(1);
+    expect(history[0].id).toBe(previous.id);
+    act(() => root.unmount());
+  });
+
   it('previous overthinks renders stored decisions', async () => {
     const previous = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
     previous.finalAnswer = 'Pizza';

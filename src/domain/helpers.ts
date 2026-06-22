@@ -119,7 +119,7 @@ export function isDecisionLockedDown(decision: DecisionRecord, now: Date): boole
     return false;
   }
 
-  return now.getTime() < new Date(decision.lockdown.endsAt).getTime();
+  return now.getTime() < new Date(decision.lockdown.lockdownUntil ?? decision.lockdown.endsAt).getTime();
 }
 
 export function canRunGame(decision: DecisionRecord, now: Date): boolean {
@@ -169,7 +169,7 @@ export function detectGoalpostShift(currentOptions: DecisionOption[], previousDe
 
 export function formatPreviousOverthinkSummary(decision: DecisionRecord): PreviousOverthinkSummary {
   const finalAnswer = decision.finalAnswer ?? decision.lockdown?.finalAnswer ?? 'Not accepted yet';
-  const latestMachineQuote = decision.gamesPlayed[decision.gamesPlayed.length - 1]?.machineQuote;
+  const latestMachineQuote = decision.finalMachineQuote ?? decision.lockdown?.finalMachineQuote ?? decision.gamesPlayed[decision.gamesPlayed.length - 1]?.machineQuote;
 
   return {
     problem: decision.problem,
@@ -178,7 +178,7 @@ export function formatPreviousOverthinkSummary(decision: DecisionRecord): Previo
     gamesPlayedCount: decision.gamesPlayed.length,
     attemptsUsed: decision.gamesPlayed.length,
     createdDate: decision.createdAt,
-    lockdownStatus: decision.lockdown ? `Lockdown until ${decision.lockdown.endsAt}` : undefined,
+    lockdownStatus: decision.lockdown ? `Lockdown until ${decision.lockdown.lockdownUntil ?? decision.lockdown.endsAt}` : undefined,
     machineQuote: latestMachineQuote,
   };
 }
