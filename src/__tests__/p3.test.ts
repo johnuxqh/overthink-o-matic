@@ -27,6 +27,7 @@ describe('P3 domain helpers', () => {
 
   it('normalises option text', () => {
     expect(normaliseOptionText('  Pizza   Again  ')).toBe('pizza again');
+    expect(normaliseOptionText('Pizza, again!')).toBe('pizza again');
   });
 
   it('creates locked decision with 5 credits', () => {
@@ -59,12 +60,50 @@ describe('P3 domain helpers', () => {
     expect(isDecisionLockedDown(decision, new Date('2026-06-22T00:05:00.000Z'))).toBe(false);
   });
 
-  it('detects repeated normalised option text as a goalpost shift', () => {
-    const previousDecision = createLockedDecision('Old lunch', [createDecisionOption('A', '  Pizza Again  '), createDecisionOption('B', 'Tacos')]);
+  it('detects exact repeated option', () => {
+    const previousDecision = createLockedDecision('Old lunch', [createDecisionOption('A', 'Pizza Again'), createDecisionOption('B', 'Tacos')]);
+    const result = detectGoalpostShift([createDecisionOption('A', 'Pizza Again')], previousDecision);
+
+    expect(result.hasShift).toBe(true);
+    expect(result.repeatedOptions).toEqual(['Pizza Again']);
+  });
+
+  it('detects repeated option with different case', () => {
+    const previousDecision = createLockedDecision('Old lunch', [createDecisionOption('A', 'Pizza Again')]);
+    const result = detectGoalpostShift([createDecisionOption('A', 'pizza again')], previousDecision);
+
+    expect(result.hasShift).toBe(true);
+  });
+
+  it('detects repeated option with extra spaces', () => {
+    const previousDecision = createLockedDecision('Old lunch', [createDecisionOption('A', '  Pizza Again  ')]);
     const result = detectGoalpostShift([createDecisionOption('A', 'pizza   again')], previousDecision);
 
-    expect(result.isGoalpostMove).toBe(true);
-    expect(result.matchedOptionTexts.join(',')).toBe('pizza again');
+    expect(result.hasShift).toBe(true);
+    expect(result.repeatedOptions).toEqual(['pizza again']);
+  });
+
+  it('detects repeated option with simple punctuation difference', () => {
+    const previousDecision = createLockedDecision('Old lunch', [createDecisionOption('A', 'Pizza, again!')]);
+    const result = detectGoalpostShift([createDecisionOption('A', 'pizza again')], previousDecision);
+
+    expect(result.hasShift).toBe(true);
+  });
+
+  it('does not detect unrelated options', () => {
+    const previousDecision = createLockedDecision('Old lunch', [createDecisionOption('A', 'Pizza')]);
+    const result = detectGoalpostShift([createDecisionOption('A', 'Tacos')], previousDecision);
+
+    expect(result.hasShift).toBe(false);
+    expect(result.repeatedOptions).toEqual([]);
+  });
+
+  it('returns previous final answer when available', () => {
+    const previousDecision = createLockedDecision('Old lunch', [createDecisionOption('A', 'Pizza')]);
+    previousDecision.finalAnswer = 'Pizza';
+    const result = detectGoalpostShift([createDecisionOption('A', 'Pizza')], previousDecision);
+
+    expect(result.previousFinalAnswer).toBe('Pizza');
   });
 });
 

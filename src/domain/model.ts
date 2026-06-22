@@ -157,9 +157,21 @@ export interface AppState {
 }
 
 export interface GoalpostDetectionResult {
-  isGoalpostMove: boolean;
-  matchedOptionTexts: string[];
-  message?: string;
+  hasShift: boolean;
+  repeatedOptions: string[];
+  previousFinalAnswer?: string;
+  message: string;
+}
+
+export interface PreviousOverthinkSummary {
+  problem: string;
+  finalAnswer: string;
+  options: string[];
+  gamesPlayedCount: number;
+  attemptsUsed: number;
+  createdDate: string;
+  lockdownStatus?: string;
+  machineQuote?: string;
 }
 
 export interface ShareCardData {

@@ -107,9 +107,12 @@ export function lockDraftDecision(state: AppState): AppState {
     return state;
   }
 
+  const currentDecision = createLockedDecision(state.currentDecision.problem, state.currentDecision.options);
+
   return {
     ...state,
-    currentDecision: createLockedDecision(state.currentDecision.problem, state.currentDecision.options),
+    currentDecision,
+    goalpostWarning: detectGoalpostShift(currentDecision.options, getMostRecentDecision(state)),
   };
 }
 

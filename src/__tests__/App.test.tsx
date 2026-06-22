@@ -178,6 +178,41 @@ describe('P6 text user journey', () => {
     act(() => root.unmount());
   });
 
+
+  it('goalpost warning appears after locking a decision with repeated option and does not block game selection', async () => {
+    const previous = createLockedDecision('Old dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Soup')]);
+    previous.finalAnswer = 'Soup';
+    previous.lockdown = { startedAt: new Date().toISOString(), endsAt: new Date(Date.now() + 300000).toISOString(), finalOptionId: previous.options[1].id, finalAnswer: 'Soup', rotatingMessageIndex: 0 };
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
+    localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([previous]));
+
+    const { container, root } = await renderApp();
+    await enterProblem(container);
+    await changeField(container, 'Option 1', '  pizza  ');
+    await changeField(container, 'Option 2', 'Tacos');
+    await clickButton(container, 'Lock it in');
+
+    expect(container.textContent).toContain('moving the goal posts has been detected');
+    expect(container.textContent).toContain('The last decision landed on: Soup.');
+    expect(container.textContent).toContain('Select Coin Toss');
+    await clickButton(container, 'Select Coin Toss');
+    expect(container.textContent).toContain('Selected answer:');
+    act(() => root.unmount());
+  });
+
+  it('accepted decision is not duplicated in history after navigation', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await lockTwoOptions(container);
+    await clickButton(container, 'Select Coin Toss');
+    await clickButton(container, 'Accept Decision');
+
+    const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
+    expect(history).toHaveLength(1);
+    act(() => root.unmount());
+  });
+
   it('previous overthinks renders stored decisions', async () => {
     const previous = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
     previous.finalAnswer = 'Pizza';
@@ -188,6 +223,7 @@ describe('P6 text user journey', () => {
     await clickButton(container, 'Previous Overthinks');
     expect(container.textContent).toContain('Pick dinner');
     expect(container.textContent).toContain('Final answer: Pizza');
+    expect(container.textContent).toContain('Options: Pizza, Tacos');
     expect(container.textContent).toContain('Attempts used: 1');
     act(() => root.unmount());
   });

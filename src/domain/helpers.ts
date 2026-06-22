@@ -4,6 +4,7 @@ import {
   DecisionOption,
   DecisionRecord,
   DecisionStatus,
+  PreviousOverthinkSummary,
   LOCKDOWN_DURATION_MS,
   MAX_DECISION_CREDITS,
   REQUIRED_OPTION_COUNT,
@@ -24,7 +25,11 @@ export function normaliseDecisionText(text: string): string {
 }
 
 export function normaliseOptionText(text: string): string {
-  return text.trim().replace(/\s+/g, ' ').toLowerCase();
+  return text
+    .toLowerCase()
+    .replace(/[.,!?;:'"()\[\]{}\-]/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
 }
 
 export function validateProblemText(text: string): boolean {
@@ -133,22 +138,47 @@ export function getMostRecentDecision(state: AppState): DecisionRecord | undefin
 }
 
 export function detectGoalpostShift(currentOptions: DecisionOption[], previousDecision?: DecisionRecord) {
+  const noShiftMessage = 'No goalpost wobble detected. The machine remains politely suspicious.';
+
   if (!previousDecision) {
-    return { isGoalpostMove: false, matchedOptionTexts: [] };
+    return { hasShift: false, repeatedOptions: [], message: noShiftMessage };
   }
 
   const previousTexts = new Set(previousDecision.options.map((option) => normaliseOptionText(option.text)).filter(Boolean));
-  const matchedOptionTexts = Array.from(
+  const repeatedOptions = Array.from(
     new Set(
       currentOptions
-        .map((option) => normaliseOptionText(option.text))
-        .filter((text) => text.length > 0 && previousTexts.has(text)),
+        .filter((option) => {
+          const normalisedText = normaliseOptionText(option.text);
+          return normalisedText.length > 0 && previousTexts.has(normalisedText);
+        })
+        .map((option) => normaliseDecisionText(option.text)),
     ),
   );
+  const previousFinalAnswer = previousDecision.finalAnswer ?? previousDecision.lockdown?.finalAnswer;
 
   return {
-    isGoalpostMove: matchedOptionTexts.length > 0,
-    matchedOptionTexts,
-    message: matchedOptionTexts.length > 0 ? 'This looks like a previous overthink sneaking back in.' : undefined,
+    hasShift: repeatedOptions.length > 0,
+    repeatedOptions,
+    previousFinalAnswer,
+    message: repeatedOptions.length > 0
+      ? 'Hold up. We have been here before. One of these options has mysteriously reappeared. Referee note: moving the goal posts has been detected. Proceed if this is genuinely new. The machine is watching.'
+      : noShiftMessage,
+  };
+}
+
+export function formatPreviousOverthinkSummary(decision: DecisionRecord): PreviousOverthinkSummary {
+  const finalAnswer = decision.finalAnswer ?? decision.lockdown?.finalAnswer ?? 'Not accepted yet';
+  const latestMachineQuote = decision.gamesPlayed[decision.gamesPlayed.length - 1]?.machineQuote;
+
+  return {
+    problem: decision.problem,
+    finalAnswer,
+    options: decision.options.map((option) => option.text),
+    gamesPlayedCount: decision.gamesPlayed.length,
+    attemptsUsed: decision.gamesPlayed.length,
+    createdDate: decision.createdAt,
+    lockdownStatus: decision.lockdown ? `Lockdown until ${decision.lockdown.endsAt}` : undefined,
+    machineQuote: latestMachineQuote,
   };
 }
