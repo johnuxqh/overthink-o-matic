@@ -41,6 +41,10 @@ export function validateOptions(options: DecisionOption[]): boolean {
   return nonEmptyOptions.length >= REQUIRED_OPTION_COUNT;
 }
 
+export function isAdminTestMode(userSetup: UserProfile | undefined): boolean {
+  return normaliseOptionText(userSetup?.realityCheckerName ?? '').replace(/\s+/g, '') === 'adminjohn';
+}
+
 export function createUserSetup(name: string, realityCheckerName?: string): UserProfile {
   const createdAt = nowIso();
   const trimmedRealityCheckerName = realityCheckerName?.trim();

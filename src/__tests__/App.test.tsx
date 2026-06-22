@@ -45,9 +45,9 @@ async function changeField(container: HTMLElement, label: string, value: string)
   });
 }
 
-async function setupUser(container: HTMLElement) {
+async function setupUser(container: HTMLElement, realityCheckerName = 'Sam') {
   await changeField(container, 'User name', 'Alex');
-  await changeField(container, 'Optional reality checker name', 'Sam');
+  await changeField(container, 'Optional reality checker name', realityCheckerName);
   await clickButton(container, 'Save setup');
 }
 
@@ -65,6 +65,56 @@ async function lockTwoOptions(container: HTMLElement) {
 describe('P6 text user journey', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => { document.body.innerHTML = ''; localStorage.clear(); });
+
+  it('admin controls are hidden for normal reality checker', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container, 'Sam');
+    expect(container.textContent).not.toContain('Admin Test Controls');
+    act(() => root.unmount());
+  });
+
+  it('admin controls are visible for adminjohn', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container, ' Admin John ');
+    expect(container.textContent).toContain('Admin Test Controls');
+    expect(container.textContent).toContain('Clear active decision / lockdown');
+    act(() => root.unmount());
+  });
+
+  it('admin clear active decision removes lockdown and returns home', async () => {
+    const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    decision.status = DecisionStatus.Lockdown;
+    decision.lockdown = { startedAt: new Date().toISOString(), endsAt: new Date(Date.now() + 300000).toISOString(), finalOptionId: decision.options[0].id, finalAnswer: 'Pizza', rotatingMessageIndex: 0 };
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex', 'adminjohn')));
+    localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
+
+    const { container, root } = await renderApp();
+    expect(container.textContent).toContain('Decision Locked');
+    await clickButton(container, 'Clear active decision / lockdown');
+
+    expect(localStorage.getItem('overthink-o-matic:current-decision')).toBe(null);
+    expect(container.textContent).toContain('Hi Alex, what are we overthinking today?');
+    expect(container.textContent).not.toContain('Decision Locked');
+    act(() => root.unmount());
+  });
+
+  it('admin clear all resets setup history and active decision', async () => {
+    const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    const previous = createLockedDecision('Old dinner', [createDecisionOption('Option', 'Soup'), createDecisionOption('Option', 'Salad')]);
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex', 'adminjohn')));
+    localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
+    localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([previous]));
+
+    const { container, root } = await renderApp();
+    await clickButton(container, 'Clear all local app data');
+
+    expect(localStorage.getItem('overthink-o-matic:user-profile')).toBe(null);
+    expect(localStorage.getItem('overthink-o-matic:current-decision')).toBe(null);
+    expect(localStorage.getItem('overthink-o-matic:previous-decisions')).toBe(null);
+    expect(container.textContent).toContain('Setup');
+    expect(container.textContent).not.toContain('Admin Test Controls');
+    act(() => root.unmount());
+  });
 
   it('setup flow saves user', async () => {
     const { container, root } = await renderApp();
