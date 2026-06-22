@@ -125,8 +125,10 @@ export interface DecisionCredits {
 export interface LockdownState {
   startedAt: string;
   endsAt: string;
+  lockdownUntil?: string;
   finalOptionId: string;
   finalAnswer: string;
+  finalMachineQuote?: string;
   rotatingMessageIndex: number;
 }
 
@@ -140,6 +142,8 @@ export interface DecisionRecord {
   rejectedResultIds: string[];
   finalOptionId?: string;
   finalAnswer?: string;
+  finalisedAt?: string;
+  finalMachineQuote?: string;
   lockdown?: LockdownState;
   events: DecisionEvent[];
   createdAt: string;

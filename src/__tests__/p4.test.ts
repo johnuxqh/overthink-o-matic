@@ -95,3 +95,16 @@ describe('P4 overthinking engine', () => {
     expect(state.currentDecision?.gamesPlayed.length).toBe(5);
   });
 });
+
+describe('P8 lockdown details', () => {
+  it('stores finalisation, lockdownUntil, status, option id, and final machine quote', () => {
+    const lockedDown = startLockdown(decisionWithAttempts(5), 'Pizza', now, 'Final goblin memo.');
+
+    expect(lockedDown.status).toBe(DecisionStatus.Lockdown);
+    expect(lockedDown.finalAnswer).toBe('Pizza');
+    expect(lockedDown.finalOptionId).toBe(lockedDown.options[0].id);
+    expect(lockedDown.finalisedAt).toBe(now.toISOString());
+    expect(lockedDown.lockdown?.lockdownUntil).toBe(new Date(now.getTime() + LOCKDOWN_DURATION_MS).toISOString());
+    expect(lockedDown.lockdown?.finalMachineQuote).toBe('Final goblin memo.');
+  });
+});
