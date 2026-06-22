@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { createDecisionOption, createLockedDecision, createUserSetup, detectGoalpostShift, getMostRecentDecision, normaliseDecisionText, validateOptions, validateProblemText } from './domain/helpers';
+import { createDecisionOption, createLockedDecision, createUserSetup, detectGoalpostShift, formatPreviousOverthinkSummary, getMostRecentDecision, normaliseDecisionText, validateOptions, validateProblemText } from './domain/helpers';
 import { AppState, DecisionRecord, GameId, GameResult } from './domain/model';
 import { addDecisionToHistory, createInitialAppState, hydrateAppState, saveAppState } from './state/appState';
 import { createLocalStorageService } from './storage/localStorageService';
@@ -140,7 +140,10 @@ export function App() {
       return;
     }
     const outcome = runGame(appState, gameId, new Date());
-    persist(outcome.state);
+    const nextState = outcome.suddenDeathTriggered && outcome.state.currentDecision
+      ? addDecisionToHistory(outcome.state, outcome.state.currentDecision)
+      : outcome.state;
+    persist(nextState);
     setLatestResult(outcome.result);
     setCurrentScreen(outcome.suddenDeathTriggered ? 'lockdown' : 'result');
   }
@@ -200,7 +203,13 @@ export function App() {
         {currentScreen === 'game-selection' && decision && (
           <section>
             <h2>Choose a game</h2>
-            {appState.goalpostWarning?.isGoalpostMove && <p>{appState.goalpostWarning.message} The goalposts brought snacks.</p>}
+            {appState.goalpostWarning?.hasShift && (
+              <section aria-label="Goalpost warning">
+                <p>{appState.goalpostWarning.message}</p>
+                <p>Repeated option: {appState.goalpostWarning.repeatedOptions.join(', ')}</p>
+                {appState.goalpostWarning.previousFinalAnswer && <p>The last decision landed on: {appState.goalpostWarning.previousFinalAnswer}.</p>}
+              </section>
+            )}
             <p>Decision: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
             <p>Credits remaining: {creditsRemaining}</p>
@@ -233,14 +242,21 @@ export function App() {
         {currentScreen === 'previous-overthinks' && (
           <section>
             <h2>Previous Overthinks</h2>
-            {appState.previousDecisions.length === 0 ? <p>No previous overthinks yet.</p> : appState.previousDecisions.map((previous) => (
-              <article key={previous.id}>
-                <h3>{previous.problem}</h3>
-                <p>Final answer: {previous.finalAnswer ?? 'Not accepted yet'}</p>
-                <p>Attempts used: {previous.gamesPlayed.length}</p>
-                <p>Created: {formatDate(previous.createdAt)}</p>
-              </article>
-            ))}
+            {appState.previousDecisions.length === 0 ? <p>No previous overthinks yet.</p> : appState.previousDecisions.map((previous) => {
+              const summary = formatPreviousOverthinkSummary(previous);
+              return (
+                <article key={previous.id}>
+                  <h3>{summary.problem}</h3>
+                  <p>Final answer: {summary.finalAnswer}</p>
+                  <p>Options: {summary.options.join(', ')}</p>
+                  <p>Games played: {summary.gamesPlayedCount}</p>
+                  <p>Attempts used: {summary.attemptsUsed}</p>
+                  <p>Created: {formatDate(summary.createdDate)}</p>
+                  {summary.lockdownStatus && <p>Lockdown status: {summary.lockdownStatus}</p>}
+                  {summary.machineQuote && <p>Machine quote: {summary.machineQuote}</p>}
+                </article>
+              );
+            })}
             <button type="button" onClick={() => setCurrentScreen('home')}>Back to Home</button>
           </section>
         )}
