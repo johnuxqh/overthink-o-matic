@@ -1,6 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { createDecisionOption, createLockedDecision, createUserSetup, detectGoalpostShift, formatPreviousOverthinkSummary, getMostRecentDecision, normaliseDecisionText, validateOptions, validateProblemText } from './domain/helpers';
 import { AppState, DecisionRecord, GameId, GameResult } from './domain/model';
+import { ShareResultCard } from './share/ShareResultCard';
+import { buildShareResultData } from './share/shareResultBuilder';
+import { SHARE_EXPORT_FALLBACK, downloadShareCardImage, isShareImageExportSupported } from './share/shareImageExporter';
 import { addDecisionToHistory, createInitialAppState, hydrateAppState, saveAppState } from './state/appState';
 import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, getCreditsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs } from './services/overthinkingEngine';
@@ -36,6 +39,9 @@ export function App() {
   const [problemText, setProblemText] = useState('');
   const [optionTexts, setOptionTexts] = useState(['', '']);
   const [latestResult, setLatestResult] = useState<GameResult | undefined>(undefined);
+  const [shareDecision, setShareDecision] = useState<DecisionRecord | undefined>(undefined);
+  const [shareFallbackMessage, setShareFallbackMessage] = useState(SHARE_EXPORT_FALLBACK);
+  let shareCardElement: HTMLElement | null = null;
   const [error, setError] = useState('');
   const [now, setNow] = useState(() => new Date());
 
@@ -64,9 +70,11 @@ export function App() {
   const lockdownRemainingMs = decision ? getLockdownRemainingMs(decision, now) : 0;
   const activeLockdown = isLockdownActive(decision, now);
   const canTryAgain = Boolean(decision && creditsRemaining > 0 && !activeLockdown);
+  const shareData = shareDecision ? buildShareResultData(shareDecision, shareDecision.id === decision?.id ? latestResult : undefined) : undefined;
+  const canDownloadShareImage = isShareImageExportSupported();
 
   useEffect(() => {
-    if (activeLockdown && currentScreen !== 'lockdown') {
+    if (activeLockdown && !['lockdown', 'share-result', 'previous-overthinks'].includes(currentScreen)) {
       setCurrentScreen('lockdown');
     }
   }, [activeLockdown, currentScreen]);
@@ -75,6 +83,18 @@ export function App() {
   function persist(nextState: AppState) {
     setAppState(nextState);
     void saveAppState(storageService, nextState);
+  }
+
+  function openShareResult(targetDecision: DecisionRecord | undefined) {
+    if (!targetDecision) return;
+    setShareDecision(targetDecision);
+    setShareFallbackMessage(SHARE_EXPORT_FALLBACK);
+    setCurrentScreen('share-result');
+  }
+
+  async function downloadShareImage() {
+    const result = await downloadShareCardImage(shareCardElement);
+    if (result.fallbackMessage) setShareFallbackMessage(result.fallbackMessage);
   }
 
   function goHome() {
@@ -86,6 +106,7 @@ export function App() {
     setProblemText('');
     setOptionTexts(['', '']);
     setLatestResult(undefined);
+    setShareDecision(undefined);
     setError('');
     setCurrentScreen('home');
   }
@@ -128,6 +149,7 @@ export function App() {
     const goalpostWarning = detectGoalpostShift(lockedDecision.options, getMostRecentDecision(appState));
     persist({ ...appState, currentDecision: lockedDecision, goalpostWarning });
     setLatestResult(undefined);
+    setShareDecision(undefined);
     setError('');
     setCurrentScreen('game-selection');
   }
@@ -163,6 +185,7 @@ export function App() {
     setNow(acceptedAt);
     const finalDecision = lockedDownState.currentDecision;
     persist(finalDecision ? addDecisionToHistory(lockedDownState, finalDecision) : lockedDownState);
+    if (finalDecision) setShareDecision(finalDecision);
     setCurrentScreen('lockdown');
   }
 
@@ -247,6 +270,8 @@ export function App() {
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
             <p>Countdown: {formatCountdown(lockdownRemainingMs)}</p>
             <p>{getLockdownMessage(decision, now)}</p>
+            {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>Share Result</button>}
+            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>
             {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>New Overthink</button>}
           </section>
         )}
@@ -266,6 +291,7 @@ export function App() {
                   <p>Created: {formatDate(summary.createdDate)}</p>
                   {summary.lockdownStatus && <p>Lockdown status: {summary.lockdownStatus}</p>}
                   {summary.machineQuote && <p>Machine quote: {summary.machineQuote}</p>}
+                  <button type="button" onClick={() => openShareResult(previous)}>Share</button>
                 </article>
               );
             })}
@@ -273,8 +299,21 @@ export function App() {
           </section>
         )}
 
-        {currentScreen === 'share-result' && (
-          <section><h2>Share Result</h2><p>Share card rendering arrives in P9. Placeholder only.</p></section>
+        {currentScreen === 'share-result' && shareData && (
+          <section>
+            <h2>Share Result</h2>
+            <div ref={(element: HTMLDivElement | null) => { shareCardElement = element; }}>
+              <ShareResultCard data={shareData} />
+            </div>
+            {canDownloadShareImage ? (
+              <button type="button" onClick={downloadShareImage}>Download Image</button>
+            ) : (
+              <p>{shareFallbackMessage}</p>
+            )}
+            <p>Copy/share fallback: {shareFallbackMessage}.</p>
+            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Back to Previous Overthinks</button>
+            {!activeLockdown && <button type="button" onClick={goHome}>New Overthink</button>}
+          </section>
         )}
       </section>
     </main>

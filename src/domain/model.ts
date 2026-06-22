@@ -185,6 +185,7 @@ export interface ShareCardData {
   finalAnswer: string;
   decisionStatus: DecisionStatus;
   machineQuote: string;
+  isSuddenDeath: boolean;
   createdAt: string;
 }
 
