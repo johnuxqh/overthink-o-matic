@@ -254,7 +254,7 @@ export function App() {
   return (
     <main className="app-shell" aria-labelledby="app-title">
       <section className="screen-card machine-frame">
-        <p className="eyebrow">Let&apos;s Underthink This</p>
+        <p className="eyebrow">Questionable Arcade Oracle</p>
         <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
         <p className="machine-subtitle">Powered by Barry the Honey Badger 🐾</p>
 
@@ -302,32 +302,32 @@ export function App() {
 
         {currentScreen === 'home' && appState.user && (
           <form onSubmit={submitProblem}>
-            <h2>Hi {appState.user.name}, what are we overthinking today?</h2><p className="quote-panel">The machine says... feed me one decision. Barry promises not to be normal about it.</p>
-            <label>Problem or decision<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
-            <button type="submit">Next</button>
-            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>
-            <button type="button" onClick={() => setCurrentScreen('about-machine')}>About The Machine</button>
+            <h2>STATE YOUR OVERTHINK</h2><p className="quote-panel">Feed Barry one low-stakes decision. He will pretend this is science.</p>
+            <label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
+            <button type="submit">INSERT INTO MACHINE</button>
+            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+            <button type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>Share Result</button>}
           </form>
         )}
 
         {currentScreen === 'options' && (
           <form onSubmit={lockOptions}>
-            <h2>Load the Options</h2><p>What are our options?</p><p>Insert at least two possible futures into the brass decision hopper.</p>
+            <h2>OPTIONS DETECTED</h2><p>Barry only chooses from what you feed him. Do not blame the badger.</p>
             {optionRows.map((option, index) => (
               <div key={option.id}>
                 <label>{option.label}<input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} /></label>
                 <button type="button" onClick={() => removeOption(index)} disabled={optionTexts.length <= 2}>Remove</button>
               </div>
             ))}
-            <button type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>Add another option</button>
-            <button type="submit">Lock it in</button>
+            <button type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
+            <button type="submit">LOCK IN OPTIONS</button>
           </form>
         )}
 
         {currentScreen === 'game-selection' && decision && (
           <section>
-            <h2>Choose your protocol</h2><p>Barry is thinking... each protocol spends one precious anti-overthinking credit.</p>
+            <h2>OPTIONS DETECTED</h2><p>Barry only chooses from what you feed him. Do not blame the badger.</p>
             {appState.goalpostWarning?.hasShift && (
               <section className="warning-panel" aria-label="Goalpost warning">
                 <p>{appState.goalpostWarning.message}</p>
@@ -344,31 +344,46 @@ export function App() {
             <p>Decision: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
             <div className="stat-chip">Credits remaining: {creditsRemaining}</div>
-            <div className="protocol-grid">{eligibleGames.map((game) => <article className="protocol-card" key={game.id}><h3>{game.name} Protocol</h3><p>{game.description}</p><button type="button" onClick={() => runSelectedGame(game.id)}>Select {game.name}</button></article>)}</div>
+            <div className="protocol-grid">{eligibleGames.map((game, index) => {
+              const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
+              const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
+              return (
+                <article className="protocol-card" key={game.id}>
+                  <div className="protocol-emblem" aria-hidden="true">{emblems[index % emblems.length]}</div>
+                  <div>
+                    <h3>{protocolName} Protocol</h3>
+                    <p>{game.description}</p>
+                  </div>
+                  <button type="button" onClick={() => runSelectedGame(game.id)}>Select {protocolName}</button>
+                </article>
+              );
+            })}</div>
           </section>
         )}
 
         {currentScreen === 'result' && latestResult && decision && (
           <section>
             <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
-            <p>The Machine Played: {latestGame?.name ?? latestResult.gameId} Protocol</p>
-            <p>Selected answer: {latestResult.selectedOption}</p>
-            <p className="quote-panel">{latestResult.machineQuote}</p>
+            <p>The Machine Played: {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId} Protocol</p>
+            <div className="quote-panel"><h3>Barry’s notes</h3><p>{latestResult.machineQuote}</p></div>
             <div className="stat-chip">Credits remaining: {creditsRemaining}</div>
-            <p>{getEscalationMessage(decision)}</p>
-            <button type="button" onClick={acceptLatestDecision}>Accept Decision</button>
-            <button type="button" onClick={() => setCurrentScreen('game-selection')} disabled={!canTryAgain}>Try Another Protocol</button>
+            <div className="attempt-spiral"><h3>YOUR OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText}</p>)}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
+            <button type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
+            <button type="button" onClick={() => setCurrentScreen('game-selection')} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
           </section>
         )}
 
         {currentScreen === 'lockdown' && decision?.lockdown && (
           <section className="lockdown-panel">
-            <h2>BARRY HAS TAKEN CONTROL</h2>
-            <p>Decision Locked</p>
-            <p>Lockdown active. DECISION LOCKED. Sudden Death made the call. Affectionately final.</p>
-            <p>Final answer: {decision.lockdown.finalAnswer}</p>
+            <h2>SUDDEN DEATH</h2>
+            <p className="emergency-kicker">BARRY HAS TAKEN CONTROL</p>
+            <p>You asked five times. The machine is done.</p>
+            <p>Final decision</p>
+            <p className="result-answer">{decision.lockdown.finalAnswer}</p>
+            <p>RED CARD ISSUED</p>
+            <p>5 minute cool down activated</p>
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            <p>Emergency cooling-off countdown</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>Countdown: {formatCountdown(lockdownRemainingMs)}</p>
+            <p>DECISION LOCKED</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>No new overthinks allowed</p><p>Seriously. Go do something else.</p>
             <p>{getLockdownMessage(decision, now)}</p>
             {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>Share Result</button>}
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>
@@ -423,8 +438,10 @@ export function App() {
             <p>Inside was Barry.</p>
             <p>Nobody knows how long he had been there.</p>
             <p>Nobody has successfully counted the number of energy drinks consumed.</p>
+            <p>The machine is powered by a questionable blend of pocket change, panic, static electricity, and one extremely confident honey badger.</p>
             <p>Scientific accuracy: somewhere between a fortune cookie and a very confident pigeon.</p>
             <p>Independent testing shows the machine is approximately 14% more accurate than Facebook, 22% more accurate than asking the group chat, and 37% more accurate than changing your mind six times.</p>
+            <p>Warning: results may be wildly unqualified but strangely useful.</p>
             <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>Back to Home</button>
           </section>
         )}
