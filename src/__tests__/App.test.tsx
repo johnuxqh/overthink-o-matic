@@ -52,14 +52,14 @@ async function setupUser(container: HTMLElement, realityCheckerName = 'Sam') {
 }
 
 async function enterProblem(container: HTMLElement) {
-  await changeField(container, 'Problem or decision', 'Pick dinner');
-  await clickButton(container, 'Next');
+  await changeField(container, 'Decision input', 'Pick dinner');
+  await clickButton(container, 'INSERT INTO MACHINE');
 }
 
 async function lockTwoOptions(container: HTMLElement) {
   await changeField(container, 'Option 1', 'Pizza');
   await changeField(container, 'Option 2', 'Tacos');
-  await clickButton(container, 'Lock it in');
+  await clickButton(container, 'LOCK IN OPTIONS');
 }
 
 describe('P6 text user journey', () => {
@@ -89,12 +89,12 @@ describe('P6 text user journey', () => {
     localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
 
     const { container, root } = await renderApp();
-    expect(container.textContent).toContain('Decision Locked');
+    expect(container.textContent).toContain('DECISION LOCKED');
     await clickButton(container, 'Clear active decision / lockdown');
 
     expect(localStorage.getItem('overthink-o-matic:current-decision')).toBe(null);
-    expect(container.textContent).toContain('Hi Alex, what are we overthinking today?');
-    expect(container.textContent).not.toContain('Decision Locked');
+    expect(container.textContent).toContain('STATE YOUR OVERTHINK');
+    expect(container.textContent).not.toContain('DECISION LOCKED');
     act(() => root.unmount());
   });
 
@@ -120,7 +120,7 @@ describe('P6 text user journey', () => {
     const { container, root } = await renderApp();
     expect(container.textContent).toContain('Setup');
     await setupUser(container);
-    expect(container.textContent).toContain('Hi Alex, what are we overthinking today?');
+    expect(container.textContent).toContain('STATE YOUR OVERTHINK');
     expect(JSON.parse(localStorage.getItem('overthink-o-matic:user-profile') ?? '{}').name).toBe('Alex');
     act(() => root.unmount());
   });
@@ -128,7 +128,7 @@ describe('P6 text user journey', () => {
   it('home validates problem', async () => {
     const { container, root } = await renderApp();
     await setupUser(container);
-    await clickButton(container, 'Next');
+    await clickButton(container, 'INSERT INTO MACHINE');
     expect(container.textContent).toContain('Please enter something to overthink.');
     act(() => root.unmount());
   });
@@ -138,7 +138,7 @@ describe('P6 text user journey', () => {
     await setupUser(container);
     await enterProblem(container);
     await changeField(container, 'Option 1', 'Pizza');
-    await clickButton(container, 'Lock it in');
+    await clickButton(container, 'LOCK IN OPTIONS');
     expect(container.textContent).toContain('Please enter at least 2 options.');
     act(() => root.unmount());
   });
@@ -147,7 +147,7 @@ describe('P6 text user journey', () => {
     const { container, root } = await renderApp();
     await setupUser(container);
     await enterProblem(container);
-    await clickButton(container, 'Add another option');
+    await clickButton(container, 'ADD ANOTHER OPTION');
     expect(container.textContent).toContain('Option 3');
     await clickButton(container, 'Remove');
     expect(container.textContent).not.toContain('Option 3');
@@ -161,7 +161,7 @@ describe('P6 text user journey', () => {
     await lockTwoOptions(container);
     const decision = JSON.parse(localStorage.getItem('overthink-o-matic:current-decision') ?? '{}') as DecisionRecord;
     expect(decision.status).toBe(DecisionStatus.Locked);
-    expect(container.textContent).toContain('Choose your protocol');
+    expect(container.textContent).toContain('OPTIONS DETECTED');
     act(() => root.unmount());
   });
 
@@ -179,11 +179,11 @@ describe('P6 text user journey', () => {
     const second = await renderApp();
     await setupUser(second.container);
     await enterProblem(second.container);
-    await clickButton(second.container, 'Add another option');
+    await clickButton(second.container, 'ADD ANOTHER OPTION');
     await changeField(second.container, 'Option 1', 'Pizza');
     await changeField(second.container, 'Option 2', 'Tacos');
     await changeField(second.container, 'Option 3', 'Soup');
-    await clickButton(second.container, 'Lock it in');
+    await clickButton(second.container, 'LOCK IN OPTIONS');
     expect(second.container.textContent).toContain('Wheel of Fate');
     act(() => second.root.unmount());
   });
@@ -194,9 +194,9 @@ describe('P6 text user journey', () => {
     await enterProblem(container);
     await lockTwoOptions(container);
     await clickButton(container, 'Select Coin Toss');
-    expect(container.textContent).toContain('Selected answer:');
+    expect(container.textContent).toContain('THE MACHINE SAYS...');
     expect(container.textContent).toContain('Credits remaining: 4');
-    await clickButton(container, 'Try Another Protocol');
+    await clickButton(container, 'TRY ANOTHER PROTOCOL');
     await clickButton(container, 'Select Coin Toss');
     expect(container.textContent).toContain('Credits remaining: 3');
     act(() => root.unmount());
@@ -208,10 +208,10 @@ describe('P6 text user journey', () => {
     await enterProblem(container);
     await lockTwoOptions(container);
     await clickButton(container, 'Select Coin Toss');
-    await clickButton(container, 'Accept Decision');
+    await clickButton(container, 'ACCEPT THE ANSWER');
     const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
     expect(history).toHaveLength(1);
-    expect(container.textContent).toContain('Hi Alex, what are we overthinking today?');
+    expect(container.textContent).toContain('STATE YOUR OVERTHINK');
     act(() => root.unmount());
   });
 
@@ -222,8 +222,8 @@ describe('P6 text user journey', () => {
     localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
     localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
     const { container, root } = await renderApp();
-    expect(container.textContent).toContain('Lockdown');
-    expect(container.textContent).not.toContain('Try Another Protocol');
+    expect(container.textContent).toContain('SUDDEN DEATH');
+    expect(container.textContent).not.toContain('TRY ANOTHER PROTOCOL');
     expect(container.textContent).not.toContain('New Overthink');
     act(() => root.unmount());
   });
@@ -240,13 +240,13 @@ describe('P6 text user journey', () => {
     await enterProblem(container);
     await changeField(container, 'Option 1', '  pizza  ');
     await changeField(container, 'Option 2', 'Tacos');
-    await clickButton(container, 'Lock it in');
+    await clickButton(container, 'LOCK IN OPTIONS');
 
     expect(container.textContent).toContain('Hmm. This feels familiar.');
     expect(container.textContent).toContain('The last decision landed on: Soup.');
     expect(container.textContent).toContain('Select Coin Toss');
     await clickButton(container, 'Select Coin Toss');
-    expect(container.textContent).toContain('Selected answer:');
+    expect(container.textContent).toContain('THE MACHINE SAYS...');
     act(() => root.unmount());
   });
 
@@ -256,7 +256,7 @@ describe('P6 text user journey', () => {
     await enterProblem(container);
     await lockTwoOptions(container);
     await clickButton(container, 'Select Coin Toss');
-    await clickButton(container, 'Accept Decision');
+    await clickButton(container, 'ACCEPT THE ANSWER');
 
     const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
     expect(history).toHaveLength(1);
@@ -265,7 +265,7 @@ describe('P6 text user journey', () => {
 
 
 
-  it('5th completed game attempt automatically shows Decision Locked and saves history once', async () => {
+  it('5th completed game attempt automatically shows DECISION LOCKED and saves history once', async () => {
     const { container, root } = await renderApp();
     await setupUser(container);
     await enterProblem(container);
@@ -273,14 +273,14 @@ describe('P6 text user journey', () => {
 
     for (let index = 0; index < 4; index += 1) {
       await clickButton(container, 'Select Coin Toss');
-      await clickButton(container, 'Try Another Protocol');
+      await clickButton(container, 'TRY ANOTHER PROTOCOL');
     }
     await clickButton(container, 'Select Coin Toss');
 
-    expect(container.textContent).toContain('Decision Locked');
-    expect(container.textContent).toContain('Sudden Death made the call');
-    expect(container.textContent).toContain('Countdown:');
-    expect(container.textContent).not.toContain('Try Another Protocol');
+    expect(container.textContent).toContain('DECISION LOCKED');
+    expect(container.textContent).toContain('You asked five times');
+    expect(container.textContent).toContain('No new overthinks allowed');
+    expect(container.textContent).not.toContain('TRY ANOTHER PROTOCOL');
     expect(container.textContent).not.toContain('New Overthink');
 
     const current = JSON.parse(localStorage.getItem('overthink-o-matic:current-decision') ?? '{}') as DecisionRecord;
@@ -293,7 +293,7 @@ describe('P6 text user journey', () => {
     act(() => root.unmount());
   });
 
-  it('hydrates active lockdown back to Decision Locked', async () => {
+  it('hydrates active lockdown back to DECISION LOCKED', async () => {
     const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
     decision.status = DecisionStatus.Lockdown;
     decision.finalAnswer = 'Pizza';
@@ -306,9 +306,9 @@ describe('P6 text user journey', () => {
 
     const { container, root } = await renderApp();
 
-    expect(container.textContent).toContain('Decision Locked');
-    expect(container.textContent).toContain('Final answer: Pizza');
-    expect(container.textContent).not.toContain('Choose your protocol');
+    expect(container.textContent).toContain('DECISION LOCKED');
+    expect(container.textContent).toContain('Pizza');
+    expect(container.textContent).not.toContain('OPTIONS DETECTED');
     act(() => root.unmount());
   });
 
@@ -327,11 +327,11 @@ describe('P6 text user journey', () => {
     localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([previous]));
 
     const { container, root } = await renderApp();
-    expect(container.textContent).toContain('Hi Alex');
-    expect(container.textContent).not.toContain('Decision Locked');
+    expect(container.textContent).toContain('STATE YOUR OVERTHINK');
+    expect(container.textContent).not.toContain('DECISION LOCKED');
 
     await enterProblem(container);
-    expect(container.textContent).toContain('What are our options?');
+    expect(container.textContent).toContain('OPTIONS DETECTED');
     const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
     expect(history).toHaveLength(1);
     expect(history[0].id).toBe(previous.id);
@@ -345,9 +345,9 @@ describe('P6 text user journey', () => {
     localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
     localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([previous]));
     const { container, root } = await renderApp();
-    await clickButton(container, 'Previous Overthinks');
+    await clickButton(container, 'PREVIOUS OVERTHINKS');
     expect(container.textContent).toContain('Pick dinner');
-    expect(container.textContent).toContain('Final answer: Pizza');
+    expect(container.textContent).toContain('Pizza');
     expect(container.textContent).toContain('Options: Pizza, Tacos');
     expect(container.textContent).toContain('Attempt number: 1');
     act(() => root.unmount());
@@ -356,7 +356,7 @@ describe('P6 text user journey', () => {
   it('about machine renders static lore from home navigation', async () => {
     const { container, root } = await renderApp();
     await setupUser(container);
-    await clickButton(container, 'About The Machine');
+    await clickButton(container, 'ABOUT THE MACHINE');
     expect(container.textContent).toContain('The Overthink-O-Matic 5000 was discovered behind an arcade in 1987.');
     expect(container.textContent).toContain('Inside was Barry.');
     expect(container.textContent).toContain('very confident pigeon');

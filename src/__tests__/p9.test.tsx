@@ -40,13 +40,13 @@ async function changeField(container: HTMLElement, label: string, value: string)
 async function makeAcceptedDecision(container: HTMLElement) {
   await changeField(container, 'User name', 'Alex');
   await clickButton(container, 'Save setup');
-  await changeField(container, 'Problem or decision', 'Pick dinner');
-  await clickButton(container, 'Next');
+  await changeField(container, 'Decision input', 'Pick dinner');
+  await clickButton(container, 'INSERT INTO MACHINE');
   await changeField(container, 'Option 1', 'Pizza');
   await changeField(container, 'Option 2', 'Tacos');
-  await clickButton(container, 'Lock it in');
+  await clickButton(container, 'LOCK IN OPTIONS');
   await clickButton(container, 'Select Coin Toss');
-  await clickButton(container, 'Accept Decision');
+  await clickButton(container, 'ACCEPT THE ANSWER');
 }
 
 function lockedDecision(): DecisionRecord {
@@ -73,12 +73,12 @@ describe('P9 share result', () => {
     await makeAcceptedDecision(container);
     await clickButton(container, 'Share Result');
     expect(container.textContent).toContain('OVERTHINK-O-MATIC');
-    expect(container.textContent).toContain("Let's Underthink This");
-    expect(container.textContent).toContain('The Overthink:');
+    expect(container.textContent).toContain("Mini Arcade Ticket");
+    expect(container.textContent).toContain('The Overthink');
     expect(container.textContent).toContain('Pick dinner');
-    expect(container.textContent).toContain('The Options:');
+    expect(container.textContent).toContain('The Options');
     expect(container.textContent).toContain('Pizza');
-    expect(container.textContent).toContain('The Decision:');
+    expect(container.textContent).toContain('Final Decision');
     act(() => root.unmount());
   });
 
@@ -100,7 +100,7 @@ describe('P9 share result', () => {
     localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
     localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([second, first]));
     const { container, root } = await renderApp();
-    await clickButton(container, 'Previous Overthinks');
+    await clickButton(container, 'PREVIOUS OVERTHINKS');
     const articles = Array.from(container.querySelectorAll('article'));
     const dinnerArticle = articles.find((article) => article.textContent?.includes('Pick dinner'));
     await act(async () => { (dinnerArticle?.querySelector('button') as HTMLButtonElement).dispatchEvent(new MouseEvent('click', { bubbles: true })); });

@@ -5,7 +5,7 @@ const gameLabels: Record<GameId, string> = {
   [GameId.BestOf5]: 'Best of 5',
   [GameId.WheelOfFate]: 'Wheel of Fate',
   [GameId.GutCheck]: 'Gut Check',
-  [GameId.ChaosGoblin]: 'Chaos Goblin',
+  [GameId.ChaosGoblin]: 'Chaos Engine',
   [GameId.BrutalHonesty]: 'Brutal Honesty',
   [GameId.RealityChecker]: 'Reality Checker',
   [GameId.EliminationChamber]: 'Elimination Chamber',
@@ -28,11 +28,11 @@ export function ShareResultCard({ data }: ShareResultCardProps) {
   return (
     <article className="share-result-card" aria-label="Share result card">
       <div>
-        <p className="share-result-card__tagline">Let&apos;s Underthink This</p>
+        <p className="share-result-card__tagline">Mini Arcade Ticket</p>
         <h2>OVERTHINK-O-MATIC</h2>
       </div>
       <section>
-        <h3>The Overthink:</h3>
+        <h3>The Overthink</h3>
         <p>{data.decisionProblem}</p>
       </section>
       <section>
@@ -40,11 +40,11 @@ export function ShareResultCard({ data }: ShareResultCardProps) {
         <ul>{data.options.map((option) => <li key={option}>{option}</li>)}</ul>
       </section>
       <section>
-        <h3>The Machine Played Protocol:</h3>
+        <h3>The Protocol</h3>
         <p>{gameLabels[data.selectedGameId] ?? data.selectedGameId}</p>
       </section>
       <section>
-        <h3>The Decision:</h3>
+        <h3>Final Decision</h3>
         <p className="share-result-card__decision">{data.finalAnswer}</p>
       </section>
       <section>
@@ -52,7 +52,7 @@ export function ShareResultCard({ data }: ShareResultCardProps) {
         <p>{data.isSuddenDeath ? 'Sudden Death' : statusLabels[data.decisionStatus]}</p>
       </section>
       <section>
-        <h3>The machine says:</h3>
+        <h3>Barry’s Comment</h3>
         <p>{data.machineQuote}</p>
       </section>
     </article>
