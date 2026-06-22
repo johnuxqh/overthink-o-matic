@@ -72,3 +72,11 @@ npm run build
 - No account system.
 - No AI semantic matching.
 - No social API integration.
+
+## Deployment
+
+The production app is deployed to GitHub Pages at https://johnuxqh.github.io/overthink-o-matic/.
+
+GitHub Pages should be configured with **Source: GitHub Actions**. The deployment workflow builds the Vite app and publishes the generated `dist` directory as the GitHub Pages artifact; it does not deploy from the repository root.
+
+`npm run dev` is only for local development/testing. Production deployment is created by the GitHub Actions workflow on pushes to `main`.
