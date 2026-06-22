@@ -110,6 +110,15 @@ describe('P9 share result', () => {
     act(() => root.unmount());
   });
 
+
+  it('share screen shows screenshot fallback when image export is unsupported', async () => {
+    const { container, root } = await renderApp();
+    await makeAcceptedDecision(container);
+    await clickButton(container, 'Share Result');
+    expect(container.textContent).toContain('Copy/share fallback: Take a screenshot of this card.');
+    act(() => root.unmount());
+  });
+
   it('exporter gracefully handles unsupported browser APIs', async () => {
     const result = await downloadShareCardImage(document.createElement('div'));
     expect(result.downloaded).toBe(false);
