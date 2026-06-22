@@ -83,6 +83,31 @@ export interface GameRun {
   createdAt: string;
 }
 
+export interface GameResultDetails {
+  coinSide?: string;
+  rounds?: Array<{ round: number; winnerOptionId: string; winnerOptionText: string }>;
+  score?: Record<string, number>;
+  wheelSegmentCount?: number;
+  prompt?: string;
+  goblinMood?: string;
+  tone?: string;
+  realityCheckerName?: string;
+  eliminatedOptions?: string[];
+  matchups?: Array<{ round: number; options: string[]; winner: string }>;
+  champion?: string;
+}
+
+export interface GameResult {
+  id: string;
+  gameId: GameId;
+  selectedOptionId: string;
+  selectedOption: string;
+  resultLabel: string;
+  machineQuote: string;
+  details: GameResultDetails;
+  createdAt: string;
+}
+
 export interface DecisionEvent {
   id: string;
   type: DecisionEventType;
@@ -120,6 +145,7 @@ export interface DecisionRecord {
   createdAt: string;
   updatedAt: string;
   lockedAt?: string;
+  realityCheckerName?: string;
   completedAt?: string;
 }
 

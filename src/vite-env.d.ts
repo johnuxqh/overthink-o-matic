@@ -21,6 +21,9 @@ declare namespace JSX {
     section: Record<string, unknown>;
     p: Record<string, unknown>;
     h1: Record<string, unknown>;
+    h2: Record<string, unknown>;
+    h3: Record<string, unknown>;
+    article: Record<string, unknown>;
     nav: Record<string, unknown>;
     button: Record<string, unknown>;
     div: Record<string, unknown>;
@@ -34,6 +37,11 @@ declare const afterEach: (fn: () => void) => void;
 declare const expect: (actual: unknown) => {
   toBe(expected: unknown): void;
   toContain(expected: string): void;
+  toEqual(expected: unknown): void;
+  toHaveLength(expected: number): void;
+  toBeGreaterThan(expected: number): void;
+  toBeGreaterThanOrEqual(expected: number): void;
+  toThrow(expected?: string | RegExp): void;
 };
 
 declare module '*.css';
