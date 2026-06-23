@@ -9,6 +9,7 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
+import { BarryCommentary, BarryStatus, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner', 'about-machine'] as const;
@@ -291,10 +292,11 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <section className="screen-card machine-frame">
-        <p className="eyebrow">Questionable Arcade Oracle</p>
-        <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
-        <p className="machine-subtitle">Powered by Barry the Honey Badger 🐾</p>
+      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} controls={currentScreen !== 'admin-qa-runner' && currentScreen !== 'setup' ? (<>
+          <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
+          <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+          <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
+        </>) : undefined}>
         {error && <p className="error-alert" role="alert">⚠ {error}</p>}
 
         {adminTestMode && currentScreen !== 'share-result' && (
@@ -333,32 +335,30 @@ export function App() {
             <h2>Operator Setup</h2><p>Barry is thinking... please identify yourself before touching the glowing buttons.</p>
             <label>User name<input value={userName} onChange={(event: Event) => setUserName((event.target as HTMLInputElement).value)} /></label>
             <label>Optional reality checker name<input value={realityCheckerName} onChange={(event: Event) => setRealityCheckerName((event.target as HTMLInputElement).value)} /></label>
-            <button type="submit">Save setup / Power Up Machine</button>
+            <button className="machine-button machine-button--primary" type="submit">Save setup / Power Up Machine</button>
           </form>
         )}
 
         {currentScreen === 'home' && appState.user && (
           <form onSubmit={submitProblem}>
-            <h2>STATE YOUR OVERTHINK</h2><p className="quote-panel">Feed Barry one low-stakes decision. He will pretend this is science.</p>
+            <h2>STATE YOUR OVERTHINK</h2><BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
             <label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
-            <button type="submit">INSERT INTO MACHINE</button>
-            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
-            <button type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
+            <button className="machine-button machine-button--primary" type="submit">INSERT INTO MACHINE</button>
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>
         )}
 
         {currentScreen === 'options' && (
           <form onSubmit={lockOptions}>
-            <h2>OPTIONS DETECTED</h2><p>Barry only chooses from what you feed him. Do not blame the badger.</p>
+            <h2>OPTIONS DETECTED</h2><BarryStatus>Barry only chooses from what you feed him. Do not blame the badger.</BarryStatus>
             {optionRows.map((option, index) => (
               <div key={option.id}>
                 <label>{option.label}<input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} /></label>
                 <button type="button" onClick={() => removeOption(index)} disabled={optionTexts.length <= 2}>Remove</button>
               </div>
             ))}
-            <button type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
-            <button type="submit">LOCK IN OPTIONS</button>
+            <button className="machine-button machine-button--secondary" type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
+            <button className="machine-button machine-button--primary" type="submit">LOCK IN OPTIONS</button>
           </form>
         )}
 
@@ -366,7 +366,7 @@ export function App() {
           <section>
             <h2>CHOOSE YOUR PROTOCOL</h2><p>Barry is selecting machinery with unnecessary confidence.</p>
             {appState.goalpostWarning?.hasShift && (
-              <section className="warning-panel" aria-label="Goalpost warning">
+              <MachineWarning className="warning-panel">
                 <p>{appState.goalpostWarning.message}</p>
                 <p>Repeated option: {appState.goalpostWarning.repeatedOptions.join(', ')}</p>
                 {appState.goalpostWarning.previousFinalAnswer && <p>The last decision landed on: {appState.goalpostWarning.previousFinalAnswer}.</p>}
@@ -376,7 +376,7 @@ export function App() {
                     <p><button type="button" onClick={resumeMostRecentPreviousDecision}>Resume previous overthink spiral if available</button></p>
                   ) : null;
                 })()}
-              </section>
+              </MachineWarning>
             )}
             <p>Overthink: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
@@ -385,14 +385,7 @@ export function App() {
               const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
               const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
               return (
-                <article className="protocol-card" key={game.id}>
-                  <div className="protocol-emblem" aria-hidden="true">{emblems[index % emblems.length]}</div>
-                  <div>
-                    <h3>{protocolName} Protocol</h3>
-                    <p>{game.description}</p>
-                  </div>
-                  <button type="button" onClick={() => runSelectedGame(game.id)}>RUN {protocolName}</button>
-                </article>
+                <ProtocolModuleCard key={game.id} name={protocolName} description={game.description} emblem={emblems[index % emblems.length]} onActivate={() => runSelectedGame(game.id)} />
               );
             })}</div>
           </section>
@@ -413,11 +406,11 @@ export function App() {
           <section>
             <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
             <p>The Machine Played: {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId} Protocol</p>
-            <div className="quote-panel"><h3>Barry's Notes</h3><p>{latestResult.machineQuote}</p></div>
+            <BarryCommentary><p>{latestResult.machineQuote}</p></BarryCommentary>
             <div className="stat-chip">BARRY COMMITMENT INDEX: {attemptsRemaining}</div>
             <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
-            <button type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
-            <button type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
+            <button className="machine-button machine-button--success" type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
+            <button className="machine-button machine-button--protocol" type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
           </section>
         )}
 
@@ -431,7 +424,7 @@ export function App() {
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
             <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {index < decision.gamesPlayed.length - 1 ? 'Rejected' : 'Final protocol'} — Barry is {commitment.stage}</p>; })}</div>
             <p>The machine is entering containment recovery.</p>
-            <button type="button" onClick={() => setCurrentScreen('lockdown')}>ENTER LOCKDOWN</button>
+            <button className="machine-button machine-button--danger" type="button" onClick={() => setCurrentScreen('lockdown')}>ENTER LOCKDOWN</button>
           </section>
         )}
 
@@ -506,7 +499,7 @@ export function App() {
             <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>MACHINE</button>
           </section>
         )}
-      </section>
+      </MachineShell>
     </main>
   );
 }
