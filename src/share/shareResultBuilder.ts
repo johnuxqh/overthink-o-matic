@@ -2,17 +2,15 @@ import { DecisionRecord, DecisionStatus, GameId, GameResult, ShareCardData } fro
 
 const FALLBACK_MACHINE_QUOTE = 'The machine has spoken. Please pretend this was efficient.';
 
-function isSuddenDeathDecision(decision: DecisionRecord): boolean {
-  return decision.events.some((event) => event.type === 'sudden_death_triggered')
-    || decision.gamesPlayed[decision.gamesPlayed.length - 1]?.gameId === GameId.SuddenDeath;
+function isBarryTakeoverDecision(decision: DecisionRecord): boolean {
+  return decision.events.some((event) => event.type === 'barry_took_control') || Boolean(decision.takeoverAt);
 }
 
 function getSelectedGameId(decision: DecisionRecord, lastGameResult?: GameResult): GameId {
   if (lastGameResult?.gameId) return lastGameResult.gameId;
   const latestRun = decision.gamesPlayed[decision.gamesPlayed.length - 1];
   if (latestRun?.gameId) return latestRun.gameId;
-  if (decision.lockdown && decision.events.some((event) => event.type === 'sudden_death_triggered')) return GameId.SuddenDeath;
-  return GameId.SuddenDeath;
+  return GameId.CoinToss;
 }
 
 function getFinalAnswer(decision: DecisionRecord, lastGameResult?: GameResult): string {
@@ -45,7 +43,8 @@ export function buildShareResultData(decision: DecisionRecord, lastGameResult?: 
     finalAnswer: getFinalAnswer(decision, lastGameResult),
     decisionStatus: getDecisionStatus(decision),
     machineQuote: getMachineQuote(decision, lastGameResult),
-    isSuddenDeath: isSuddenDeathDecision(decision),
+    isSuddenDeath: isBarryTakeoverDecision(decision),
+    isBarryTakeover: isBarryTakeoverDecision(decision),
     createdAt: decision.finalisedAt ?? decision.completedAt ?? decision.updatedAt ?? decision.createdAt,
   };
 }

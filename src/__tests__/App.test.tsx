@@ -195,10 +195,10 @@ describe('P6 text user journey', () => {
     await lockTwoOptions(container);
     await clickButton(container, 'Select Coin Toss');
     expect(container.textContent).toContain('THE MACHINE SAYS...');
-    expect(container.textContent).toContain('Credits remaining: 4');
+    expect(container.textContent).toContain('Barry commitment remaining: 4');
     await clickButton(container, 'TRY ANOTHER PROTOCOL');
     await clickButton(container, 'Select Coin Toss');
-    expect(container.textContent).toContain('Credits remaining: 3');
+    expect(container.textContent).toContain('Barry commitment remaining: 3');
     act(() => root.unmount());
   });
 
@@ -222,7 +222,7 @@ describe('P6 text user journey', () => {
     localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
     localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
     const { container, root } = await renderApp();
-    expect(container.textContent).toContain('SUDDEN DEATH');
+    expect(container.textContent).toContain('BARRY HAS TAKEN CONTROL');
     expect(container.textContent).not.toContain('TRY ANOTHER PROTOCOL');
     expect(container.textContent).not.toContain('New Overthink');
     act(() => root.unmount());
@@ -278,8 +278,8 @@ describe('P6 text user journey', () => {
     await clickButton(container, 'Select Coin Toss');
 
     expect(container.textContent).toContain('DECISION LOCKED');
-    expect(container.textContent).toContain('You asked five times');
-    expect(container.textContent).toContain('No new overthinks allowed');
+    expect(container.textContent).toContain('Barry made the final decision');
+    expect(container.textContent).toContain('No new overthinks until Barry recovers');
     expect(container.textContent).not.toContain('TRY ANOTHER PROTOCOL');
     expect(container.textContent).not.toContain('New Overthink');
 

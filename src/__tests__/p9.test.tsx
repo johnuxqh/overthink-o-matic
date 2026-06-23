@@ -64,7 +64,7 @@ describe('P9 share result', () => {
     expect(data.decisionProblem).toBe('Pick dinner');
     expect(data.options).toEqual(['Pizza', 'Tacos']);
     expect(data.finalAnswer).toBe('Pizza');
-    expect(data.selectedGameId).toBe(GameId.SuddenDeath);
+    expect(data.selectedGameId).toBe(GameId.CoinToss);
     expect(data.machineQuote).toBe(FALLBACK_MACHINE_QUOTE);
   });
 

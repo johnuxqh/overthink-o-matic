@@ -124,29 +124,32 @@ describe('P5 game logic modules', () => {
     expect(() => runGame({ currentDecision: lockedDown, previousDecisions: [] }, GameId.CoinToss, now)).toThrow(/locked/);
   });
 
-  it('runGame triggers Sudden Death after 5th attempt', () => {
+  it('runGame triggers Barry takeover after 5th attempt', () => {
     const currentDecision = decision(['Alpha', 'Beta']);
     currentDecision.gamesPlayed = [fakeRun(0), fakeRun(1), fakeRun(2), fakeRun(3)];
     const outcome = runGame({ currentDecision, previousDecisions: [] }, GameId.CoinToss, now);
 
-    expect(outcome.suddenDeathTriggered).toBe(true);
+    expect(outcome.barryTakeoverTriggered).toBe(true);
     expect(outcome.state.currentDecision?.status).toBe(DecisionStatus.Lockdown);
     expect(outcome.state.currentDecision?.gamesPlayed).toHaveLength(5);
+    expect(outcome.state.currentDecision?.finalAnswer).toBe(outcome.result.selectedOption);
+    expect(outcome.state.currentDecision?.finalMachineQuote).toBe(outcome.result.machineQuote);
   });
 });
 
-describe('P8 automatic Sudden Death', () => {
-  it('5th game attempt automatically locks down with an existing option as final answer', () => {
+describe('P8 automatic Barry takeover', () => {
+  it('5th game attempt automatically locks down with final protocol answer', () => {
     const currentDecision = decision(['Alpha', 'Beta']);
     currentDecision.gamesPlayed = [fakeRun(0), fakeRun(1), fakeRun(2), fakeRun(3)];
     const outcome = runGame({ currentDecision, previousDecisions: [] }, GameId.CoinToss, now);
     const finalAnswer = outcome.state.currentDecision?.finalAnswer;
 
-    expect(outcome.suddenDeathTriggered).toBe(true);
+    expect(outcome.barryTakeoverTriggered).toBe(true);
     expect(outcome.state.currentDecision?.status).toBe(DecisionStatus.Lockdown);
     expect(Boolean(finalAnswer)).toBe(true);
     expect(optionTexts(outcome.state)).toContain(finalAnswer!);
     expect(outcome.state.currentDecision?.lockdown?.finalAnswer).toBe(finalAnswer);
+    expect(finalAnswer).toBe(outcome.result.selectedOption);
   });
 });
 
@@ -158,6 +161,6 @@ describe('Admin QA Runner service', () => {
 
     expect(results.length).toBeGreaterThan(20);
     expect(results.filter((result) => !result.passed)).toEqual([]);
-    expect(results.map((result) => result.testName)).toContain('5th attempt triggers Sudden Death / final answer / lockdown / blocks gameplay and New Overthink');
+    expect(results.map((result) => result.testName)).toContain('5th attempt triggers Barry Has Taken Control / final answer / lockdown / blocks gameplay and New Overthink');
   });
 });

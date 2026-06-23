@@ -23,7 +23,6 @@ export enum GameId {
   RealityChecker = 'reality_checker',
   EliminationChamber = 'elimination_chamber',
   BattleRoyale = 'battle_royale',
-  SuddenDeath = 'sudden_death',
 }
 
 export enum DecisionEventType {
@@ -32,14 +31,15 @@ export enum DecisionEventType {
   Locked = 'locked',
   GameRun = 'game_run',
   ResultRejected = 'result_rejected',
-  SuddenDeathTriggered = 'sudden_death_triggered',
+  BarryTookControl = 'barry_took_control',
   LockdownStarted = 'lockdown_started',
   LockdownEnded = 'lockdown_ended',
   Completed = 'completed',
 }
 
 export const REQUIRED_OPTION_COUNT = 2;
-export const MAX_DECISION_CREDITS = 5;
+export const MAX_DECISION_ATTEMPTS = 5;
+export const MAX_DECISION_CREDITS = MAX_DECISION_ATTEMPTS;
 export const LOCKDOWN_DURATION_MS = 5 * 60 * 1000;
 
 export const TWO_OPTION_GAME_IDS = [
@@ -116,8 +116,18 @@ export interface DecisionEvent {
   gameRunId?: string;
 }
 
+export type BarryEscalationStage = 'helpful' | 'determined' | 'concerned' | 'obsessed' | 'unhinged';
+
+export interface BarryCommitment {
+  maxAttempts: typeof MAX_DECISION_ATTEMPTS;
+  currentAttempt: number;
+  remainingAttempts: number;
+  stage: BarryEscalationStage;
+  hasTakenControl: boolean;
+}
+
 export interface DecisionCredits {
-  total: typeof MAX_DECISION_CREDITS;
+  total: typeof MAX_DECISION_ATTEMPTS;
   used: number;
   remaining: number;
 }
@@ -144,6 +154,11 @@ export interface DecisionRecord {
   finalAnswer?: string;
   finalisedAt?: string;
   finalMachineQuote?: string;
+  selectedProtocolId?: GameId;
+  currentResult?: GameRun;
+  acceptedResultId?: string;
+  barryCommitment?: BarryCommitment;
+  takeoverAt?: string;
   lockdown?: LockdownState;
   events: DecisionEvent[];
   createdAt: string;
@@ -186,6 +201,7 @@ export interface ShareCardData {
   decisionStatus: DecisionStatus;
   machineQuote: string;
   isSuddenDeath: boolean;
+  isBarryTakeover?: boolean;
   createdAt: string;
 }
 

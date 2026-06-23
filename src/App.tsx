@@ -6,7 +6,7 @@ import { buildShareResultData } from './share/shareResultBuilder';
 import { SHARE_EXPORT_FALLBACK, downloadShareCardImage, isShareImageExportSupported } from './share/shareImageExporter';
 import { addDecisionToHistory, clearActiveDecision, clearAllAppData, clearPreviousOverthinks, createInitialAppState, hydrateAppState, saveAppState } from './state/appState';
 import { createLocalStorageService } from './storage/localStorageService';
-import { acceptDecisionResult, getCreditsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs } from './services/overthinkingEngine';
+import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
 import './styles/base.css';
@@ -66,12 +66,12 @@ export function App() {
   }, []);
 
   const decision = appState.currentDecision;
-  const creditsRemaining = decision ? getCreditsRemaining(decision) : 0;
+  const attemptsRemaining = decision ? getAttemptsRemaining(decision) : 0;
   const eligibleGames = decision ? getEligibleGames(decision) : [];
   const latestGame = latestResult ? eligibleGames.find((game) => game.id === latestResult.gameId) : undefined;
   const lockdownRemainingMs = decision ? getLockdownRemainingMs(decision, now) : 0;
   const activeLockdown = isLockdownActive(decision, now);
-  const canTryAgain = Boolean(decision && creditsRemaining > 0 && !activeLockdown);
+  const canTryAgain = Boolean(decision && attemptsRemaining > 0 && !activeLockdown);
   const shareData = shareDecision ? buildShareResultData(shareDecision, shareDecision.id === decision?.id ? latestResult : undefined) : undefined;
   const canDownloadShareImage = isShareImageExportSupported();
   const adminTestMode = isAdminTestMode(appState.user);
@@ -224,12 +224,20 @@ export function App() {
     const runAt = new Date();
     const outcome = runGame(appState, gameId, runAt);
     setNow(runAt);
-    const nextState = outcome.suddenDeathTriggered && outcome.state.currentDecision
+    const nextState = outcome.barryTakeoverTriggered && outcome.state.currentDecision
       ? addDecisionToHistory(outcome.state, outcome.state.currentDecision)
       : outcome.state;
     persist(nextState);
     setLatestResult(outcome.result);
-    setCurrentScreen(outcome.suddenDeathTriggered ? 'lockdown' : 'result');
+    setCurrentScreen(outcome.barryTakeoverTriggered ? 'lockdown' : 'result');
+  }
+
+
+  function rejectLatestDecision() {
+    if (!latestResult || !canTryAgain) return;
+    const rejectedState = rejectDecisionResult(appState);
+    persist(rejectedState);
+    setCurrentScreen('game-selection');
   }
 
   function acceptLatestDecision() {
@@ -343,7 +351,7 @@ export function App() {
             )}
             <p>Decision: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
-            <div className="stat-chip">Credits remaining: {creditsRemaining}</div>
+            <div className="stat-chip">Barry commitment remaining: {attemptsRemaining}</div>
             <div className="protocol-grid">{eligibleGames.map((game, index) => {
               const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
               const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
@@ -366,24 +374,24 @@ export function App() {
             <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
             <p>The Machine Played: {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId} Protocol</p>
             <div className="quote-panel"><h3>Barry’s notes</h3><p>{latestResult.machineQuote}</p></div>
-            <div className="stat-chip">Credits remaining: {creditsRemaining}</div>
+            <div className="stat-chip">Barry commitment remaining: {attemptsRemaining}</div>
             <div className="attempt-spiral"><h3>YOUR OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText}</p>)}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
             <button type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
-            <button type="button" onClick={() => setCurrentScreen('game-selection')} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
+            <button type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
           </section>
         )}
 
         {currentScreen === 'lockdown' && decision?.lockdown && (
           <section className="lockdown-panel">
-            <h2>SUDDEN DEATH</h2>
-            <p className="emergency-kicker">BARRY HAS TAKEN CONTROL</p>
-            <p>You asked five times. The machine is done.</p>
+            <h2>BARRY HAS TAKEN CONTROL</h2>
+            <p className="emergency-kicker">BARRY IS RECOVERING</p>
+            <p>You rejected too many answers. Barry made the final decision.</p>
             <p>Final decision</p>
             <p className="result-answer">{decision.lockdown.finalAnswer}</p>
-            <p>RED CARD ISSUED</p>
-            <p>5 minute cool down activated</p>
+            <p>Recovery mode activated.</p>
+            <p>5 minute cooldown activated.</p>
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            <p>DECISION LOCKED</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>No new overthinks allowed</p><p>Seriously. Go do something else.</p>
+            <p>DECISION LOCKED</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>No new overthinks until Barry recovers.</p><p>Recovery is underway.</p>
             <p>{getLockdownMessage(decision, now)}</p>
             {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>Share Result</button>}
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>

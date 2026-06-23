@@ -10,7 +10,6 @@ const gameLabels: Record<GameId, string> = {
   [GameId.RealityChecker]: 'Reality Checker',
   [GameId.EliminationChamber]: 'Elimination Chamber',
   [GameId.BattleRoyale]: 'Battle Royale',
-  [GameId.SuddenDeath]: 'Sudden Death',
 };
 
 const statusLabels: Record<DecisionStatus, string> = {
@@ -49,7 +48,7 @@ export function ShareResultCard({ data }: ShareResultCardProps) {
       </section>
       <section>
         <h3>Status:</h3>
-        <p>{data.isSuddenDeath ? 'Sudden Death' : statusLabels[data.decisionStatus]}</p>
+        <p>{data.isBarryTakeover || data.isSuddenDeath ? 'Barry Has Taken Control' : statusLabels[data.decisionStatus]}</p>
       </section>
       <section>
         <h3>Barry’s Comment</h3>

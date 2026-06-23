@@ -83,18 +83,18 @@ export async function runFullAdminQaSimulation(): Promise<AdminQaResult[]> {
     }));
   }
 
-  results.push(await runCase('new unrelated decision gets fresh 5 credits', () => assert(decision(['X', 'Y'], 'New').credits.remaining === 5, 'fresh decision did not get 5 credits')));
+  results.push(await runCase('new unrelated decision gets fresh 5 attempts', () => assert(decision(['X', 'Y'], 'New').credits.remaining === 5, 'fresh decision did not get 5 attempts')));
   results.push(await runCase('repeated option triggers goalpost warning', () => assert(detectGoalpostShift([createDecisionOption('Option', ' pizza!! ')], decision(['Pizza', 'Soup'])).hasShift, 'repeated option did not warn')));
   results.push(await runCase('unrelated option does not trigger goalpost warning', () => assert(!detectGoalpostShift([createDecisionOption('Option', 'Tacos')], decision(['Pizza', 'Soup'])).hasShift, 'unrelated option warned')));
 
-  results.push(await runCase('try another game consumes credits', () => {
+  results.push(await runCase('try another game consumes attempts', () => {
     let state: AppState = { currentDecision: decision(['A', 'B']), previousDecisions: [] };
     state = runGame(state, GameId.CoinToss, now).state;
     state = runGame(state, GameId.CoinToss, new Date(now.getTime() + 1)).state;
-    assert(state.currentDecision?.credits.remaining === 3, 'two attempts did not leave 3 credits');
+    assert(state.currentDecision?.credits.remaining === 3, 'two attempts did not leave 3 attempts');
   }));
 
-  results.push(await runCase('5th attempt triggers Sudden Death / final answer / lockdown / blocks gameplay and New Overthink', () => {
+  results.push(await runCase('5th attempt triggers Barry Has Taken Control / final answer / lockdown / blocks gameplay and New Overthink', () => {
     let state: AppState = { currentDecision: decision(['A', 'B']), previousDecisions: [] };
     for (let index = 0; index < 5; index += 1) state = runGame(state, GameId.CoinToss, new Date(now.getTime() + index)).state;
     assert(state.currentDecision?.status === DecisionStatus.Lockdown, 'not in lockdown');
@@ -111,11 +111,11 @@ export async function runFullAdminQaSimulation(): Promise<AdminQaResult[]> {
     assert(getLockdownRemainingMs(state.currentDecision!, now) === 0, 'expired lockdown still blocked');
   }));
 
-  results.push(await runCase('previous overthinks history stores accepted and Sudden Death decisions once', () => {
+  results.push(await runCase('previous overthinks history stores accepted and takeover decisions once', () => {
     const accepted = { ...decision(['A', 'B']), finalAnswer: 'A', status: DecisionStatus.Complete };
-    const sudden = { ...decision(['C', 'D']), finalAnswer: 'C', status: DecisionStatus.Lockdown };
+    const takeover = { ...decision(['C', 'D']), finalAnswer: 'C', status: DecisionStatus.Lockdown };
     let state: AppState = { previousDecisions: [], currentDecision: undefined };
-    state = addDecisionToHistory(addDecisionToHistory(addDecisionToHistory(state, accepted), accepted), sudden);
+    state = addDecisionToHistory(addDecisionToHistory(addDecisionToHistory(state, accepted), accepted), takeover);
     assert(state.previousDecisions.length === 2, 'duplicate history entries found');
   }));
 
@@ -153,7 +153,7 @@ export async function runFullAdminQaSimulation(): Promise<AdminQaResult[]> {
     let state: AppState = { currentDecision: decision(['A', 'B']), previousDecisions: [] };
     for (let index = 0; index < 4; index += 1) {
       state = runGame(state, GameId.CoinToss, new Date(now.getTime() + index)).state;
-      assert(state.currentDecision?.status === DecisionStatus.Locked, `loop broke before sudden death at ${index}`);
+      assert(state.currentDecision?.status === DecisionStatus.Locked, `loop broke before Barry takeover at ${index}`);
     }
   }));
 
