@@ -46,6 +46,7 @@ export function App() {
   const [shareDecision, setShareDecision] = useState<DecisionRecord | undefined>(undefined);
   const [shareFallbackMessage, setShareFallbackMessage] = useState(SHARE_EXPORT_FALLBACK);
   const [adminQaResults, setAdminQaResults] = useState<AdminQaResult[]>([]);
+  const [expandedProtocolId, setExpandedProtocolId] = useState<GameId | undefined>(undefined);
   let shareCardElement: HTMLElement | null = null;
   const [error, setError] = useState('');
   const [now, setNow] = useState(() => new Date());
@@ -401,7 +402,15 @@ export function App() {
               const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
               const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
               return (
-                <ProtocolModuleCard key={game.id} name={protocolName} description={game.description} emblem={emblems[index % emblems.length]} onActivate={() => runSelectedGame(game.id)} />
+                <ProtocolModuleCard
+                  key={game.id}
+                  name={protocolName}
+                  description={game.description}
+                  emblem={emblems[index % emblems.length]}
+                  expanded={expandedProtocolId === game.id}
+                  onInfoToggle={() => setExpandedProtocolId((current) => current === game.id ? undefined : game.id)}
+                  onActivate={() => runSelectedGame(game.id)}
+                />
               );
             })}</div>
           </section>

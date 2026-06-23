@@ -294,6 +294,8 @@ describe('P6 text user journey', () => {
 
     expect(button(container, 'RUN Coin Toss').getAttribute('disabled')).toBe(null);
     expect(container.textContent).toContain('Coin Toss Protocol');
+    expect(container.textContent).not.toContain('Module eligible and loaded.');
+    await clickButton(container, 'i');
     expect(container.textContent).toContain('Module eligible and loaded.');
     act(() => root.unmount());
   });

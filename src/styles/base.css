@@ -120,3 +120,94 @@ a:focus-visible {
   font-size: 2rem;
   font-weight: 700;
 }
+.machine-powered-strip,
+.home-screen-reset,
+.home-screen-reset__barry-window,
+.home-screen-reset__lcd,
+.home-screen-reset__lcd-header,
+.home-screen-reset__notes,
+.home-screen-reset__input,
+.protocol-module-card__details {
+  border: 1px solid #999;
+  padding: 12px;
+}
+
+.machine-powered-strip {
+  text-align: center;
+}
+
+.machine-control-deck {
+  grid-template-columns: 1fr;
+}
+
+.home-screen-reset {
+  display: grid;
+  gap: 12px;
+}
+
+.home-screen-reset__barry-window,
+.home-screen-reset__lcd,
+.home-screen-reset__lcd-header,
+.home-screen-reset__notes,
+.home-screen-reset__input {
+  display: grid;
+  gap: 8px;
+}
+
+.home-screen-reset__lcd-header > *,
+.home-screen-reset__notes > * {
+  margin: 0;
+}
+
+.home-screen-reset__cta {
+  width: 100%;
+  min-height: 52px;
+}
+
+.protocol-grid {
+  gap: 8px;
+}
+
+.protocol-module-card {
+  gap: 8px;
+}
+
+.protocol-module-card__summary {
+  display: grid;
+  gap: 8px;
+}
+
+.protocol-module-card__summary h3 {
+  margin: 0;
+}
+
+.protocol-module-card__actions {
+  display: grid;
+  grid-template-columns: minmax(44px, auto) 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.protocol-info-button {
+  width: auto;
+  min-width: 44px;
+}
+
+.protocol-module-card__details {
+  display: grid;
+  gap: 8px;
+}
+
+.protocol-module-card__details > * {
+  margin: 0;
+}
+
+@media (min-width: 390px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .machine-control-deck {
+    grid-template-columns: 1fr 1fr;
+  }
+}
