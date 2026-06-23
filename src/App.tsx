@@ -9,7 +9,7 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
-import { BarryCommentary, BarryStatus, BarryWindow, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
+import { BarryCommentary, BarryStatus, BarryWindow, MachineDecor, MachineLcdFrame, MachinePrimaryCta, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin', 'about-machine'] as const;
@@ -292,7 +292,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home'} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -335,10 +335,11 @@ export function App() {
         )}
 
         {currentScreen === 'home' && appState.user && (
-          <form onSubmit={submitProblem}>
-            <h2>STATE YOUR OVERTHINK</h2><BarryWindow><BarryStatus>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</BarryStatus></BarryWindow><BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
-            <label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
-            <button className="machine-button machine-button--primary" type="submit">INSERT INTO MACHINE</button>
+          <form className="home-input-form" onSubmit={submitProblem}>
+            <MachineDecor kind="gauge" />
+            <h2>STATE YOUR OVERTHINK</h2><BarryWindow art><BarryStatus>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</BarryStatus></BarryWindow><BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
+            <MachineLcdFrame><label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label></MachineLcdFrame>
+            <MachinePrimaryCta type="submit">INSERT INTO MACHINE</MachinePrimaryCta>
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>
         )}
