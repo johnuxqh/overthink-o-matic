@@ -130,3 +130,48 @@ form, section[aria-label="Admin Test Controls"], section[aria-label="Admin QA Ru
 .protocol-emblem { width: 2.35rem; height: 2.35rem; font-size: 1.15rem; }
 .protocol-module-card::after { right: .55rem; top: .35rem; font-size: .56rem; }
 @media (min-width: 640px) { .machine-control-deck { grid-template-columns: repeat(4, 1fr); } .protocol-module-card { grid-template-columns: auto 1fr auto; padding: .75rem .85rem; } }
+
+/* PASS 5.3 home screen machine artwork integration */
+.machine-art-shell { isolation: isolate; overflow: hidden; }
+.machine-art-side-left,
+.machine-art-side-right { position: absolute; z-index: 0; top: 5.8rem; bottom: 5.8rem; width: clamp(2.1rem, 12vw, 4.4rem); pointer-events: none; background-repeat: repeat-y; background-size: 100% auto; opacity: .9; }
+.machine-art-side-left { left: -.55rem; background-image: var(--machine-art-side-left-image); background-position: left top; }
+.machine-art-side-right { right: -.55rem; background-image: var(--machine-art-side-right-image); background-position: right top; }
+.machine-art-shell .machine-display-frame,
+.machine-art-shell .machine-operator-strip,
+.machine-art-shell .machine-control-deck,
+.machine-art-shell .machine-marquee { z-index: 1; }
+.machine-art-marquee { padding-inline: .35rem; }
+.machine-art-marquee h1.visually-hidden { border: 0; padding: 0; background: transparent; box-shadow: none; transform: none; }
+.machine-art-marquee__image { display: block; width: min(100%, 28rem); height: auto; margin: .1rem auto .25rem; object-fit: contain; filter: drop-shadow(0 0 14px rgba(255,212,71,.3)) drop-shadow(0 0 20px rgba(255,62,181,.18)); }
+.machine-art-powered { position: relative; min-height: 4.75rem; display: grid; align-content: center; margin-inline: auto; padding: 1rem 1.2rem; border: 0; background: var(--machine-art-powered-image) center / 100% 100% no-repeat; box-shadow: none; }
+.machine-art-powered .machine-marquee__status { color: #fff6c9; text-shadow: 0 2px 2px rgba(0,0,0,.85), 0 0 8px rgba(255,212,71,.4); }
+.machine-art-powered .machine-marquee__tagline { color: var(--neon-pink); text-shadow: 0 2px 2px rgba(0,0,0,.85), 0 0 10px rgba(255,62,181,.8); }
+.machine-art-barry-window { min-height: 5.2rem; border: 0; padding: 1.1rem 1.35rem 1.3rem; background: var(--machine-art-barry-window-image) center / 100% 100% no-repeat; box-shadow: none; }
+.machine-art-barry-window::before { margin-top: .05rem; text-shadow: 0 2px 2px rgba(0,0,0,.9); }
+.machine-art-barry-window .barry-status { max-width: 88%; color: #fff6c9; text-shadow: 0 2px 2px rgba(0,0,0,.95); }
+.machine-art-lcd { display: grid; gap: 0; overflow: hidden; border-radius: .85rem; filter: drop-shadow(0 10px 0 rgba(0,0,0,.38)) drop-shadow(0 0 14px rgba(38,247,255,.18)); }
+.machine-art-lcd::before,
+.machine-art-lcd::after { content: ""; display: block; min-height: 1.1rem; background-repeat: no-repeat; background-position: center; background-size: 100% 100%; pointer-events: none; }
+.machine-art-lcd::before { background-image: var(--machine-art-lcd-top-image); }
+.machine-art-lcd::after { background-image: var(--machine-art-lcd-bottom-image); }
+.machine-art-lcd label { margin: 0; padding: .65rem .9rem .8rem; color: #fff1aa; background-image: var(--machine-art-lcd-middle-image); background-repeat: repeat-y; background-position: center; background-size: 100% auto; text-shadow: 0 2px 2px rgba(0,0,0,.9); }
+.machine-art-lcd textarea { min-height: 8rem; border-color: rgba(182,255,114,.7); background: rgba(3,15,10,.88); }
+.machine-art-primary-cta { min-height: 4.25rem; border: 0; border-radius: 1rem; color: #fff7d2; background: var(--machine-art-primary-cta-image) center / 100% 100% no-repeat; box-shadow: 0 5px 0 #4a102f, 0 0 18px rgba(255,62,181,.3); text-shadow: 0 2px 2px rgba(0,0,0,.85), 0 0 9px rgba(255,255,255,.34); }
+.machine-art-primary-cta:hover:not(:disabled) { box-shadow: 0 6px 0 #4a102f, var(--machine-glow); }
+.machine-art-primary-cta:disabled { filter: grayscale(.65); opacity: .62; }
+.machine-art-primary-cta:focus-visible { outline: 3px solid var(--neon-cyan); outline-offset: 4px; }
+.machine-art-nav-frame { position: relative; padding: 1.05rem .95rem; border: 0; background: linear-gradient(90deg, var(--machine-art-nav-left-image) left center / auto 100% no-repeat, var(--machine-art-nav-right-image) right center / auto 100% no-repeat), linear-gradient(180deg, var(--machine-art-nav-top-image) top center / 100% auto no-repeat, var(--machine-art-nav-bottom-image) bottom center / 100% auto no-repeat), linear-gradient(180deg, #171116, #050507); }
+.machine-art-decor { position: absolute; z-index: 2; pointer-events: none; user-select: none; }
+.home-input-form { position: relative; }
+.machine-art-decor--gauge { top: .45rem; right: .55rem; width: clamp(2.4rem, 17vw, 4.2rem); opacity: .9; filter: drop-shadow(0 0 10px rgba(255,212,71,.22)); }
+.home-input-form h2 { padding-right: clamp(2.7rem, 18vw, 4.6rem); }
+@media (max-width: 430px) {
+  .machine-art-side-left, .machine-art-side-right { width: 2.2rem; opacity: .55; }
+  .machine-art-side-left { left: -1.05rem; }
+  .machine-art-side-right { right: -1.05rem; }
+  .machine-art-powered { min-height: 4.25rem; padding: .8rem .9rem; }
+  .machine-art-barry-window { padding: .95rem 1rem 1.1rem; }
+  .machine-art-barry-window .barry-status { max-width: 100%; }
+  .machine-art-nav-frame { grid-template-columns: 1fr; padding-inline: .75rem; background-size: auto 100%, auto 100%, 100% auto, 100% auto, auto; }
+}

@@ -36,6 +36,7 @@ declare namespace JSX {
     ul: Record<string, unknown>;
     li: Record<string, unknown>;
     span: Record<string, unknown>;
+    img: Record<string, unknown>;
   }
   type Element = unknown;
 }
