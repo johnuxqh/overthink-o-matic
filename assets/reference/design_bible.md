@@ -42,17 +42,16 @@ Reference images are locked.
 Primary style references should live in:
 
 ```text
-assets/reference/design/
+assets/reference/
 ```
 
 Recommended filenames:
 
 ```text
-style-reference-01.png
-style-reference-02.png
-style-reference-03.png
-style-reference-04.png
-style-reference-05.png
+overthink-o-matic-style-01.png
+overthink-o-matic-style-02.png
+overthink-o-matic-style-03.png
+overthink-o-matic-style-04.png
 ```
 
 These references define:
