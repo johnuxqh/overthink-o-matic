@@ -354,3 +354,45 @@ a:focus-visible {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.thinking-master-blueprint {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #999;
+  padding: 12px;
+}
+
+.thinking-master-blueprint__header,
+.thinking-master-blueprint__status,
+.thinking-master-blueprint__progress {
+  display: grid;
+  gap: 6px;
+}
+
+.thinking-master-blueprint__header > *,
+.thinking-master-blueprint__status > *,
+.thinking-master-blueprint__progress > * {
+  margin: 0;
+}
+
+.thinking-master-blueprint__header h2 {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.thinking-master-blueprint__header p,
+.thinking-master-blueprint__status p:first-child {
+  font-weight: 700;
+}
+
+.thinking-master-blueprint__status,
+.thinking-master-blueprint__progress {
+  border-top: 1px solid #999;
+  padding-top: 10px;
+}
+
+.thinking-master-blueprint__progress {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
