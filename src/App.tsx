@@ -9,7 +9,7 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
-import { BarryCommentary, BarryStatus, BarryWindow, MachineDecor, MachineLcdFrame, MachinePrimaryCta, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
+import { BarryCommentary, BarryStatus, BarryWindow, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin', 'about-machine'] as const;
@@ -292,7 +292,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home'} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -335,21 +335,43 @@ export function App() {
         )}
 
         {currentScreen === 'home' && appState.user && (
-          <form className="home-input-form home-machine-home" onSubmit={submitProblem}>
-            <h2>STATE YOUR OVERTHINK</h2>
-            <BarryWindow art><BarryStatus>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</BarryStatus></BarryWindow>
-            <MachineLcdFrame>
-              <section className="home-main-lcd" aria-label="Decision input display">
-                <MachineDecor kind="gauge" />
-                <div className="home-main-lcd__prompt">
-                  <p className="module-label">Main decision display</p>
-                  <p>Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
-                </div>
-                <BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
-                <label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
+          <form className="home-screen-reset" onSubmit={submitProblem} aria-label="State your overthink">
+            <section className="home-screen-reset__marquee" aria-label="Home machine marquee">
+              <div className="home-screen-reset__logo-area" aria-labelledby="home-machine-title">
+                <p className="module-label">Home Machine</p>
+                <h2 id="home-machine-title">OVERTHINK-O-MATIC 5000</h2>
+              </div>
+              <p>Let's Underthink This</p>
+            </section>
+
+            <section className="home-screen-reset__powered" aria-label="Machine power source">
+              <p>Powered by Barry the Honey Badger 🐾</p>
+            </section>
+
+            <section className="home-screen-reset__barry-window" aria-label="Barry operator window">
+              <p>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</p>
+            </section>
+
+            <section className="home-screen-reset__lcd" aria-label="Main LCD decision display">
+              <section className="home-screen-reset__lcd-header" aria-label="LCD header">
+                <p className="module-label">Main LCD Display</p>
+                <h2>STATE YOUR OVERTHINK</h2>
+                <p>Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
               </section>
-            </MachineLcdFrame>
-            <MachinePrimaryCta type="submit">INSERT INTO MACHINE</MachinePrimaryCta>
+
+              <section className="home-screen-reset__notes" aria-label="Barry notes">
+                <h3>Barry's Notes</h3>
+                <p>Feed Barry one low-stakes decision. He will pretend this is science.</p>
+              </section>
+
+              <label className="home-screen-reset__input">
+                Decision input
+                <textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} />
+              </label>
+            </section>
+
+            <button className="machine-button machine-button--primary home-screen-reset__primary-cta" type="submit">INSERT INTO MACHINE</button>
+
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>
         )}
