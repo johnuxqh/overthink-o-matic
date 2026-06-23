@@ -292,7 +292,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeReset={currentScreen === 'home'} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine={currentScreen === 'home' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home'} homeReset={currentScreen === 'home'} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -336,15 +336,6 @@ export function App() {
 
         {currentScreen === 'home' && appState.user && (
           <form className="home-screen-reset" onSubmit={submitProblem} aria-label="State your overthink">
-            <section className="home-screen-reset__marquee" aria-label="Home machine marquee">
-              <h2 id="home-machine-title">OVERTHINK-O-MATIC 5000</h2>
-              <p>Let's Underthink This</p>
-            </section>
-
-            <section className="home-screen-reset__powered" aria-label="Machine power source">
-              <p>Powered by Barry the Honey Badger 🐾</p>
-            </section>
-
             <section className="home-screen-reset__barry-window" aria-label="Barry operator window">
               <p>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</p>
             </section>
