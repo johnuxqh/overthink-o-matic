@@ -35,6 +35,7 @@ declare namespace JSX {
     textarea: Record<string, unknown>;
     ul: Record<string, unknown>;
     li: Record<string, unknown>;
+    span: Record<string, unknown>;
   }
   type Element = unknown;
 }

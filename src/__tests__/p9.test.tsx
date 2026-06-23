@@ -26,6 +26,19 @@ async function clickButton(container: HTMLElement, label: string) {
   await act(async () => { button(container, label).dispatchEvent(new MouseEvent('click', { bubbles: true })); });
 }
 
+
+async function waitForThinkingToFinish() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+  });
+}
+
+async function runCoinTossProtocol(container: HTMLElement) {
+  await clickButton(container, 'RUN Coin Toss');
+  expect(container.textContent).toContain('BARRY IS THINKING');
+  await waitForThinkingToFinish();
+}
+
 async function changeField(container: HTMLElement, label: string, value: string) {
   const found = Array.from(container.querySelectorAll('label')).find((candidate) => candidate.textContent?.startsWith(label));
   const field = found?.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement | null;
@@ -45,7 +58,7 @@ async function makeAcceptedDecision(container: HTMLElement) {
   await changeField(container, 'Option 1', 'Pizza');
   await changeField(container, 'Option 2', 'Tacos');
   await clickButton(container, 'LOCK IN OPTIONS');
-  await clickButton(container, 'RUN Coin Toss');
+  await runCoinTossProtocol(container);
   await clickButton(container, 'ACCEPT THE ANSWER');
 }
 
