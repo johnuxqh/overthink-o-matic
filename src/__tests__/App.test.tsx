@@ -215,15 +215,20 @@ describe('P6 text user journey', () => {
     act(() => root.unmount());
   });
 
-  it('accepting decision adds it to history', async () => {
+  it('accepting decision opens receipt, saves history, shows final decision, and allows a new overthink', async () => {
     const { container, root } = await renderApp();
     await setupUser(container);
     await enterProblem(container);
     await lockTwoOptions(container);
     await runCoinTossProtocol(container);
+    const finalAnswer = container.querySelector('.result-answer')?.textContent ?? '';
     await clickButton(container, 'ACCEPT THE ANSWER');
     const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
     expect(history).toHaveLength(1);
+    expect(container.textContent).toContain('SHARE YOUR OVERTHINK');
+    expect(container.textContent).toContain('Cursed Arcade Receipt');
+    expect(container.textContent).toContain(finalAnswer);
+    await clickButton(container, 'NEW OVERTHINK');
     expect(container.textContent).toContain('STATE YOUR OVERTHINK');
     act(() => root.unmount());
   });
@@ -292,10 +297,14 @@ describe('P6 text user journey', () => {
 
     expect(container.textContent).toContain('BARRY HAS TAKEN CONTROL');
     expect(container.textContent).toContain('Your decision-making privileges have been temporarily revoked.');
-    await clickButton(container, 'ENTER LOCKDOWN');
     expect(container.textContent).toContain('DECISION LOCKED');
-    expect(container.textContent).toContain('Barry made the final decision');
-    expect(container.textContent).toContain('No new overthinks until Barry recovers');
+    expect(container.textContent).toContain('LOCKDOWN REMAINING');
+    expect(container.textContent).toContain('Recovery is underway');
+    expect(container.textContent).toContain('SHARE YOUR OVERTHINK');
+    expect(container.textContent).toContain('PREVIOUS OVERTHINKS');
+    expect(container.textContent).not.toContain('ENTER LOCKDOWN');
+    expect(container.textContent).not.toContain('START LOCKDOWN');
+    expect(container.textContent).not.toContain('BEGIN LOCKDOWN');
     expect(container.textContent).not.toContain('TRY ANOTHER PROTOCOL');
     expect(container.textContent).not.toContain('New Overthink');
 
