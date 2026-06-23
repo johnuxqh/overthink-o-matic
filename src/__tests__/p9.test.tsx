@@ -81,10 +81,9 @@ describe('P9 share result', () => {
     expect(data.machineQuote).toBe(FALLBACK_MACHINE_QUOTE);
   });
 
-  it('share screen renders card after accepted decision', async () => {
+  it('share screen renders card immediately after accepted decision', async () => {
     const { container, root } = await renderApp();
     await makeAcceptedDecision(container);
-    await clickButton(container, 'SHARE YOUR OVERTHINK');
     expect(container.textContent).toContain('OVERTHINK-O-MATIC');
     expect(container.textContent).toContain("Cursed Arcade Receipt");
     expect(container.textContent).toContain('Overthink');
@@ -127,7 +126,6 @@ describe('P9 share result', () => {
   it('share screen shows screenshot fallback when image export is unsupported', async () => {
     const { container, root } = await renderApp();
     await makeAcceptedDecision(container);
-    await clickButton(container, 'SHARE YOUR OVERTHINK');
     expect(container.textContent).toContain('Receipt fallback: Take a screenshot of this card.');
     act(() => root.unmount());
   });

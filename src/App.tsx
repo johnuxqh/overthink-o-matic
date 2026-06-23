@@ -283,7 +283,7 @@ export function App() {
     setThinkingRun(undefined);
     setProblemText('');
     setOptionTexts(['', '']);
-    setCurrentScreen('home');
+    setCurrentScreen('share-result');
   }
 
   if (!hasHydrated) {
@@ -424,8 +424,11 @@ export function App() {
             <p className="result-answer">{decision.lockdown.finalAnswer}</p>
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
             <div className="attempt-spiral"><p className="module-label">MACHINE AUDIT LOG</p><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {index < decision.gamesPlayed.length - 1 ? 'Rejected' : 'Final protocol'} — Barry is {commitment.stage}</p>; })}</div>
-            <p>The machine is entering containment recovery.</p>
-            <button className="machine-button machine-button--danger" type="button" onClick={() => setCurrentScreen('lockdown')}>ENTER LOCKDOWN</button>
+            <p>Barry has spiralled out of control, made the final decision, and is now recovering.</p>
+            <p>DECISION LOCKED</p><p>LOCKDOWN REMAINING</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>Recovery is underway.</p>
+            <p>{getLockdownMessage(decision, now)}</p>
+            <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>
+            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           </section>
         )}
 
@@ -482,6 +485,7 @@ export function App() {
             )}
             <p>Receipt fallback: {shareFallbackMessage}.</p>
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>BACK TO PREVIOUS OVERTHINKS</button>
+            {!activeLockdown && <button className="machine-button machine-button--success" type="button" onClick={goHome}>NEW OVERTHINK</button>}
             {!activeLockdown && <button type="button" onClick={goHome}>MACHINE</button>}
           </section>
         )}
