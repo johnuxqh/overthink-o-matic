@@ -6,15 +6,16 @@ import { buildShareResultData } from './share/shareResultBuilder';
 import { SHARE_EXPORT_FALLBACK, downloadShareCardImage, isShareImageExportSupported } from './share/shareImageExporter';
 import { addDecisionToHistory, clearActiveDecision, clearAllAppData, clearPreviousOverthinks, createInitialAppState, hydrateAppState, saveAppState } from './state/appState';
 import { createLocalStorageService } from './storage/localStorageService';
-import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs } from './services/overthinkingEngine';
+import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
 import './styles/base.css';
 
-export const screens = ['setup', 'home', 'options', 'game-selection', 'result', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner', 'about-machine'] as const;
+export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner', 'about-machine'] as const;
 export type AppScreen = (typeof screens)[number];
 
 const storageService = createLocalStorageService();
+
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.ceil(ms / 1000);
@@ -40,6 +41,7 @@ export function App() {
   const [problemText, setProblemText] = useState('');
   const [optionTexts, setOptionTexts] = useState(['', '']);
   const [latestResult, setLatestResult] = useState<GameResult | undefined>(undefined);
+  const [thinkingRun, setThinkingRun] = useState<{ protocolName: string; progress: string; result: GameResult; outcome: ReturnType<typeof runGame> } | undefined>(undefined);
   const [shareDecision, setShareDecision] = useState<DecisionRecord | undefined>(undefined);
   const [shareFallbackMessage, setShareFallbackMessage] = useState(SHARE_EXPORT_FALLBACK);
   const [adminQaResults, setAdminQaResults] = useState<AdminQaResult[]>([]);
@@ -77,10 +79,17 @@ export function App() {
   const adminTestMode = isAdminTestMode(appState.user);
 
   useEffect(() => {
-    if (activeLockdown && !['lockdown', 'share-result', 'previous-overthinks'].includes(currentScreen)) {
+    if (activeLockdown && !['barry-takeover', 'lockdown', 'share-result', 'previous-overthinks'].includes(currentScreen)) {
       setCurrentScreen('lockdown');
     }
   }, [activeLockdown, currentScreen]);
+
+
+  useEffect(() => {
+    if (currentScreen !== 'thinking' || !thinkingRun) return;
+    const timer = window.setTimeout(revealThinkingResult, 650);
+    return () => window.clearTimeout(timer);
+  }, [currentScreen, thinkingRun]);
   const optionRows = useMemo(() => optionTexts.map((value, index) => ({ id: `option-${index}`, label: `Option ${index + 1}`, value })), [optionTexts]);
 
   function persist(nextState: AppState) {
@@ -106,6 +115,7 @@ export function App() {
     setProblemText('');
     setOptionTexts(['', '']);
     setLatestResult(undefined);
+    setThinkingRun(undefined);
     setShareDecision(undefined);
     setError('');
     setCurrentScreen(nextState.user ? 'home' : 'setup');
@@ -136,6 +146,7 @@ export function App() {
     setProblemText('');
     setOptionTexts(['', '']);
     setLatestResult(undefined);
+    setThinkingRun(undefined);
     setShareDecision(undefined);
     setError('');
     setCurrentScreen('setup');
@@ -150,6 +161,7 @@ export function App() {
     setProblemText('');
     setOptionTexts(['', '']);
     setLatestResult(undefined);
+    setThinkingRun(undefined);
     setShareDecision(undefined);
     setError('');
     setCurrentScreen('home');
@@ -193,6 +205,7 @@ export function App() {
     const goalpostWarning = detectGoalpostShift(lockedDecision.options, getMostRecentDecision(appState));
     persist({ ...appState, currentDecision: lockedDecision, goalpostWarning });
     setLatestResult(undefined);
+    setThinkingRun(undefined);
     setShareDecision(undefined);
     setError('');
     setCurrentScreen('game-selection');
@@ -211,6 +224,7 @@ export function App() {
     if (!previous || isLockdownActive(previous, now)) return;
     persist({ ...appState, currentDecision: previous, goalpostWarning: undefined });
     setLatestResult(undefined);
+    setThinkingRun(undefined);
     setShareDecision(undefined);
     setError('');
     setCurrentScreen('game-selection');
@@ -223,13 +237,28 @@ export function App() {
     }
     const runAt = new Date();
     const outcome = runGame(appState, gameId, runAt);
+    const game = eligibleGames.find((candidate) => candidate.id === gameId);
+    const protocolName = gameId === GameId.ChaosGoblin ? 'Chaos Engine' : game?.name ?? outcome.result.gameId;
     setNow(runAt);
-    const nextState = outcome.barryTakeoverTriggered && outcome.state.currentDecision
-      ? addDecisionToHistory(outcome.state, outcome.state.currentDecision)
-      : outcome.state;
+    setLatestResult(undefined);
+    setThinkingRun({
+      protocolName,
+      progress: `Barry is running the ${protocolName} Protocol with unnecessary confidence.`,
+      result: outcome.result,
+      outcome,
+    });
+    setCurrentScreen('thinking');
+  }
+
+  function revealThinkingResult() {
+    if (!thinkingRun) return;
+    const nextState = thinkingRun.outcome.barryTakeoverTriggered && thinkingRun.outcome.state.currentDecision
+      ? addDecisionToHistory(thinkingRun.outcome.state, thinkingRun.outcome.state.currentDecision)
+      : thinkingRun.outcome.state;
     persist(nextState);
-    setLatestResult(outcome.result);
-    setCurrentScreen(outcome.barryTakeoverTriggered ? 'lockdown' : 'result');
+    setLatestResult(thinkingRun.result);
+    setThinkingRun(undefined);
+    setCurrentScreen(thinkingRun.outcome.barryTakeoverTriggered ? 'barry-takeover' : 'result');
   }
 
 
@@ -250,6 +279,7 @@ export function App() {
     persist({ ...historyState, currentDecision: undefined, goalpostWarning: undefined });
     if (finalDecision) setShareDecision(finalDecision);
     setLatestResult(undefined);
+    setThinkingRun(undefined);
     setProblemText('');
     setOptionTexts(['', '']);
     setCurrentScreen('home');
@@ -265,7 +295,6 @@ export function App() {
         <p className="eyebrow">Questionable Arcade Oracle</p>
         <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
         <p className="machine-subtitle">Powered by Barry the Honey Badger 🐾</p>
-
         {error && <p className="error-alert" role="alert">⚠ {error}</p>}
 
         {adminTestMode && currentScreen !== 'share-result' && (
@@ -295,7 +324,7 @@ export function App() {
                 ))}</ul>
               </div>
             )}
-            <button type="button" onClick={() => setCurrentScreen('home')}>BACK TO HOME</button>
+            <button type="button" onClick={() => setCurrentScreen('home')}>MACHINE</button>
           </section>
         )}
 
@@ -369,15 +398,40 @@ export function App() {
           </section>
         )}
 
+        {currentScreen === 'thinking' && thinkingRun && (
+          <section className="thinking-panel" aria-live="polite">
+            <h2>BARRY IS THINKING</h2>
+            <p className="emergency-kicker">{thinkingRun.protocolName} Protocol</p>
+            <div className="machine-progress" aria-label="Machine processing progress"><span /></div>
+            <p>{thinkingRun.progress}</p>
+            <p>Barry is consulting highly questionable science.</p>
+            <p>Switches are flipping. Gauges are moving. This may or may not help.</p>
+          </section>
+        )}
+
         {currentScreen === 'result' && latestResult && decision && (
           <section>
             <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
             <p>The Machine Played: {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId} Protocol</p>
             <div className="quote-panel"><h3>Barry's Notes</h3><p>{latestResult.machineQuote}</p></div>
             <div className="stat-chip">BARRY COMMITMENT INDEX: {attemptsRemaining}</div>
-            <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText}</p>)}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
+            <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
             <button type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
             <button type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
+          </section>
+        )}
+
+        {currentScreen === 'barry-takeover' && decision?.lockdown && (
+          <section className="lockdown-panel">
+            <h2>BARRY HAS TAKEN CONTROL</h2>
+            <p className="emergency-kicker">Your decision-making privileges have been temporarily revoked.</p>
+            <p>Barry has concluded additional user input is no longer helping.</p>
+            <p>Final decision</p>
+            <p className="result-answer">{decision.lockdown.finalAnswer}</p>
+            {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
+            <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {index < decision.gamesPlayed.length - 1 ? 'Rejected' : 'Final protocol'} — Barry is {commitment.stage}</p>; })}</div>
+            <p>The machine is entering containment recovery.</p>
+            <button type="button" onClick={() => setCurrentScreen('lockdown')}>ENTER LOCKDOWN</button>
           </section>
         )}
 
@@ -394,7 +448,7 @@ export function App() {
             <p>{getLockdownMessage(decision, now)}</p>
             {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>}
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
-            {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>NEW OVERTHINK</button>}
+            {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>MACHINE</button>}
           </section>
         )}
 
@@ -417,7 +471,7 @@ export function App() {
                 </article>
               );
             })}
-            <button type="button" onClick={() => setCurrentScreen('home')}>BACK TO HOME</button>
+            <button type="button" onClick={() => setCurrentScreen('home')}>MACHINE</button>
           </section>
         )}
 
@@ -434,7 +488,7 @@ export function App() {
             )}
             <p>Receipt fallback: {shareFallbackMessage}.</p>
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>BACK TO PREVIOUS OVERTHINKS</button>
-            {!activeLockdown && <button type="button" onClick={goHome}>NEW OVERTHINK</button>}
+            {!activeLockdown && <button type="button" onClick={goHome}>MACHINE</button>}
           </section>
         )}
 
@@ -449,7 +503,7 @@ export function App() {
             <p>Scientific accuracy: somewhere between a fortune cookie and a very confident pigeon.</p>
             <p>Independent testing shows the machine is approximately 14% more accurate than Facebook, 22% more accurate than asking the group chat, and 37% more accurate than changing your mind six times.</p>
             <p>Warning: results may be wildly unqualified but strangely useful.</p>
-            <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>BACK TO HOME</button>
+            <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>MACHINE</button>
           </section>
         )}
       </section>

@@ -32,6 +32,19 @@ async function clickButton(container: HTMLElement, label: string) {
   });
 }
 
+
+async function waitForThinkingToFinish() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 700));
+  });
+}
+
+async function runCoinTossProtocol(container: HTMLElement) {
+  await clickButton(container, 'RUN Coin Toss');
+  expect(container.textContent).toContain('BARRY IS THINKING');
+  await waitForThinkingToFinish();
+}
+
 async function changeField(container: HTMLElement, label: string, value: string) {
   const labels = Array.from(container.querySelectorAll('label'));
   const found = labels.find((candidate) => candidate.textContent?.startsWith(label));
@@ -193,11 +206,11 @@ describe('P6 text user journey', () => {
     await setupUser(container);
     await enterProblem(container);
     await lockTwoOptions(container);
-    await clickButton(container, 'RUN Coin Toss');
+    await runCoinTossProtocol(container);
     expect(container.textContent).toContain('THE MACHINE SAYS...');
     expect(container.textContent).toContain('BARRY COMMITMENT INDEX: 4');
     await clickButton(container, 'TRY ANOTHER PROTOCOL');
-    await clickButton(container, 'RUN Coin Toss');
+    await runCoinTossProtocol(container);
     expect(container.textContent).toContain('BARRY COMMITMENT INDEX: 3');
     act(() => root.unmount());
   });
@@ -207,7 +220,7 @@ describe('P6 text user journey', () => {
     await setupUser(container);
     await enterProblem(container);
     await lockTwoOptions(container);
-    await clickButton(container, 'RUN Coin Toss');
+    await runCoinTossProtocol(container);
     await clickButton(container, 'ACCEPT THE ANSWER');
     const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
     expect(history).toHaveLength(1);
@@ -245,7 +258,7 @@ describe('P6 text user journey', () => {
     expect(container.textContent).toContain('Hmm. This feels familiar.');
     expect(container.textContent).toContain('The last decision landed on: Soup.');
     expect(container.textContent).toContain('RUN Coin Toss');
-    await clickButton(container, 'RUN Coin Toss');
+    await runCoinTossProtocol(container);
     expect(container.textContent).toContain('THE MACHINE SAYS...');
     act(() => root.unmount());
   });
@@ -255,7 +268,7 @@ describe('P6 text user journey', () => {
     await setupUser(container);
     await enterProblem(container);
     await lockTwoOptions(container);
-    await clickButton(container, 'RUN Coin Toss');
+    await runCoinTossProtocol(container);
     await clickButton(container, 'ACCEPT THE ANSWER');
 
     const history = JSON.parse(localStorage.getItem('overthink-o-matic:previous-decisions') ?? '[]') as DecisionRecord[];
@@ -272,11 +285,14 @@ describe('P6 text user journey', () => {
     await lockTwoOptions(container);
 
     for (let index = 0; index < 4; index += 1) {
-      await clickButton(container, 'RUN Coin Toss');
+      await runCoinTossProtocol(container);
       await clickButton(container, 'TRY ANOTHER PROTOCOL');
     }
-    await clickButton(container, 'RUN Coin Toss');
+    await runCoinTossProtocol(container);
 
+    expect(container.textContent).toContain('BARRY HAS TAKEN CONTROL');
+    expect(container.textContent).toContain('Your decision-making privileges have been temporarily revoked.');
+    await clickButton(container, 'ENTER LOCKDOWN');
     expect(container.textContent).toContain('DECISION LOCKED');
     expect(container.textContent).toContain('Barry made the final decision');
     expect(container.textContent).toContain('No new overthinks until Barry recovers');
