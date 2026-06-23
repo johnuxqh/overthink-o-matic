@@ -545,3 +545,58 @@ ul.receipt-card-blueprint__value {
 .receipt-card-blueprint__actions {
   grid-template-columns: 1fr;
 }
+
+.support-master-blueprint {
+  display: grid;
+  gap: 12px;
+  border: 1px solid #999;
+  padding: 12px;
+}
+
+.support-master-blueprint__header,
+.support-master-blueprint__content,
+.support-master-blueprint__list,
+.support-master-blueprint__item,
+.support-master-blueprint__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.support-master-blueprint__header > *,
+.support-master-blueprint__content > *,
+.support-master-blueprint__item > *,
+.support-master-blueprint__actions > * {
+  margin: 0;
+}
+
+.support-master-blueprint__header h2 {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.support-master-blueprint__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.support-master-blueprint__item {
+  border-top: 1px solid #999;
+  padding-top: 10px;
+  overflow-wrap: anywhere;
+}
+
+.support-master-blueprint__item h3 {
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.support-master-blueprint__actions {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 390px) {
+  .support-master-blueprint__actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}

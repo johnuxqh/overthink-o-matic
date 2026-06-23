@@ -302,21 +302,25 @@ export function App() {
         {error && <p className="error-alert" role="alert">⚠ {error}</p>}
 
         {adminTestMode && currentScreen === 'admin' && (
-          <section className="admin-panel" aria-label="Admin Test Controls">
-            <h2>ADMIN</h2>
-            <p>Testing controls. Hidden from normal operators.</p>
-            <button type="button" onClick={handleClearActiveDecision}>Clear active decision / lockdown</button>
-            <button type="button" onClick={handleClearPreviousOverthinks}>Clear Previous Overthinks</button>
-            <button type="button" onClick={handleClearAllAppData}>Clear all local app data</button>
-            <div className="admin-qa-deck" aria-label="Admin QA Runner">
+          <section className="support-master-blueprint" aria-label="Admin Test Controls">
+            <div className="support-master-blueprint__header">
+              <h2>ADMIN</h2>
+              <p>Testing controls. Hidden from normal operators.</p>
+            </div>
+            <div className="support-master-blueprint__actions">
+              <button type="button" onClick={handleClearActiveDecision}>Clear active decision / lockdown</button>
+              <button type="button" onClick={handleClearPreviousOverthinks}>Clear Previous Overthinks</button>
+              <button type="button" onClick={handleClearAllAppData}>Clear all local app data</button>
+            </div>
+            <div className="support-master-blueprint__content" aria-label="Admin QA Runner">
               <h3>Admin QA Runner</h3>
               <button type="button" onClick={handleRunAdminQaSimulation}>Run Full QA Simulation</button>
               <button type="button" onClick={handleResetAdminQaData}>Reset Test Data</button>
               {adminQaResults.length > 0 && (
                 <div>
                   <p>Test name | Pass/fail | Notes | Failed state/branch</p>
-                  <ul>{adminQaResults.map((result) => (
-                    <li key={result.testName}>
+                  <ul className="support-master-blueprint__list">{adminQaResults.map((result) => (
+                    <li className="support-master-blueprint__item" key={result.testName}>
                       {result.testName} | {result.passed ? 'PASS' : 'FAIL'} | {result.notes} | {result.failedBranch ?? ''}
                     </li>
                   ))}</ul>
@@ -538,25 +542,36 @@ export function App() {
         )}
 
         {currentScreen === 'previous-overthinks' && (
-          <section>
-            <h2>PREVIOUS OVERTHINKS</h2>
-            {appState.previousDecisions.length === 0 ? <p>No previous overthinks yet.</p> : appState.previousDecisions.map((previous) => {
-              const summary = formatPreviousOverthinkSummary(previous);
-              return (
-                <article className="history-card" key={previous.id}>
-                  <h3>{summary.problem}</h3>
-                  <p>Final decision: {summary.finalAnswer}</p>
-                  <p>Options: {summary.options.join(', ')}</p>
-                  <p>Overthink Spiral entries: {summary.gamesPlayedCount}</p>
-                  <p>Barry Commitment Index: {summary.attemptsUsed}</p>
-                  <p>Created: {formatDate(summary.createdDate)}</p>
-                  {summary.lockdownStatus && <p>Barry recovery status: {summary.lockdownStatus}</p>}
-                  {summary.machineQuote && <p>Barry's comment: {summary.machineQuote}</p>}
-                  <button type="button" onClick={() => openShareResult(previous)}>SHARE YOUR OVERTHINK</button>
-                </article>
-              );
-            })}
-            <button type="button" onClick={() => setCurrentScreen('home')}>MACHINE</button>
+          <section className="support-master-blueprint" aria-label="Previous Overthinks">
+            <div className="support-master-blueprint__header">
+              <h2>PREVIOUS OVERTHINKS</h2>
+              <p>Past decisions Barry has already over-processed.</p>
+            </div>
+            <div className="support-master-blueprint__content">
+              {appState.previousDecisions.length === 0 ? <p>No previous overthinks yet.</p> : (
+                <div className="support-master-blueprint__list">
+                  {appState.previousDecisions.map((previous) => {
+                    const summary = formatPreviousOverthinkSummary(previous);
+                    return (
+                      <article className="support-master-blueprint__item" key={previous.id}>
+                        <h3>{summary.problem}</h3>
+                        <p>Final decision: {summary.finalAnswer}</p>
+                        <p>Options: {summary.options.join(', ')}</p>
+                        <p>Overthink Spiral entries: {summary.gamesPlayedCount}</p>
+                        <p>Barry Commitment Index: {summary.attemptsUsed}</p>
+                        <p>Created: {formatDate(summary.createdDate)}</p>
+                        {summary.lockdownStatus && <p>Barry recovery status: {summary.lockdownStatus}</p>}
+                        {summary.machineQuote && <p>Barry's comment: {summary.machineQuote}</p>}
+                        <button type="button" onClick={() => openShareResult(previous)}>SHARE YOUR OVERTHINK</button>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <div className="support-master-blueprint__actions">
+              <button type="button" onClick={() => setCurrentScreen('home')}>MACHINE</button>
+            </div>
           </section>
         )}
 
@@ -586,17 +601,24 @@ export function App() {
         )}
 
         {currentScreen === 'about-machine' && (
-          <section className="about-lore">
-            <h2>ABOUT THE MACHINE</h2>
-            <p>The OVERTHINK-O-MATIC 5000 was discovered behind an arcade in 1987.</p>
-            <p>Inside was Barry.</p>
-            <p>Nobody knows how long he had been there.</p>
-            <p>Nobody has successfully counted the number of energy drinks consumed.</p>
-            <p>The machine is powered by a questionable blend of pocket change, panic, static electricity, and one extremely confident honey badger.</p>
-            <p>Scientific accuracy: somewhere between a fortune cookie and a very confident pigeon.</p>
-            <p>Independent testing shows the machine is approximately 14% more accurate than Facebook, 22% more accurate than asking the group chat, and 37% more accurate than changing your mind six times.</p>
-            <p>Warning: results may be wildly unqualified but strangely useful.</p>
-            <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>MACHINE</button>
+          <section className="support-master-blueprint" aria-label="About The Machine">
+            <div className="support-master-blueprint__header">
+              <h2>ABOUT THE MACHINE</h2>
+              <p>Questionable lore from the support panel.</p>
+            </div>
+            <div className="support-master-blueprint__content">
+              <p>The OVERTHINK-O-MATIC 5000 was discovered behind an arcade in 1987.</p>
+              <p>Inside was Barry.</p>
+              <p>Nobody knows how long he had been there.</p>
+              <p>Nobody has successfully counted the number of energy drinks consumed.</p>
+              <p>The machine is powered by a questionable blend of pocket change, panic, static electricity, and one extremely confident honey badger.</p>
+              <p>Scientific accuracy: somewhere between a fortune cookie and a very confident pigeon.</p>
+              <p>Independent testing shows the machine is approximately 14% more accurate than Facebook, 22% more accurate than asking the group chat, and 37% more accurate than changing your mind six times.</p>
+              <p>Warning: results may be wildly unqualified but strangely useful.</p>
+            </div>
+            <div className="support-master-blueprint__actions">
+              <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>MACHINE</button>
+            </div>
           </section>
         )}
       </MachineShell>
