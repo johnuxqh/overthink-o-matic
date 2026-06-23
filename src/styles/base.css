@@ -131,133 +131,199 @@ form, section[aria-label="Admin Test Controls"], section[aria-label="Admin QA Ru
 .protocol-module-card::after { right: .55rem; top: .35rem; font-size: .56rem; }
 @media (min-width: 640px) { .machine-control-deck { grid-template-columns: repeat(4, 1fr); } .protocol-module-card { grid-template-columns: auto 1fr auto; padding: .75rem .85rem; } }
 
-/* PASS 5.5A.2 home screen hard reset */
-.machine-shell--home-reset,
-.machine-shell--home-reset .machine-marquee,
+/* PASS 5.5B home art rebuild from clean reset */
+.machine-art-shell.machine-shell--home-reset {
+  width: min(100%, var(--mobile-cabinet-width));
+  overflow: hidden;
+  border: 6px solid var(--machine-copper);
+  border-radius: 1.3rem;
+  padding: .65rem clamp(.35rem, 2.4vw, .85rem) .85rem;
+  background: linear-gradient(180deg, #7a351b 0, #2b120d 7.5rem, #0a0909 100%);
+  box-shadow: 0 0 0 3px var(--machine-brass), 0 0 0 8px #2b1510, var(--machine-shadow);
+  color: var(--body-text);
+}
+.machine-art-shell.machine-shell--home-reset::before,
+.machine-art-shell.machine-shell--home-reset::after {
+  display: block;
+}
+.machine-art-shell.machine-shell--home-reset::before { inset: .45rem; border: 1px solid rgba(255,212,71,.45); }
+.machine-art-shell.machine-shell--home-reset::after { inset: auto .65rem .65rem; height: 7.2rem; }
+.machine-art-side-left,
+.machine-art-side-right {
+  position: absolute;
+  top: 5.9rem;
+  bottom: 6.8rem;
+  z-index: 0;
+  width: clamp(2.2rem, 16vw, 5rem);
+  pointer-events: none;
+  background-repeat: repeat-y;
+  background-position: top center;
+  background-size: 100% auto;
+  opacity: .82;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,.5));
+}
+.machine-art-side-left { left: max(-1.25rem, -4vw); background-image: var(--machine-art-side-left-image); }
+.machine-art-side-right { right: max(-1.25rem, -4vw); background-image: var(--machine-art-side-right-image); }
+.machine-art-shell .machine-art-marquee {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: .28rem;
+  margin: 0 0 .55rem;
+  border: 0;
+  border-radius: 1rem;
+  padding: .35rem .45rem .5rem;
+  background: radial-gradient(circle at 50% 0, rgba(255,212,71,.18), transparent 58%), linear-gradient(180deg, rgba(92,32,23,.68), rgba(27,10,16,.82));
+  box-shadow: inset 0 0 0 2px rgba(255,212,71,.22), 0 7px 0 rgba(0,0,0,.4);
+}
+.machine-art-shell .cabinet-lights { display: flex; margin-bottom: .05rem; }
+.machine-art-marquee__image {
+  display: block;
+  width: min(100%, 27rem);
+  height: auto;
+  margin: 0 auto;
+}
+.machine-art-marquee__tagline {
+  margin: -.1rem 0 .05rem;
+  color: var(--neon-pink);
+  font-size: clamp(.78rem, 3.2vw, .95rem);
+  letter-spacing: .14em;
+}
+.machine-art-shell .machine-marquee__kicker { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+.machine-art-powered {
+  display: grid;
+  min-height: 2.35rem;
+  margin: 0 auto;
+  width: min(100%, 24rem);
+  place-items: center;
+  border: 0;
+  padding: .42rem 1.15rem .52rem;
+  background: var(--machine-art-powered-image) center / 100% 100% no-repeat;
+}
+.machine-art-powered .machine-marquee__status {
+  margin: 0;
+  color: #2a1207;
+  font-size: clamp(.56rem, 2.8vw, .78rem);
+  line-height: 1.05;
+  letter-spacing: .08em;
+  text-shadow: 0 1px 0 rgba(255,255,255,.45);
+}
 .machine-shell--home-reset .machine-operator-strip,
 .machine-display-frame--home-reset,
-.machine-display--home-reset,
-.machine-shell--home-reset .machine-control-deck {
+.machine-display--home-reset {
   border: 0;
   border-radius: 0;
-  background: #fff;
-  box-shadow: none;
-  color: #111;
-}
-.machine-shell--home-reset::before,
-.machine-shell--home-reset::after,
-.machine-display-frame--home-reset::before,
-.machine-shell--home-reset .cabinet-lights,
-.machine-shell--home-reset .machine-display-label {
-  display: none;
-}
-.machine-shell--home-reset {
-  overflow: visible;
   padding: 0;
-}
-.machine-shell--home-reset .machine-marquee,
-.machine-shell--home-reset .machine-operator-strip,
-.machine-display-frame--home-reset,
-.machine-display--home-reset,
-.machine-shell--home-reset .machine-control-deck {
   margin: 0;
-  padding: 0;
-}
-.machine-shell--home-reset .machine-marquee h1,
-.machine-shell--home-reset .machine-marquee__kicker,
-.machine-shell--home-reset .machine-marquee__tagline,
-.machine-shell--home-reset .machine-marquee__status,
-.machine-shell--home-reset .machine-operator-strip {
-  color: #111;
-  text-shadow: none;
-  transform: none;
-}
-.machine-shell--home-reset .machine-control-deck {
-  gap: .5rem;
-  padding: 1rem;
-}
-.machine-shell--home-reset .machine-control-deck .machine-button {
-  border: 1px solid #777;
-  border-radius: 0;
-  background: #eee;
+  background: transparent;
   box-shadow: none;
-  color: #111;
 }
-.home-screen-reset,
-.home-screen-reset *,
-.home-screen-reset::before,
-.home-screen-reset::after {
-  box-shadow: none;
-  text-shadow: none;
-  background-image: none;
-}
+.machine-shell--home-reset .machine-operator-strip,
+.machine-display-frame--home-reset::before,
+.machine-shell--home-reset .machine-display-label { display: none; }
+.machine-display--home-reset { position: relative; z-index: 1; display: block; }
 .home-screen-reset {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 1rem;
+  gap: .72rem;
   width: 100%;
   max-width: 100%;
-  border: 1px solid #999;
+  border: 0;
   border-radius: 0;
-  padding: 1rem;
-  background: #fff;
-  color: #111;
+  padding: 0 clamp(.45rem, 8vw, 3.2rem);
+  background: transparent;
+  color: var(--body-text);
+  box-shadow: none;
 }
-.home-screen-reset section,
-.home-screen-reset header,
-.home-screen-reset label,
-.home-screen-reset__marquee,
-.home-screen-reset__powered,
-.home-screen-reset__barry-window,
-.home-screen-reset__lcd,
+.home-screen-reset__barry-window {
+  display: grid;
+  align-items: center;
+  min-height: clamp(4.3rem, 18vw, 6.2rem);
+  border: 0;
+  padding: .95rem 1.4rem .95rem 1rem;
+  background: url('../assets/images/machine/barry_window_frame.png') center / 100% 100% no-repeat;
+}
+.home-screen-reset__barry-window p {
+  max-width: 82%;
+  margin: 0;
+  color: #f7f0cb;
+  font-size: clamp(.72rem, 3.1vw, .9rem);
+  font-weight: 900;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+.home-screen-reset__lcd {
+  display: grid;
+  gap: .55rem;
+  border: 0;
+  padding: clamp(1rem, 4vw, 1.35rem) clamp(1rem, 5vw, 1.55rem) clamp(1.15rem, 4vw, 1.55rem);
+  background: url('../assets/images/machine/inout_lcd_top.png') top center / 100% auto no-repeat,
+    url('../assets/images/machine/input_lcd_bottom.png') bottom center / 100% auto no-repeat,
+    url('../assets/images/machine/input_lcd_middle.png') center / 100% 100% no-repeat;
+  color: var(--crt-green);
+}
 .home-screen-reset__lcd-header,
 .home-screen-reset__notes,
 .home-screen-reset__input {
   display: grid;
-  gap: .5rem;
-}
-.home-screen-reset section,
-.home-screen-reset label {
-  border: 1px solid #bbb;
-  border-radius: 0;
-  padding: .75rem;
-  background: #fff;
-  color: #111;
-}
-.home-screen-reset h2,
-.home-screen-reset h3,
-.home-screen-reset p,
-.home-screen-reset label {
-  margin: 0;
-  color: #111;
-  font-family: inherit;
-  letter-spacing: normal;
-  text-transform: none;
-}
-.home-screen-reset textarea {
-  width: 100%;
-  min-height: 8rem;
-  border: 1px solid #777;
-  border-radius: 0;
-  padding: .75rem;
-  background: #fff;
-  color: #111;
-  resize: vertical;
-}
-.home-screen-reset button,
-.home-screen-reset__cta {
-  min-height: 48px;
-  border: 1px solid #777;
-  border-radius: 0;
-  padding: .75rem 1rem;
-  background: #eee;
-  color: #111;
+  gap: .35rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
   box-shadow: none;
-  font-weight: 700;
-  letter-spacing: normal;
+}
+.home-screen-reset__lcd-header p:first-child,
+.home-screen-reset__input { color: var(--neon-yellow); font-size: .68rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.home-screen-reset__lcd-header h2 { color: var(--neon-cyan); font-size: clamp(1.45rem, 7.2vw, 2.1rem); line-height: .95; text-shadow: 0 0 12px rgba(38,247,255,.45); }
+.home-screen-reset__lcd-header p:last-child,
+.home-screen-reset__notes p { color: #d7ffb9; font-size: .84rem; line-height: 1.35; }
+.home-screen-reset__notes h3 { margin: .15rem 0 0; color: var(--neon-pink); font-size: 1rem; }
+.home-screen-reset__input textarea {
+  width: 100%;
+  min-height: 8.5rem;
+  border: 2px solid rgba(124,255,77,.78);
+  border-radius: .45rem;
+  padding: .78rem;
+  color: var(--crt-green);
+  background: linear-gradient(180deg, rgba(4,23,13,.94), rgba(1,7,5,.96));
+  box-shadow: inset 0 0 16px rgba(124,255,77,.15);
+  caret-color: var(--neon-cyan);
+  resize: vertical;
   text-transform: none;
 }
+.home-screen-reset__cta {
+  min-height: 56px;
+  width: 100%;
+  border: 0;
+  border-radius: .6rem;
+  padding: .8rem 1rem 1rem;
+  color: #fff7fb;
+  background: url('../assets/images/machine/primary_cta_pink.png') center / 100% 100% no-repeat;
+  box-shadow: 0 5px 0 rgba(0,0,0,.45), 0 0 18px rgba(255,62,181,.24);
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.machine-shell--home-reset .machine-control-deck {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .45rem;
+  margin: .8rem 0 0;
+  border: 0;
+  border-radius: .75rem;
+  padding: .7rem;
+  background: linear-gradient(180deg, rgba(23,17,22,.94), rgba(5,5,7,.94));
+  box-shadow: inset 0 0 0 2px rgba(178,122,43,.55), 0 -3px 0 rgba(178,122,43,.35);
+}
+.machine-shell--home-reset .machine-control-deck .machine-button { min-width: 0; padding: .62rem .25rem; font-size: clamp(.56rem, 2.45vw, .72rem); }
+.machine-shell--home-reset .machine-control-deck:has(.machine-button:nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 390px) {
-  .home-screen-reset {
-    gap: 1rem;
-  }
+  .machine-art-shell.machine-shell--home-reset { border-width: 4px; }
+  .home-screen-reset { padding-inline: clamp(.35rem, 6vw, 1.45rem); }
+  .machine-art-side-left, .machine-art-side-right { opacity: .45; width: 3.2rem; }
 }
