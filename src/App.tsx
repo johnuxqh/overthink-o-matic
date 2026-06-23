@@ -396,7 +396,7 @@ export function App() {
             )}
             <p>Overthink: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
-            <MachineReadout><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
+            <MachineReadout className="protocol-commitment-readout"><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
             <div className="protocol-grid">{eligibleGames.map((game, index) => {
               const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
               const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
