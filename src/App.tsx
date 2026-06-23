@@ -428,14 +428,22 @@ export function App() {
         )}
 
         {currentScreen === 'thinking' && thinkingRun && (
-          <section className="thinking-panel" aria-live="polite">
-            <h2>BARRY IS THINKING</h2>
-            <BarryWindow><BarryStatus>OPERATOR WINDOW: Barry is somewhere inside the cabinet making this worse.</BarryStatus></BarryWindow>
-            <MachineReadout><span>STATUS:</span><span className="readout-value">PROCESSING</span><span className="readout-detail">PROTOCOL: {thinkingRun.protocolName}</span></MachineReadout>
-            <div className="machine-progress" aria-label="Machine processing progress"><span /></div>
-            <p>{thinkingRun.progress}</p>
-            <p>Barry is consulting highly questionable science.</p>
-            <p>Switches are flipping. Gauges are moving. This may or may not help.</p>
+          <section className="thinking-master-blueprint" aria-live="polite">
+            <div className="thinking-master-blueprint__header">
+              <h2>BARRY IS THINKING</h2>
+              <p>Protocol: {thinkingRun.protocolName}</p>
+            </div>
+
+            <section className="thinking-master-blueprint__status" aria-label="Machine processing status">
+              <p>Status: Processing</p>
+              <p>Barry is pulling levers, shaking things, and ignoring best practices.</p>
+            </section>
+
+            <div className="thinking-master-blueprint__progress" aria-label="Machine progress">
+              <p>{thinkingRun.progress}</p>
+              <p>Barry is consulting highly questionable science.</p>
+              <p>Switches are flipping. Gauges are moving. This may or may not help.</p>
+            </div>
           </section>
         )}
 
