@@ -481,36 +481,59 @@ export function App() {
         )}
 
         {currentScreen === 'barry-takeover' && decision?.lockdown && (
-          <section className="lockdown-panel">
-            <h2>BARRY HAS TAKEN CONTROL</h2>
-            <p className="emergency-kicker">Your decision-making privileges have been temporarily revoked.</p>
-            <p>Barry has concluded additional user input is no longer helping.</p>
-            <p>Final decision</p>
-            <p className="result-answer">{decision.lockdown.finalAnswer}</p>
-            {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            <div className="attempt-spiral"><p className="module-label">MACHINE AUDIT LOG</p><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {index < decision.gamesPlayed.length - 1 ? 'Rejected' : 'Final protocol'} — Barry is {commitment.stage}</p>; })}</div>
-            <p>Barry has spiralled out of control, made the final decision, and is now recovering.</p>
-            <p>DECISION LOCKED</p><p>LOCKDOWN REMAINING</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>Recovery is underway.</p>
-            <p>{getLockdownMessage(decision, now)}</p>
-            <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>
-            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+          <section className="lockdown-master-blueprint lockdown-master-blueprint--takeover" aria-label="Barry takeover lockdown">
+            <section className="lockdown-master-blueprint__header">
+              <h2>BARRY HAS TAKEN CONTROL</h2>
+              <p>Barry has become too committed. Barry made the final decision.</p>
+            </section>
+
+            <section className="lockdown-master-blueprint__decision" aria-label="Final decision">
+              <p>Final decision</p>
+              <p className="lockdown-master-blueprint__answer">{decision.lockdown.finalAnswer}</p>
+              {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
+            </section>
+
+            <section className="lockdown-master-blueprint__timer" aria-label="Lockdown timer">
+              <p>DECISION LOCKED</p>
+              <p>LOCKDOWN REMAINING</p>
+              <p className="lockdown-master-blueprint__countdown">{formatCountdown(lockdownRemainingMs)}</p>
+              <p>Barry is recovering.</p>
+              <p>{getLockdownMessage(decision, now)}</p>
+            </section>
+
+            <section className="lockdown-master-blueprint__actions" aria-label="Lockdown actions">
+              <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>
+              <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+            </section>
           </section>
         )}
 
         {currentScreen === 'lockdown' && decision?.lockdown && (
-          <section className="lockdown-panel">
-            <h2>BARRY HAS TAKEN CONTROL</h2>
-            <p className="emergency-kicker">BARRY IS RECOVERING</p>
-            <p>Barry has become too committed. Barry made the final decision.</p>
-            <p>Final decision</p>
-            <p className="result-answer">{decision.lockdown.finalAnswer}</p>
-            <p>Containment recovery has begun.</p>
-            {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            <p>DECISION LOCKED</p><p>LOCKDOWN REMAINING</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>No new overthinks until Barry recovers.</p><p>Recovery is underway.</p>
-            <p>{getLockdownMessage(decision, now)}</p>
-            {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>}
-            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
-            {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>MACHINE</button>}
+          <section className="lockdown-master-blueprint" aria-label="Barry recovery lockdown">
+            <section className="lockdown-master-blueprint__header">
+              <h2>BARRY IS RECOVERING</h2>
+              <p>Barry has become too committed. Barry made the final decision.</p>
+            </section>
+
+            <section className="lockdown-master-blueprint__decision" aria-label="Final decision">
+              <p>Final decision</p>
+              <p className="lockdown-master-blueprint__answer">{decision.lockdown.finalAnswer}</p>
+              {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
+            </section>
+
+            <section className="lockdown-master-blueprint__timer" aria-label="Lockdown timer">
+              <p>DECISION LOCKED</p>
+              <p>LOCKDOWN REMAINING</p>
+              <p className="lockdown-master-blueprint__countdown">{formatCountdown(lockdownRemainingMs)}</p>
+              <p>No new overthinks until Barry recovers.</p>
+              <p>{getLockdownMessage(decision, now)}</p>
+            </section>
+
+            <section className="lockdown-master-blueprint__actions" aria-label="Lockdown actions">
+              {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>}
+              <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+              {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>MACHINE</button>}
+            </section>
           </section>
         )}
 
