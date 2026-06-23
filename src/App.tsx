@@ -292,7 +292,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeReset={currentScreen === 'home'} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -337,10 +337,7 @@ export function App() {
         {currentScreen === 'home' && appState.user && (
           <form className="home-screen-reset" onSubmit={submitProblem} aria-label="State your overthink">
             <section className="home-screen-reset__marquee" aria-label="Home machine marquee">
-              <div className="home-screen-reset__logo-area" aria-labelledby="home-machine-title">
-                <p className="module-label">Home Machine</p>
-                <h2 id="home-machine-title">OVERTHINK-O-MATIC 5000</h2>
-              </div>
+              <h2 id="home-machine-title">OVERTHINK-O-MATIC 5000</h2>
               <p>Let's Underthink This</p>
             </section>
 
@@ -354,7 +351,7 @@ export function App() {
 
             <section className="home-screen-reset__lcd" aria-label="Main LCD decision display">
               <section className="home-screen-reset__lcd-header" aria-label="LCD header">
-                <p className="module-label">Main LCD Display</p>
+                <p>Main LCD Display</p>
                 <h2>STATE YOUR OVERTHINK</h2>
                 <p>Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
               </section>
@@ -370,7 +367,7 @@ export function App() {
               </label>
             </section>
 
-            <button className="machine-button machine-button--primary home-screen-reset__primary-cta" type="submit">INSERT INTO MACHINE</button>
+            <button className="home-screen-reset__cta" type="submit">INSERT INTO MACHINE</button>
 
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>
