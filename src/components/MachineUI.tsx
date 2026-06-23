@@ -11,6 +11,10 @@ export function MachineShell({ children, statusLine = 'Machine containment accep
   return (
     <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}`} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
       <MachineMarquee statusLine={statusLine} />
+      <div className="machine-operator-strip" aria-label="Machine operator status">
+        <span>OPERATOR: BARRY</span>
+        <span>{emergency ? 'CONTAINMENT ALERT' : 'CABINET ONLINE'}</span>
+      </div>
       <MachineDisplay>{children}</MachineDisplay>
       {controls && <MachineControlDeck>{controls}</MachineControlDeck>}
     </section>
@@ -23,14 +27,21 @@ export function MachineMarquee({ statusLine = "Let's Underthink This" }: { statu
       <div className="cabinet-lights" aria-hidden="true"><span /><span /><span /><span /></div>
       <p className="machine-marquee__kicker">Questionable Arcade Oracle</p>
       <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
-      <p className="machine-marquee__tagline">Let's Underthink This</p>
-      <p className="machine-marquee__status">{statusLine}</p>
+      <div className="machine-marquee__subtitle">
+        <p className="machine-marquee__tagline">Let's Underthink This</p>
+        <p className="machine-marquee__status">{statusLine}</p>
+      </div>
     </div>
   );
 }
 
 export function MachineDisplay({ children }: { children: ReactNode }) {
-  return <div className="machine-display" role="region" aria-label="Machine display">{children}</div>;
+  return (
+    <div className="machine-display-frame">
+      <div className="machine-display-label" aria-hidden="true">PRIMARY DECISION DISPLAY</div>
+      <div className="machine-display" role="region" aria-label="Machine display">{children}</div>
+    </div>
+  );
 }
 
 export function MachinePanel({ children, className = '', ariaLabel }: { children: ReactNode; className?: string; ariaLabel?: string }) {
@@ -76,6 +87,7 @@ export function ProtocolModuleCard({ name, description, emblem = '⚙', disabled
     <article className={`protocol-module-card${special ? ' protocol-module-card--special' : ''}${disabled ? ' protocol-module-card--disabled' : ''}`}>
       <div className="protocol-emblem" aria-hidden="true">{emblem}</div>
       <div>
+        <p className="module-label">LOADABLE MACHINE MODULE</p>
         <h3>{name} Protocol</h3>
         <p>{description}</p>
         <p className="protocol-eligibility">{disabled ? 'Module unavailable for these options.' : 'Module eligible and loaded.'}</p>

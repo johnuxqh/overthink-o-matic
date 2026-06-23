@@ -9,7 +9,7 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
-import { BarryCommentary, BarryStatus, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
+import { BarryCommentary, BarryStatus, BarryWindow, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner', 'about-machine'] as const;
@@ -341,7 +341,7 @@ export function App() {
 
         {currentScreen === 'home' && appState.user && (
           <form onSubmit={submitProblem}>
-            <h2>STATE YOUR OVERTHINK</h2><BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
+            <h2>STATE YOUR OVERTHINK</h2><BarryWindow><BarryStatus>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</BarryStatus></BarryWindow><BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
             <label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
             <button className="machine-button machine-button--primary" type="submit">INSERT INTO MACHINE</button>
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
@@ -364,7 +364,7 @@ export function App() {
 
         {currentScreen === 'game-selection' && decision && (
           <section>
-            <h2>CHOOSE YOUR PROTOCOL</h2><p>Barry is selecting machinery with unnecessary confidence.</p>
+            <h2>CHOOSE YOUR PROTOCOL</h2><BarryWindow><BarryStatus>OPERATOR WINDOW: Barry is selecting machinery with unnecessary confidence.</BarryStatus></BarryWindow>
             {appState.goalpostWarning?.hasShift && (
               <MachineWarning className="warning-panel">
                 <p>{appState.goalpostWarning.message}</p>
@@ -380,7 +380,7 @@ export function App() {
             )}
             <p>Overthink: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
-            <div className="stat-chip">BARRY COMMITMENT INDEX: {attemptsRemaining}</div>
+            <MachineReadout><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
             <div className="protocol-grid">{eligibleGames.map((game, index) => {
               const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
               const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
@@ -394,7 +394,8 @@ export function App() {
         {currentScreen === 'thinking' && thinkingRun && (
           <section className="thinking-panel" aria-live="polite">
             <h2>BARRY IS THINKING</h2>
-            <p className="emergency-kicker">{thinkingRun.protocolName} Protocol</p>
+            <BarryWindow><BarryStatus>OPERATOR WINDOW: Barry is somewhere inside the cabinet making this worse.</BarryStatus></BarryWindow>
+            <MachineReadout><span>STATUS:</span><span className="readout-value">PROCESSING</span><span className="readout-detail">PROTOCOL: {thinkingRun.protocolName}</span></MachineReadout>
             <div className="machine-progress" aria-label="Machine processing progress"><span /></div>
             <p>{thinkingRun.progress}</p>
             <p>Barry is consulting highly questionable science.</p>
@@ -405,10 +406,10 @@ export function App() {
         {currentScreen === 'result' && latestResult && decision && (
           <section>
             <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
-            <p>The Machine Played: {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId} Protocol</p>
+            <MachineReadout><span>PROTOCOL:</span><span className="readout-value">{latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId}</span><span className="readout-detail">STATUS: OUTPUT STABLE</span></MachineReadout>
             <BarryCommentary><p>{latestResult.machineQuote}</p></BarryCommentary>
-            <div className="stat-chip">BARRY COMMITMENT INDEX: {attemptsRemaining}</div>
-            <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
+            <MachineReadout><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
+            <div className="attempt-spiral"><p className="module-label">MACHINE AUDIT LOG</p><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
             <button className="machine-button machine-button--success" type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
             <button className="machine-button machine-button--protocol" type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
           </section>
@@ -422,7 +423,7 @@ export function App() {
             <p>Final decision</p>
             <p className="result-answer">{decision.lockdown.finalAnswer}</p>
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {index < decision.gamesPlayed.length - 1 ? 'Rejected' : 'Final protocol'} — Barry is {commitment.stage}</p>; })}</div>
+            <div className="attempt-spiral"><p className="module-label">MACHINE AUDIT LOG</p><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {index < decision.gamesPlayed.length - 1 ? 'Rejected' : 'Final protocol'} — Barry is {commitment.stage}</p>; })}</div>
             <p>The machine is entering containment recovery.</p>
             <button className="machine-button machine-button--danger" type="button" onClick={() => setCurrentScreen('lockdown')}>ENTER LOCKDOWN</button>
           </section>
