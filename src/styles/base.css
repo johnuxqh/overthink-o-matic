@@ -462,3 +462,86 @@ a:focus-visible {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.receipt-master-blueprint {
+  display: grid;
+  gap: 12px;
+  border: 1px solid #999;
+  padding: 12px;
+}
+
+.receipt-master-blueprint__header,
+.receipt-master-blueprint__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.receipt-master-blueprint__header > *,
+.receipt-master-blueprint__actions > * {
+  margin: 0;
+}
+
+.receipt-master-blueprint__header h2 {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.receipt-card-blueprint {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #999;
+  padding: 12px;
+}
+
+.receipt-card-blueprint__title,
+.receipt-card-blueprint__field,
+.receipt-card-blueprint__actions {
+  display: grid;
+  gap: 4px;
+}
+
+.receipt-card-blueprint__title > *,
+.receipt-card-blueprint__field > *,
+.receipt-card-blueprint__actions > * {
+  margin: 0;
+}
+
+.receipt-card-blueprint__title {
+  text-align: center;
+}
+
+.receipt-card-blueprint__title p,
+.receipt-card-blueprint__label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.receipt-card-blueprint__title h2 {
+  font-size: 1.2rem;
+  line-height: 1.1;
+}
+
+.receipt-card-blueprint__field {
+  border-top: 1px solid #999;
+  padding-top: 8px;
+}
+
+.receipt-card-blueprint__value {
+  overflow-wrap: anywhere;
+}
+
+ul.receipt-card-blueprint__value {
+  padding-left: 20px;
+}
+
+.receipt-card-blueprint__value--decision {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.receipt-master-blueprint__actions,
+.receipt-card-blueprint__actions {
+  grid-template-columns: 1fr;
+}
