@@ -561,20 +561,27 @@ export function App() {
         )}
 
         {currentScreen === 'share-result' && shareData && (
-          <section>
-            <h2>SHARE YOUR OVERTHINK</h2><p className="quote-panel">Print a cursed arcade receipt for this overthink.</p>
+          <section className="receipt-master-blueprint">
+            <div className="receipt-master-blueprint__header">
+              <h2>SHARE YOUR OVERTHINK</h2>
+              <p>Print a cursed arcade receipt for this overthink.</p>
+            </div>
+
             <div ref={(element: HTMLDivElement | null) => { shareCardElement = element; }}>
               <ShareResultCard data={shareData} />
             </div>
-            {canDownloadShareImage ? (
-              <button type="button" onClick={downloadShareImage}>DOWNLOAD RECEIPT</button>
-            ) : (
-              <p>{shareFallbackMessage}</p>
-            )}
-            <p>Receipt fallback: {shareFallbackMessage}.</p>
-            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>BACK TO PREVIOUS OVERTHINKS</button>
-            {!activeLockdown && <button className="machine-button machine-button--success" type="button" onClick={goHome}>NEW OVERTHINK</button>}
-            {!activeLockdown && <button type="button" onClick={goHome}>MACHINE</button>}
+
+            <section className="receipt-master-blueprint__actions" aria-label="Receipt actions">
+              {canDownloadShareImage ? (
+                <button type="button" onClick={downloadShareImage}>DOWNLOAD RECEIPT</button>
+              ) : (
+                <p>{shareFallbackMessage}</p>
+              )}
+              <p>Receipt fallback: {shareFallbackMessage}.</p>
+              <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>BACK TO PREVIOUS OVERTHINKS</button>
+              {!activeLockdown && <button className="machine-button machine-button--success" type="button" onClick={goHome}>NEW OVERTHINK</button>}
+              {!activeLockdown && <button type="button" onClick={goHome}>MACHINE</button>}
+            </section>
           </section>
         )}
 
