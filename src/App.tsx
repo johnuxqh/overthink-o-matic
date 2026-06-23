@@ -295,7 +295,7 @@ export function App() {
                 ))}</ul>
               </div>
             )}
-            <button type="button" onClick={() => setCurrentScreen('home')}>Back to Home</button>
+            <button type="button" onClick={() => setCurrentScreen('home')}>BACK TO HOME</button>
           </section>
         )}
 
@@ -315,7 +315,7 @@ export function App() {
             <button type="submit">INSERT INTO MACHINE</button>
             <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
             <button type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
-            {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>Share Result</button>}
+            {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>
         )}
 
@@ -335,7 +335,7 @@ export function App() {
 
         {currentScreen === 'game-selection' && decision && (
           <section>
-            <h2>OPTIONS DETECTED</h2><p>Barry only chooses from what you feed him. Do not blame the badger.</p>
+            <h2>CHOOSE YOUR PROTOCOL</h2><p>Barry is selecting machinery with unnecessary confidence.</p>
             {appState.goalpostWarning?.hasShift && (
               <section className="warning-panel" aria-label="Goalpost warning">
                 <p>{appState.goalpostWarning.message}</p>
@@ -344,14 +344,14 @@ export function App() {
                 {(() => {
                   const previous = getMostRecentDecision(appState);
                   return previous && !isLockdownActive(previous, now) ? (
-                    <p><button type="button" onClick={resumeMostRecentPreviousDecision}>Resume previous decision tree if available</button></p>
+                    <p><button type="button" onClick={resumeMostRecentPreviousDecision}>Resume previous overthink spiral if available</button></p>
                   ) : null;
                 })()}
               </section>
             )}
-            <p>Decision: {decision.problem}</p>
+            <p>Overthink: {decision.problem}</p>
             <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
-            <div className="stat-chip">Barry commitment remaining: {attemptsRemaining}</div>
+            <div className="stat-chip">BARRY COMMITMENT INDEX: {attemptsRemaining}</div>
             <div className="protocol-grid">{eligibleGames.map((game, index) => {
               const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
               const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
@@ -362,7 +362,7 @@ export function App() {
                     <h3>{protocolName} Protocol</h3>
                     <p>{game.description}</p>
                   </div>
-                  <button type="button" onClick={() => runSelectedGame(game.id)}>Select {protocolName}</button>
+                  <button type="button" onClick={() => runSelectedGame(game.id)}>RUN {protocolName}</button>
                 </article>
               );
             })}</div>
@@ -373,9 +373,9 @@ export function App() {
           <section>
             <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
             <p>The Machine Played: {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId} Protocol</p>
-            <div className="quote-panel"><h3>Barry’s notes</h3><p>{latestResult.machineQuote}</p></div>
-            <div className="stat-chip">Barry commitment remaining: {attemptsRemaining}</div>
-            <div className="attempt-spiral"><h3>YOUR OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText}</p>)}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
+            <div className="quote-panel"><h3>Barry's Notes</h3><p>{latestResult.machineQuote}</p></div>
+            <div className="stat-chip">BARRY COMMITMENT INDEX: {attemptsRemaining}</div>
+            <div className="attempt-spiral"><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText}</p>)}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
             <button type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
             <button type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
           </section>
@@ -385,64 +385,63 @@ export function App() {
           <section className="lockdown-panel">
             <h2>BARRY HAS TAKEN CONTROL</h2>
             <p className="emergency-kicker">BARRY IS RECOVERING</p>
-            <p>You rejected too many answers. Barry made the final decision.</p>
+            <p>Barry has become too committed. Barry made the final decision.</p>
             <p>Final decision</p>
             <p className="result-answer">{decision.lockdown.finalAnswer}</p>
-            <p>Recovery mode activated.</p>
-            <p>5 minute cooldown activated.</p>
+            <p>Containment recovery has begun.</p>
             {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            <p>DECISION LOCKED</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>No new overthinks until Barry recovers.</p><p>Recovery is underway.</p>
+            <p>DECISION LOCKED</p><p>LOCKDOWN REMAINING</p><div className="countdown">{formatCountdown(lockdownRemainingMs)}</div><p>No new overthinks until Barry recovers.</p><p>Recovery is underway.</p>
             <p>{getLockdownMessage(decision, now)}</p>
-            {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>Share Result</button>}
-            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Previous Overthinks</button>
-            {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>New Overthink</button>}
+            {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>}
+            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+            {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>NEW OVERTHINK</button>}
           </section>
         )}
 
         {currentScreen === 'previous-overthinks' && (
           <section>
-            <h2>Your Overthink Spiral</h2>
+            <h2>PREVIOUS OVERTHINKS</h2>
             {appState.previousDecisions.length === 0 ? <p>No previous overthinks yet.</p> : appState.previousDecisions.map((previous) => {
               const summary = formatPreviousOverthinkSummary(previous);
               return (
                 <article className="history-card" key={previous.id}>
                   <h3>{summary.problem}</h3>
-                  <p>Final answer: {summary.finalAnswer}</p>
+                  <p>Final decision: {summary.finalAnswer}</p>
                   <p>Options: {summary.options.join(', ')}</p>
-                  <p>Protocols played: {summary.gamesPlayedCount}</p>
-                  <p>Attempt number: {summary.attemptsUsed}</p>
+                  <p>Overthink Spiral entries: {summary.gamesPlayedCount}</p>
+                  <p>Barry Commitment Index: {summary.attemptsUsed}</p>
                   <p>Created: {formatDate(summary.createdDate)}</p>
-                  {summary.lockdownStatus && <p>Lockdown status: {summary.lockdownStatus}</p>}
-                  {summary.machineQuote && <p>Machine quote: {summary.machineQuote}</p>}
-                  <button type="button" onClick={() => openShareResult(previous)}>Share</button>
+                  {summary.lockdownStatus && <p>Barry recovery status: {summary.lockdownStatus}</p>}
+                  {summary.machineQuote && <p>Barry's comment: {summary.machineQuote}</p>}
+                  <button type="button" onClick={() => openShareResult(previous)}>SHARE YOUR OVERTHINK</button>
                 </article>
               );
             })}
-            <button type="button" onClick={() => setCurrentScreen('home')}>Back to Home</button>
+            <button type="button" onClick={() => setCurrentScreen('home')}>BACK TO HOME</button>
           </section>
         )}
 
         {currentScreen === 'share-result' && shareData && (
           <section>
-            <h2>Share Result</h2><p className="quote-panel">The machine says... publish this questionable wisdom responsibly.</p>
+            <h2>SHARE YOUR OVERTHINK</h2><p className="quote-panel">Print a cursed arcade receipt for this overthink.</p>
             <div ref={(element: HTMLDivElement | null) => { shareCardElement = element; }}>
               <ShareResultCard data={shareData} />
             </div>
             {canDownloadShareImage ? (
-              <button type="button" onClick={downloadShareImage}>Download Image</button>
+              <button type="button" onClick={downloadShareImage}>DOWNLOAD RECEIPT</button>
             ) : (
               <p>{shareFallbackMessage}</p>
             )}
-            <p>Copy/share fallback: {shareFallbackMessage}.</p>
-            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>Back to Previous Overthinks</button>
-            {!activeLockdown && <button type="button" onClick={goHome}>New Overthink</button>}
+            <p>Receipt fallback: {shareFallbackMessage}.</p>
+            <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>BACK TO PREVIOUS OVERTHINKS</button>
+            {!activeLockdown && <button type="button" onClick={goHome}>NEW OVERTHINK</button>}
           </section>
         )}
 
         {currentScreen === 'about-machine' && (
           <section className="about-lore">
-            <h2>About The Machine</h2>
-            <p>The Overthink-O-Matic 5000 was discovered behind an arcade in 1987.</p>
+            <h2>ABOUT THE MACHINE</h2>
+            <p>The OVERTHINK-O-MATIC 5000 was discovered behind an arcade in 1987.</p>
             <p>Inside was Barry.</p>
             <p>Nobody knows how long he had been there.</p>
             <p>Nobody has successfully counted the number of energy drinks consumed.</p>
@@ -450,7 +449,7 @@ export function App() {
             <p>Scientific accuracy: somewhere between a fortune cookie and a very confident pigeon.</p>
             <p>Independent testing shows the machine is approximately 14% more accurate than Facebook, 22% more accurate than asking the group chat, and 37% more accurate than changing your mind six times.</p>
             <p>Warning: results may be wildly unqualified but strangely useful.</p>
-            <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>Back to Home</button>
+            <button type="button" onClick={() => setCurrentScreen(appState.user ? 'home' : 'setup')}>BACK TO HOME</button>
           </section>
         )}
       </section>

@@ -15,7 +15,7 @@ const gameLabels: Record<GameId, string> = {
 const statusLabels: Record<DecisionStatus, string> = {
   [DecisionStatus.Draft]: 'Draft',
   [DecisionStatus.Locked]: 'Accepted',
-  [DecisionStatus.Lockdown]: 'Decision Locked',
+  [DecisionStatus.Lockdown]: 'DECISION LOCKED',
   [DecisionStatus.Complete]: 'Accepted',
 };
 
@@ -27,19 +27,19 @@ export function ShareResultCard({ data }: ShareResultCardProps) {
   return (
     <article className="share-result-card" aria-label="Share result card">
       <div>
-        <p className="share-result-card__tagline">Mini Arcade Ticket</p>
-        <h2>OVERTHINK-O-MATIC</h2>
+        <p className="share-result-card__tagline">Cursed Arcade Receipt</p>
+        <h2>OVERTHINK-O-MATIC 5000</h2>
       </div>
       <section>
-        <h3>The Overthink</h3>
+        <h3>Overthink</h3>
         <p>{data.decisionProblem}</p>
       </section>
       <section>
-        <h3>The Options:</h3>
+        <h3>Options</h3>
         <ul>{data.options.map((option) => <li key={option}>{option}</li>)}</ul>
       </section>
       <section>
-        <h3>The Protocol</h3>
+        <h3>Protocol</h3>
         <p>{gameLabels[data.selectedGameId] ?? data.selectedGameId}</p>
       </section>
       <section>
@@ -47,11 +47,11 @@ export function ShareResultCard({ data }: ShareResultCardProps) {
         <p className="share-result-card__decision">{data.finalAnswer}</p>
       </section>
       <section>
-        <h3>Status:</h3>
-        <p>{data.isBarryTakeover || data.isSuddenDeath ? 'Barry Has Taken Control' : statusLabels[data.decisionStatus]}</p>
+        <h3>Overthink Spiral</h3>
+        <p>{data.isBarryTakeover || data.isSuddenDeath ? 'BARRY HAS TAKEN CONTROL' : statusLabels[data.decisionStatus]}</p>
       </section>
       <section>
-        <h3>Barry’s Comment</h3>
+        <h3>Barry's Comment</h3>
         <p>{data.machineQuote}</p>
       </section>
     </article>

@@ -45,7 +45,7 @@ async function makeAcceptedDecision(container: HTMLElement) {
   await changeField(container, 'Option 1', 'Pizza');
   await changeField(container, 'Option 2', 'Tacos');
   await clickButton(container, 'LOCK IN OPTIONS');
-  await clickButton(container, 'Select Coin Toss');
+  await clickButton(container, 'RUN Coin Toss');
   await clickButton(container, 'ACCEPT THE ANSWER');
 }
 
@@ -71,12 +71,12 @@ describe('P9 share result', () => {
   it('share screen renders card after accepted decision', async () => {
     const { container, root } = await renderApp();
     await makeAcceptedDecision(container);
-    await clickButton(container, 'Share Result');
+    await clickButton(container, 'SHARE YOUR OVERTHINK');
     expect(container.textContent).toContain('OVERTHINK-O-MATIC');
-    expect(container.textContent).toContain("Mini Arcade Ticket");
-    expect(container.textContent).toContain('The Overthink');
+    expect(container.textContent).toContain("Cursed Arcade Receipt");
+    expect(container.textContent).toContain('Overthink');
     expect(container.textContent).toContain('Pick dinner');
-    expect(container.textContent).toContain('The Options');
+    expect(container.textContent).toContain('Options');
     expect(container.textContent).toContain('Pizza');
     expect(container.textContent).toContain('Final Decision');
     act(() => root.unmount());
@@ -87,10 +87,10 @@ describe('P9 share result', () => {
     localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
     localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
     const { container, root } = await renderApp();
-    await clickButton(container, 'Share Result');
-    expect(container.textContent).toContain('Share Result');
+    await clickButton(container, 'SHARE YOUR OVERTHINK');
+    expect(container.textContent).toContain('SHARE YOUR OVERTHINK');
     expect(container.textContent).toContain('Goblin approved.');
-    expect(container.textContent).toContain('Decision Locked');
+    expect(container.textContent).toContain('DECISION LOCKED');
     act(() => root.unmount());
   });
 
@@ -114,8 +114,8 @@ describe('P9 share result', () => {
   it('share screen shows screenshot fallback when image export is unsupported', async () => {
     const { container, root } = await renderApp();
     await makeAcceptedDecision(container);
-    await clickButton(container, 'Share Result');
-    expect(container.textContent).toContain('Copy/share fallback: Take a screenshot of this card.');
+    await clickButton(container, 'SHARE YOUR OVERTHINK');
+    expect(container.textContent).toContain('Receipt fallback: Take a screenshot of this card.');
     act(() => root.unmount());
   });
 
