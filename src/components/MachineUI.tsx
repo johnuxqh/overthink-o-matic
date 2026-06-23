@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { machineAssets } from '../assets/machineAssets';
 
 interface MachineShellProps {
   children: ReactNode;
@@ -10,48 +9,32 @@ interface MachineShellProps {
   homeReset?: boolean;
 }
 
-export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false, homeArt = false, homeReset = false }: MachineShellProps) {
-  const shellStyle = homeArt ? {
-    '--machine-art-side-left-image': `url(${machineAssets.pageSideLeft})`,
-    '--machine-art-side-right-image': `url(${machineAssets.pageSideRight})`,
-  } as Record<string, string> : undefined;
-
+export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false }: MachineShellProps) {
   return (
-    <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}${homeArt ? ' machine-art-shell' : ''}${homeReset ? ' machine-shell--home-reset' : ''}`} style={shellStyle} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
-      {homeArt && <><span className="machine-art-side-left" aria-hidden="true" /><span className="machine-art-side-right" aria-hidden="true" /></>}
-      <MachineMarquee statusLine={statusLine} art={homeArt} />
-      <div className="machine-operator-strip" aria-label="Machine operator status">
-        <span>OPERATOR: BARRY</span>
-        <span>{emergency ? 'CONTAINMENT ALERT' : 'CABINET ONLINE'}</span>
-      </div>
-      <MachineDisplay homeReset={homeReset}>{children}</MachineDisplay>
-      {controls && <MachineControlDeck art={homeArt}>{controls}</MachineControlDeck>}
+    <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}`} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
+      <MachineMarquee statusLine={statusLine} />
+      <MachineDisplay>{children}</MachineDisplay>
+      {controls && <MachineControlDeck>{controls}</MachineControlDeck>}
     </section>
   );
 }
 
-export function MachineMarquee({ statusLine = "Let's Underthink This", art = false }: { statusLine?: string; art?: boolean }) {
+export function MachineMarquee({ statusLine = "Let's Underthink This" }: { statusLine?: string; art?: boolean }) {
   return (
-    <div className={`machine-marquee${art ? ' machine-art-marquee' : ''}`.trim()}>
-      <div className="cabinet-lights" aria-hidden="true"><span /><span /><span /><span /></div>
+    <div className="machine-marquee">
       <p className="machine-marquee__kicker">Questionable Arcade Oracle</p>
-      <h1 id="app-title" className={art ? 'visually-hidden' : undefined}>OVERTHINK-O-MATIC 5000</h1>
-      {art && <img className="machine-art-marquee__image" src={machineAssets.logoHeading} alt="" aria-hidden="true" />}
-      {art && <p className="machine-marquee__tagline machine-art-marquee__tagline">Let's Underthink This</p>}
-      <div className={`machine-marquee__subtitle${art ? ' machine-art-powered' : ''}`.trim()} style={art ? { '--machine-art-powered-image': `url(${machineAssets.poweredByFrame})` } as Record<string, string> : undefined}>
-        {!art && <p className="machine-marquee__tagline">Let's Underthink This</p>}
-        <p className="machine-marquee__status">{statusLine}</p>
-      </div>
+      <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
+      <p className="machine-marquee__tagline">Let's Underthink This</p>
+      <p className="machine-marquee__status">{statusLine}</p>
     </div>
   );
 }
 
-export function MachineDisplay({ children, homeReset = false }: { children: ReactNode; homeReset?: boolean }) {
+export function MachineDisplay({ children }: { children: ReactNode; homeReset?: boolean }) {
   return (
-    <div className={`machine-display-frame${homeReset ? ' machine-display-frame--home-reset' : ''}`}>
-      <div className="machine-display-label" aria-hidden="true">PRIMARY DECISION DISPLAY</div>
-      <div className={`machine-display${homeReset ? ' machine-display--home-reset' : ''}`} role="region" aria-label="Machine display">{children}</div>
-    </div>
+    <main className="machine-display" role="region" aria-label="Machine display">
+      {children}
+    </main>
   );
 }
 
@@ -67,31 +50,20 @@ export function MachineWarning({ children, className = '' }: { children: ReactNo
   return <section className={`machine-warning ${className}`.trim()} role="status">{children}</section>;
 }
 
-export function BarryWindow({ children, art = false }: { children: ReactNode; art?: boolean }) {
-  return <div className={`barry-window${art ? ' machine-art-barry-window' : ''}`.trim()} style={art ? { '--machine-art-barry-window-image': `url(${machineAssets.barryWindowFrame})` } as Record<string, string> : undefined} aria-label="Barry operator window">{children}</div>;
+export function BarryWindow({ children }: { children: ReactNode; art?: boolean }) {
+  return <section className="barry-window" aria-label="Barry operator window">{children}</section>;
 }
 
 export function MachineLcdFrame({ children }: { children: ReactNode }) {
-  return (
-    <div
-      className="machine-art-lcd"
-      style={{
-        '--machine-art-lcd-top-image': `url(${machineAssets.inputLcdTop})`,
-        '--machine-art-lcd-middle-image': `url(${machineAssets.inputLcdMiddle})`,
-        '--machine-art-lcd-bottom-image': `url(${machineAssets.inputLcdBottom})`,
-      } as Record<string, string>}
-    >
-      <div className="machine-art-lcd__body">{children}</div>
-    </div>
-  );
+  return <div>{children}</div>;
 }
 
-export function MachineDecor({ kind }: { kind: 'gauge' }) {
-  return <img className={`machine-art-decor machine-art-decor--${kind}`} src={machineAssets.gauge} alt="" aria-hidden="true" />;
+export function MachineDecor() {
+  return null;
 }
 
 export function MachinePrimaryCta({ children, type = 'button', disabled = false }: { children: ReactNode; type?: 'button' | 'submit'; disabled?: boolean }) {
-  return <button className="machine-button machine-button--primary machine-art-primary-cta" style={{ '--machine-art-primary-cta-image': `url(${machineAssets.primaryCtaPink})` } as Record<string, string>} type={type} disabled={disabled}>{children}</button>;
+  return <button className="machine-button machine-button--primary" type={type} disabled={disabled}>{children}</button>;
 }
 
 export function BarryStatus({ children }: { children: ReactNode }) {
@@ -99,11 +71,11 @@ export function BarryStatus({ children }: { children: ReactNode }) {
 }
 
 export function BarryCommentary({ children }: { children: ReactNode }) {
-  return <div className="barry-commentary"><h3>Barry's Notes</h3>{children}</div>;
+  return <section className="barry-commentary"><h3>Barry's Notes</h3>{children}</section>;
 }
 
-export function MachineControlDeck({ children, art = false }: { children: ReactNode; art?: boolean }) {
-  return <nav className={`machine-control-deck${art ? ' machine-art-nav-frame' : ''}`.trim()} style={art ? { '--machine-art-nav-top-image': `url(${machineAssets.buttonPanelFrameTop})`, '--machine-art-nav-bottom-image': `url(${machineAssets.buttonPanelFrameBottom})`, '--machine-art-nav-left-image': `url(${machineAssets.buttonPanelFrameLeft})`, '--machine-art-nav-right-image': `url(${machineAssets.buttonPanelFrameRight})` } as Record<string, string> : undefined} aria-label="Machine controls">{children}</nav>;
+export function MachineControlDeck({ children }: { children: ReactNode; art?: boolean }) {
+  return <nav className="machine-control-deck" aria-label="Machine controls">{children}</nav>;
 }
 
 interface ProtocolModuleCardProps {
@@ -116,10 +88,9 @@ interface ProtocolModuleCardProps {
   onActivate: () => void;
 }
 
-export function ProtocolModuleCard({ name, description, emblem = '⚙', disabled = false, special = false, onActivate }: ProtocolModuleCardProps) {
+export function ProtocolModuleCard({ name, description, disabled = false, special = false, onActivate }: ProtocolModuleCardProps) {
   return (
     <article className={`protocol-module-card${special ? ' protocol-module-card--special' : ''}${disabled ? ' protocol-module-card--disabled' : ''}`}>
-      <div className="protocol-emblem" aria-hidden="true">{emblem}</div>
       <div>
         <p className="module-label">LOADABLE MACHINE MODULE</p>
         <h3>{name} Protocol</h3>
