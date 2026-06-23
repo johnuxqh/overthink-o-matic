@@ -12,22 +12,26 @@ interface MachineShellProps {
 export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false }: MachineShellProps) {
   return (
     <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}`} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
-      <MachineMarquee statusLine={statusLine} />
+      <MachineMarquee />
+      <MachinePoweredStrip>{statusLine}</MachinePoweredStrip>
       <MachineDisplay>{children}</MachineDisplay>
       {controls && <MachineControlDeck>{controls}</MachineControlDeck>}
     </section>
   );
 }
 
-export function MachineMarquee({ statusLine = "Let's Underthink This" }: { statusLine?: string; art?: boolean }) {
+export function MachineMarquee() {
   return (
-    <div className="machine-marquee">
+    <div className="machine-marquee" aria-label="Machine marquee">
       <p className="machine-marquee__kicker">Questionable Arcade Oracle</p>
       <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
       <p className="machine-marquee__tagline">Let's Underthink This</p>
-      <p className="machine-marquee__status">{statusLine}</p>
     </div>
   );
+}
+
+export function MachinePoweredStrip({ children }: { children: ReactNode }) {
+  return <div className="machine-powered-strip" aria-label="Powered-by strip">{children}</div>;
 }
 
 export function MachineDisplay({ children }: { children: ReactNode; homeReset?: boolean }) {
@@ -85,19 +89,29 @@ interface ProtocolModuleCardProps {
   emblem?: string;
   disabled?: boolean;
   special?: boolean;
+  expanded?: boolean;
+  onInfoToggle: () => void;
   onActivate: () => void;
 }
 
-export function ProtocolModuleCard({ name, description, disabled = false, special = false, onActivate }: ProtocolModuleCardProps) {
+export function ProtocolModuleCard({ name, description, disabled = false, special = false, expanded = false, onInfoToggle, onActivate }: ProtocolModuleCardProps) {
+  const detailsId = `protocol-details-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
   return (
     <article className={`protocol-module-card${special ? ' protocol-module-card--special' : ''}${disabled ? ' protocol-module-card--disabled' : ''}`}>
-      <div>
-        <p className="module-label">LOADABLE MACHINE MODULE</p>
+      <div className="protocol-module-card__summary">
         <h3>{name} Protocol</h3>
-        <p>{description}</p>
-        <p className="protocol-eligibility">{disabled ? 'Module unavailable for these options.' : 'Module eligible and loaded.'}</p>
+        <div className="protocol-module-card__actions">
+          <button className="machine-button machine-button--secondary protocol-info-button" type="button" onClick={onInfoToggle} aria-expanded={expanded} aria-controls={detailsId}>i</button>
+          <button className={special ? 'machine-button machine-button--primary' : 'machine-button machine-button--protocol'} type="button" onClick={onActivate} disabled={disabled}>RUN {name}</button>
+        </div>
       </div>
-      <button className={special ? 'machine-button machine-button--primary' : 'machine-button machine-button--protocol'} type="button" onClick={onActivate} disabled={disabled}>RUN {name}</button>
+      {expanded && (
+        <div id={detailsId} className="protocol-module-card__details">
+          <p className="module-label">LOADABLE MACHINE MODULE</p>
+          <p>{description}</p>
+          <p className="protocol-eligibility">{disabled ? 'Module unavailable for these options.' : 'Module eligible and loaded.'}</p>
+        </div>
+      )}
     </article>
   );
 }
