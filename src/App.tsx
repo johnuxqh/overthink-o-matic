@@ -9,7 +9,7 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
-import { BarryCommentary, BarryStatus, BarryWindow, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
+import { BarryStatus, BarryWindow, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin', 'about-machine'] as const;
@@ -428,14 +428,35 @@ export function App() {
         )}
 
         {currentScreen === 'result' && latestResult && decision && (
-          <section>
-            <div className="result-sign"><h2>THE MACHINE SAYS...</h2><p className="result-answer">{latestResult.selectedOption}</p></div>
-            <MachineReadout><span>PROTOCOL:</span><span className="readout-value">{latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId}</span><span className="readout-detail">STATUS: OUTPUT STABLE</span></MachineReadout>
-            <BarryCommentary><p>{latestResult.machineQuote}</p></BarryCommentary>
-            <MachineReadout><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
-            <div className="attempt-spiral"><p className="module-label">MACHINE AUDIT LOG</p><h3>OVERTHINK SPIRAL</h3>{decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}{decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}{decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}<p>{getEscalationMessage(decision)}</p></div>
-            <button className="machine-button machine-button--success" type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
-            <button className="machine-button machine-button--protocol" type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
+          <section className="result-master-blueprint" aria-label="Machine result">
+            <section className="result-master-blueprint__hero">
+              <h2>THE MACHINE SAYS...</h2>
+              <p className="result-master-blueprint__answer">{latestResult.selectedOption}</p>
+            </section>
+
+            <section className="result-master-blueprint__details" aria-label="Result details">
+              <p><span>PROTOCOL:</span> {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId}</p>
+              <p><span>STATUS:</span> OUTPUT STABLE</p>
+              <h3>Barry's Notes</h3>
+              <p>{latestResult.machineQuote}</p>
+              <p><span>COMMITMENT LEVEL:</span> {getBarryCommitment(decision).stage}</p>
+              <p><span>ATTEMPTS REMAINING:</span> {attemptsRemaining}</p>
+              <p className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</p>
+            </section>
+
+            <section className="result-master-blueprint__spiral" aria-label="Machine audit log">
+              <p className="module-label">MACHINE AUDIT LOG</p>
+              <h3>OVERTHINK SPIRAL</h3>
+              {decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}
+              {decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}
+              {decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}
+              <p>{getEscalationMessage(decision)}</p>
+            </section>
+
+            <section className="result-master-blueprint__actions" aria-label="Result actions">
+              <button className="machine-button machine-button--success" type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
+              <button className="machine-button machine-button--protocol" type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
+            </section>
           </section>
         )}
 
