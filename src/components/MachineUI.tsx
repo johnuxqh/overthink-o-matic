@@ -36,8 +36,9 @@ export function MachineMarquee({ statusLine = "Let's Underthink This", art = fal
       <p className="machine-marquee__kicker">Questionable Arcade Oracle</p>
       <h1 id="app-title" className={art ? 'visually-hidden' : undefined}>OVERTHINK-O-MATIC 5000</h1>
       {art && <img className="machine-art-marquee__image" src={machineAssets.logoHeading} alt="" aria-hidden="true" />}
+      {art && <p className="machine-marquee__tagline machine-art-marquee__tagline">Let's Underthink This</p>}
       <div className={`machine-marquee__subtitle${art ? ' machine-art-powered' : ''}`.trim()} style={art ? { '--machine-art-powered-image': `url(${machineAssets.poweredByFrame})` } as Record<string, string> : undefined}>
-        <p className="machine-marquee__tagline">Let's Underthink This</p>
+        {!art && <p className="machine-marquee__tagline">Let's Underthink This</p>}
         <p className="machine-marquee__status">{statusLine}</p>
       </div>
     </div>
