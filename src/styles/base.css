@@ -121,12 +121,6 @@ a:focus-visible {
   font-weight: 700;
 }
 .machine-powered-strip,
-.home-screen-reset,
-.home-screen-reset__barry-window,
-.home-screen-reset__lcd,
-.home-screen-reset__lcd-header,
-.home-screen-reset__notes,
-.home-screen-reset__input,
 .protocol-module-card__details {
   border: 1px solid #999;
   padding: 12px;
@@ -140,28 +134,61 @@ a:focus-visible {
   grid-template-columns: 1fr;
 }
 
-.home-screen-reset {
+.home-master-blueprint {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
-.home-screen-reset__barry-window,
-.home-screen-reset__lcd,
-.home-screen-reset__lcd-header,
-.home-screen-reset__notes,
-.home-screen-reset__input {
+.home-master-blueprint__operator,
+.home-master-blueprint__display {
   display: grid;
   gap: 8px;
+  border: 1px solid #999;
+  padding: 10px;
 }
 
-.home-screen-reset__lcd-header > *,
-.home-screen-reset__notes > * {
+.home-master-blueprint__operator > *,
+.home-master-blueprint__display > *,
+.home-master-blueprint__notes > * {
   margin: 0;
 }
 
-.home-screen-reset__cta {
+.home-master-blueprint__operator p:first-child,
+.home-master-blueprint__display-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.home-master-blueprint__display h2 {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.home-master-blueprint__notes {
+  display: grid;
+  gap: 4px;
+}
+
+.home-master-blueprint__notes h3 {
+  font-size: 1rem;
+}
+
+.home-master-blueprint__input {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.home-master-blueprint__input textarea {
+  min-height: 96px;
+  font-weight: 400;
+}
+
+.home-master-blueprint__cta {
   width: 100%;
-  min-height: 52px;
+  min-height: 48px;
+  font-weight: 700;
 }
 
 .protocol-grid {
