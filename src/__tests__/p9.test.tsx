@@ -17,7 +17,7 @@ async function renderApp() {
 }
 
 function button(container: HTMLElement, label: string) {
-  const found = Array.from(container.querySelectorAll('button')).find((candidate) => candidate.textContent === label || candidate.textContent?.startsWith(label));
+  const found = Array.from(container.querySelectorAll('button')).find((candidate) => candidate.textContent === label || candidate.textContent?.startsWith(label) || candidate.getAttribute('aria-label') === label || candidate.getAttribute('aria-label')?.startsWith(label));
   if (!found) throw new Error(`Button not found: ${label}`);
   return found;
 }
@@ -34,7 +34,7 @@ async function waitForThinkingToFinish() {
 }
 
 async function runCoinTossProtocol(container: HTMLElement) {
-  await clickButton(container, 'RUN Coin Toss');
+  await clickButton(container, 'Run Coin Toss protocol');
   expect(container.textContent).toContain('BARRY IS THINKING');
   await waitForThinkingToFinish();
 }

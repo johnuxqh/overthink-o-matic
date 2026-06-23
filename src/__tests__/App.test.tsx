@@ -21,7 +21,7 @@ async function renderApp() {
 }
 
 function button(container: HTMLElement, label: string) {
-  const found = Array.from(container.querySelectorAll('button')).find((candidate) => candidate.textContent === label || candidate.textContent?.startsWith(label));
+  const found = Array.from(container.querySelectorAll('button')).find((candidate) => candidate.textContent === label || candidate.textContent?.startsWith(label) || candidate.getAttribute('aria-label') === label || candidate.getAttribute('aria-label')?.startsWith(label));
   if (!found) throw new Error(`Button not found: ${label}`);
   return found;
 }
@@ -40,7 +40,7 @@ async function waitForThinkingToFinish() {
 }
 
 async function runCoinTossProtocol(container: HTMLElement) {
-  await clickButton(container, 'RUN Coin Toss');
+  await clickButton(container, 'Run Coin Toss protocol');
   expect(container.textContent).toContain('BARRY IS THINKING');
   await waitForThinkingToFinish();
 }
@@ -292,11 +292,15 @@ describe('P6 text user journey', () => {
     await enterProblem(container);
     await lockTwoOptions(container);
 
-    expect(button(container, 'RUN Coin Toss').getAttribute('disabled')).toBe(null);
-    expect(container.textContent).toContain('Coin Toss Protocol');
+    expect(button(container, 'Run Coin Toss protocol').getAttribute('disabled')).toBe(null);
+    expect(container.textContent).toContain('Coin Toss');
+    expect(container.textContent).not.toContain('A tiny binary oracle with pocket change energy.');
     expect(container.textContent).not.toContain('Module eligible and loaded.');
-    await clickButton(container, 'i');
+    await clickButton(container, 'Show Coin Toss protocol details');
+    expect(container.textContent).toContain('A tiny binary oracle with pocket change energy.');
     expect(container.textContent).toContain('Module eligible and loaded.');
+    await clickButton(container, 'Hide Coin Toss protocol details');
+    expect(container.textContent).not.toContain('A tiny binary oracle with pocket change energy.');
     act(() => root.unmount());
   });
 
@@ -315,7 +319,7 @@ describe('P6 text user journey', () => {
 
     expect(container.textContent).toContain('Hmm. This feels familiar.');
     expect(container.textContent).toContain('The last decision landed on: Soup.');
-    expect(container.textContent).toContain('RUN Coin Toss');
+    expect(button(container, 'Run Coin Toss protocol')).not.toBe(null);
     await runCoinTossProtocol(container);
     expect(container.textContent).toContain('THE MACHINE SAYS...');
     act(() => root.unmount());

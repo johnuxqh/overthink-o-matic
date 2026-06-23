@@ -94,16 +94,15 @@ interface ProtocolModuleCardProps {
   onActivate: () => void;
 }
 
-export function ProtocolModuleCard({ name, description, disabled = false, special = false, expanded = false, onInfoToggle, onActivate }: ProtocolModuleCardProps) {
+export function ProtocolModuleCard({ name, description, emblem, disabled = false, special = false, expanded = false, onInfoToggle, onActivate }: ProtocolModuleCardProps) {
   const detailsId = `protocol-details-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
   return (
     <article className={`protocol-module-card${special ? ' protocol-module-card--special' : ''}${disabled ? ' protocol-module-card--disabled' : ''}`}>
       <div className="protocol-module-card__summary">
-        <h3>{name} Protocol</h3>
-        <div className="protocol-module-card__actions">
-          <button className="machine-button machine-button--secondary protocol-info-button" type="button" onClick={onInfoToggle} aria-expanded={expanded} aria-controls={detailsId}>i</button>
-          <button className={special ? 'machine-button machine-button--primary' : 'machine-button machine-button--protocol'} type="button" onClick={onActivate} disabled={disabled}>RUN {name}</button>
-        </div>
+        {emblem && <span className="protocol-emblem" aria-hidden="true">{emblem}</span>}
+        <h3>{name}</h3>
+        <button className="machine-button machine-button--secondary protocol-info-button" type="button" onClick={onInfoToggle} aria-expanded={expanded} aria-controls={detailsId} aria-label={`${expanded ? 'Hide' : 'Show'} ${name} protocol details`}>i</button>
+        <button className={special ? 'machine-button machine-button--primary protocol-run-button' : 'machine-button machine-button--protocol protocol-run-button'} type="button" onClick={onActivate} disabled={disabled} aria-label={`Run ${name} protocol`}>RUN</button>
       </div>
       {expanded && (
         <div id={detailsId} className="protocol-module-card__details">
