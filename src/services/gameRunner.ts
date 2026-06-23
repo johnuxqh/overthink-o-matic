@@ -1,11 +1,11 @@
 import { AppState, DecisionStatus, GameId, GameResult, GameRun } from '../domain/model';
 import { getGameById, getEligibleGames } from '../games/gameRegistry';
-import { getCreditsRemaining, recordGameAttempt, triggerSuddenDeathIfNeeded } from './overthinkingEngine';
+import { getAttemptsRemaining, recordGameAttempt, triggerBarryTakeoverIfNeeded } from './overthinkingEngine';
 
 export interface RunGameResult {
   state: AppState;
   result: GameResult;
-  suddenDeathTriggered: boolean;
+  barryTakeoverTriggered: boolean;
 }
 
 function toGameRun(result: GameResult): GameRun {
@@ -49,18 +49,18 @@ export function runGame(state: AppState, gameId: GameId, now: Date): RunGameResu
     throw new Error('That game is not eligible for this option count. The machine is being fussy but fair.');
   }
 
-  if (getCreditsRemaining(decision) <= 0) {
-    throw new Error('No decision credits remain. The machine is cutting you off affectionately.');
+  if (getAttemptsRemaining(decision) <= 0) {
+    throw new Error('No decision attempts remain. Barry is cutting you off affectionately.');
   }
 
   const result = game.run(decision, now);
   const stateAfterAttempt = recordGameAttempt({ ...state, currentDecision: decision }, toGameRun(result));
-  const stateAfterSuddenDeath = triggerSuddenDeathIfNeeded(stateAfterAttempt, now);
+  const stateAfterTakeover = triggerBarryTakeoverIfNeeded(stateAfterAttempt, now);
 
   return {
-    state: stateAfterSuddenDeath,
+    state: stateAfterTakeover,
     result,
-    suddenDeathTriggered: stateAfterAttempt.currentDecision?.status !== DecisionStatus.Lockdown && stateAfterSuddenDeath.currentDecision?.status === DecisionStatus.Lockdown,
+    barryTakeoverTriggered: stateAfterAttempt.currentDecision?.status !== DecisionStatus.Lockdown && stateAfterTakeover.currentDecision?.status === DecisionStatus.Lockdown,
   };
 }
 

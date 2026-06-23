@@ -1,15 +1,14 @@
 import { createDecisionOption, createLockedDecision } from '../domain/helpers';
 import { AppState, DecisionStatus, GameId, GameRun, LOCKDOWN_DURATION_MS } from '../domain/model';
 import {
-  getCreditsRemaining,
+  getAttemptsRemaining,
   getEscalationMessage,
   getLockdownMessage,
   getLockdownRemainingMs,
   recordGameAttempt,
-  runSuddenDeath,
-  shouldTriggerSuddenDeath,
+  shouldBarryTakeControl,
   startLockdown,
-  triggerSuddenDeathIfNeeded,
+  triggerBarryTakeoverIfNeeded,
 } from '../services/overthinkingEngine';
 
 const now = new Date('2026-06-22T12:00:00.000Z');
@@ -33,23 +32,15 @@ function fakeRun(index: number): GameRun {
 
 describe('P4 overthinking engine', () => {
   it('reports 0 attempts as 5 credits', () => {
-    expect(getCreditsRemaining(decisionWithAttempts(0))).toBe(5);
+    expect(getAttemptsRemaining(decisionWithAttempts(0))).toBe(5);
   });
 
   it('reports 4 attempts as 1 credit', () => {
-    expect(getCreditsRemaining(decisionWithAttempts(4))).toBe(1);
+    expect(getAttemptsRemaining(decisionWithAttempts(4))).toBe(1);
   });
 
-  it('requires sudden death at 5 attempts', () => {
-    expect(shouldTriggerSuddenDeath(decisionWithAttempts(5))).toBe(true);
-  });
-
-  it('picks sudden death from existing options', () => {
-    const decision = decisionWithAttempts(5);
-    const result = runSuddenDeath(decision, now);
-
-    expect(decision.options.map((option) => option.id)).toContain(result.selectedOptionId);
-    expect(decision.options.map((option) => option.text)).toContain(result.selectedOptionText);
+  it('requires Barry takeover at 5 attempts', () => {
+    expect(shouldBarryTakeControl(decisionWithAttempts(5))).toBe(true);
   });
 
   it('starts a 5 minute lockdown', () => {
@@ -72,7 +63,7 @@ describe('P4 overthinking engine', () => {
   it('returns safe playful escalation messages', () => {
     const message = getEscalationMessage(decisionWithAttempts(4));
 
-    expect(message).toBe('Overthinking levels are approaching silly.');
+    expect(message).toBe('Barry is obsessed. Containment is monitoring enthusiasm levels.');
     expect(message.toLowerCase().includes('panic')).toBe(false);
   });
 
@@ -85,10 +76,10 @@ describe('P4 overthinking engine', () => {
     expect(message.toLowerCase().includes('doom')).toBe(false);
   });
 
-  it('records game attempts and triggers sudden death at attempt 5', () => {
+  it('records game attempts and triggers Barry takeover at attempt 5', () => {
     let state: AppState = { currentDecision: decisionWithAttempts(4), previousDecisions: [] };
     state = recordGameAttempt(state, fakeRun(4));
-    state = triggerSuddenDeathIfNeeded(state, now);
+    state = triggerBarryTakeoverIfNeeded(state, now);
 
     expect(state.currentDecision?.status).toBe(DecisionStatus.Lockdown);
     expect(Boolean(state.currentDecision?.finalAnswer)).toBe(true);

@@ -153,5 +153,5 @@ export {
   acceptDecisionResult,
   recordGameAttempt,
   rejectDecisionResult,
-  triggerSuddenDeathIfNeeded,
+  triggerBarryTakeoverIfNeeded,
 } from '../services/overthinkingEngine';

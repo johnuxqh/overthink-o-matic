@@ -1,27 +1,27 @@
 import {
   AppState,
+  BarryEscalationStage,
   DecisionEventType,
   DecisionRecord,
   DecisionStatus,
-  GameId,
   GameRun,
   LOCKDOWN_DURATION_MS,
-  MAX_DECISION_CREDITS,
+  MAX_DECISION_ATTEMPTS,
 } from '../domain/model';
 
-export type OverthinkingLevel = 'calm' | 'warm-up' | 'suspicion' | 'warning' | 'red-zone' | 'sudden-death';
+export type OverthinkingLevel = 'calm' | 'helpful' | 'determined' | 'concerned' | 'obsessed' | 'unhinged';
 
 const ESCALATION_MESSAGES: Record<OverthinkingLevel, string> = {
-  calm: 'The machine is calm. Suspiciously reasonable, honestly.',
-  'warm-up': 'Interesting. We appear to be collecting answers now.',
-  suspicion: 'We have discussed this.',
-  warning: 'The machine is starting to suspect shenanigans.',
-  'red-zone': 'Overthinking levels are approaching silly.',
-  'sudden-death': 'Sudden Death has entered the chat.',
+  calm: 'Barry is ready to help. Suspiciously confident, honestly.',
+  helpful: 'Barry is helpful and confident. This is probably fine.',
+  determined: 'Barry is determined now. The badger has focus.',
+  concerned: 'Barry is concerned you are ignoring perfectly good machinery.',
+  obsessed: 'Barry is obsessed. Containment is monitoring enthusiasm levels.',
+  unhinged: 'BARRY HAS TAKEN CONTROL.',
 };
 
 const LOCKDOWN_MESSAGES = [
-  'Decision machine cooling down...',
+  'Barry is cooling down.',
   'The answer is still the answer.',
   'No new evidence has been discovered.',
   'Nice try.',
@@ -34,7 +34,7 @@ function createId(prefix: string): string {
 }
 
 function clampAttempts(attempts: number): number {
-  return Math.min(MAX_DECISION_CREDITS, Math.max(0, attempts));
+  return Math.min(MAX_DECISION_ATTEMPTS, Math.max(0, attempts));
 }
 
 function withCredits(decision: DecisionRecord): DecisionRecord {
@@ -42,10 +42,23 @@ function withCredits(decision: DecisionRecord): DecisionRecord {
   return {
     ...decision,
     credits: {
-      total: MAX_DECISION_CREDITS,
+      total: MAX_DECISION_ATTEMPTS,
       used,
-      remaining: getCreditsRemaining(decision),
+      remaining: getAttemptsRemaining(decision),
     },
+    barryCommitment: getBarryCommitment(decision),
+  };
+}
+
+export function getBarryCommitment(decision: DecisionRecord) {
+  const currentAttempt = getAttemptsUsed(decision);
+  const stage: BarryEscalationStage = currentAttempt >= 5 ? 'unhinged' : currentAttempt === 4 ? 'obsessed' : currentAttempt === 3 ? 'concerned' : currentAttempt === 2 ? 'determined' : 'helpful';
+  return {
+    maxAttempts: 5 as typeof MAX_DECISION_ATTEMPTS,
+    currentAttempt,
+    remainingAttempts: getAttemptsRemaining(decision),
+    stage,
+    hasTakenControl: Boolean(decision.takeoverAt || currentAttempt >= MAX_DECISION_ATTEMPTS),
   };
 }
 
@@ -53,34 +66,16 @@ export function getAttemptsUsed(decision: DecisionRecord): number {
   return clampAttempts(decision.gamesPlayed.length);
 }
 
-export function getCreditsRemaining(decision: DecisionRecord): number {
-  return Math.max(0, MAX_DECISION_CREDITS - getAttemptsUsed(decision));
+export function getAttemptsRemaining(decision: DecisionRecord): number {
+  return Math.max(0, MAX_DECISION_ATTEMPTS - getAttemptsUsed(decision));
 }
 
-export function hasCreditsRemaining(decision: DecisionRecord): boolean {
-  return getCreditsRemaining(decision) > 0;
+export function hasAttemptsRemaining(decision: DecisionRecord): boolean {
+  return getAttemptsRemaining(decision) > 0;
 }
 
-export function shouldTriggerSuddenDeath(decision: DecisionRecord): boolean {
-  return decision.status === DecisionStatus.Locked && getAttemptsUsed(decision) >= MAX_DECISION_CREDITS;
-}
-
-export function runSuddenDeath(decision: DecisionRecord, now: Date): GameRun {
-  const options = decision.options.filter((option) => option.text.trim().length > 0);
-  if (options.length === 0) {
-    throw new Error('Sudden Death needs at least one option to choose from.');
-  }
-
-  const selectedOption = options[now.getTime() % options.length];
-
-  return {
-    id: createId('game_run'),
-    gameId: GameId.SuddenDeath,
-    selectedOptionId: selectedOption.id,
-    selectedOptionText: selectedOption.text,
-    machineQuote: 'The tiny decision goblin has spoken, gently but firmly.',
-    createdAt: now.toISOString(),
-  };
+export function shouldBarryTakeControl(decision: DecisionRecord): boolean {
+  return decision.status === DecisionStatus.Locked && getAttemptsUsed(decision) >= MAX_DECISION_ATTEMPTS;
 }
 
 export function startLockdown(decision: DecisionRecord, finalAnswer: string, now: Date, finalMachineQuote?: string): DecisionRecord {
@@ -111,7 +106,7 @@ export function startLockdown(decision: DecisionRecord, finalAnswer: string, now
         id: createId('event'),
         type: DecisionEventType.LockdownStarted,
         createdAt: startedAt,
-        message: 'Final answer accepted. The machine is cooling down.',
+        message: 'Barry has taken control. Recovery is underway.',
       },
     ],
     updatedAt: startedAt,
@@ -130,11 +125,11 @@ export function getLockdownRemainingMs(decision: DecisionRecord, now: Date): num
 export function getOverthinkingLevel(decision: DecisionRecord): OverthinkingLevel {
   const attempts = getAttemptsUsed(decision);
   if (attempts <= 0) return 'calm';
-  if (attempts === 1) return 'warm-up';
-  if (attempts === 2) return 'suspicion';
-  if (attempts === 3) return 'warning';
-  if (attempts === 4) return 'red-zone';
-  return 'sudden-death';
+  if (attempts === 1) return 'helpful';
+  if (attempts === 2) return 'determined';
+  if (attempts === 3) return 'concerned';
+  if (attempts === 4) return 'obsessed';
+  return 'unhinged';
 }
 
 export function getEscalationMessage(decision: DecisionRecord): string {
@@ -149,13 +144,15 @@ export function getLockdownMessage(decision: DecisionRecord, now: Date): string 
 
 export function recordGameAttempt(state: AppState, gameRun: GameRun): AppState {
   const decision = state.currentDecision;
-  if (!decision || decision.status !== DecisionStatus.Locked || !hasCreditsRemaining(decision)) {
+  if (!decision || decision.status !== DecisionStatus.Locked || !hasAttemptsRemaining(decision)) {
     return state;
   }
 
   const updatedDecision = withCredits({
     ...decision,
     gamesPlayed: [...decision.gamesPlayed, gameRun],
+    currentResult: gameRun,
+    selectedProtocolId: gameRun.gameId,
     events: [
       ...decision.events,
       {
@@ -187,6 +184,7 @@ export function completeDecision(decision: DecisionRecord, finalAnswer: string, 
     finalAnswer,
     finalisedAt: completedAt,
     finalMachineQuote: machineQuote,
+    acceptedResultId: decision.currentResult?.id ?? decision.gamesPlayed[decision.gamesPlayed.length - 1]?.id,
     completedAt,
     events: [
       ...decision.events,
@@ -238,32 +236,41 @@ export function rejectDecisionResult(state: AppState): AppState {
   };
 }
 
-export function triggerSuddenDeathIfNeeded(state: AppState, now: Date): AppState {
+export function triggerBarryTakeoverIfNeeded(state: AppState, now: Date): AppState {
   const decision = state.currentDecision;
-  if (!decision || !shouldTriggerSuddenDeath(decision)) {
+  if (!decision || !shouldBarryTakeControl(decision)) {
     return state;
   }
 
-  const suddenDeathRun = runSuddenDeath(decision, now);
-  const withSuddenDeathEvent: DecisionRecord = {
+  const finalRun = decision.gamesPlayed[decision.gamesPlayed.length - 1];
+  if (!finalRun) {
+    return state;
+  }
+
+  const takeoverAt = now.toISOString();
+  const withTakeoverEvent: DecisionRecord = withCredits({
     ...decision,
-    finalOptionId: suddenDeathRun.selectedOptionId,
-    finalAnswer: suddenDeathRun.selectedOptionText,
+    finalOptionId: finalRun.selectedOptionId,
+    finalAnswer: finalRun.selectedOptionText,
+    finalMachineQuote: finalRun.machineQuote,
+    currentResult: finalRun,
+    selectedProtocolId: finalRun.gameId,
+    takeoverAt,
     events: [
       ...decision.events,
       {
         id: createId('event'),
-        type: DecisionEventType.SuddenDeathTriggered,
-        createdAt: now.toISOString(),
-        gameRunId: suddenDeathRun.id,
+        type: DecisionEventType.BarryTookControl,
+        createdAt: takeoverAt,
+        gameRunId: finalRun.id,
         message: getEscalationMessage(decision),
       },
     ],
-    updatedAt: now.toISOString(),
-  };
+    updatedAt: takeoverAt,
+  });
 
   return {
     ...state,
-    currentDecision: startLockdown(withSuddenDeathEvent, suddenDeathRun.selectedOptionText, now, suddenDeathRun.machineQuote),
+    currentDecision: startLockdown(withTakeoverEvent, finalRun.selectedOptionText, now, finalRun.machineQuote),
   };
 }
