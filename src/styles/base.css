@@ -118,3 +118,15 @@ form, section[aria-label="Admin Test Controls"], section[aria-label="Admin QA Ru
 @media (max-width: 380px) { .machine-control-deck { grid-template-columns: 1fr; } }
 @media (min-width: 640px) { .machine-shell { border-radius: 1.6rem; } }
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* PASS 5.2 mobile usability cleanup */
+.admin-qa-deck { display: grid; gap: .7rem; border: 2px solid rgba(38,247,255,.58); border-radius: .75rem; padding: .75rem; background: rgba(3,2,10,.36); }
+.protocol-grid { gap: .6rem; }
+.protocol-module-card { gap: .45rem .55rem; padding: .65rem .7rem; border-left-width: 6px; }
+.protocol-module-card h3 { margin-bottom: .15rem; font-size: 1.02rem; line-height: 1.05; }
+.protocol-module-card p { line-height: 1.3; }
+.protocol-module-card .module-label, .protocol-eligibility { margin: .1rem 0; font-size: .62rem; letter-spacing: .08em; }
+.protocol-module-card button { min-height: var(--touch-target-min); padding-block: .65rem; }
+.protocol-emblem { width: 2.35rem; height: 2.35rem; font-size: 1.15rem; }
+.protocol-module-card::after { right: .55rem; top: .35rem; font-size: .56rem; }
+@media (min-width: 640px) { .machine-control-deck { grid-template-columns: repeat(4, 1fr); } .protocol-module-card { grid-template-columns: auto 1fr auto; padding: .75rem .85rem; } }

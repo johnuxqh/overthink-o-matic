@@ -12,7 +12,7 @@ import { getEligibleGames, runGame } from './services/gameRunner';
 import { BarryCommentary, BarryStatus, BarryWindow, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
-export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin-qa-runner', 'about-machine'] as const;
+export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin', 'about-machine'] as const;
 export type AppScreen = (typeof screens)[number];
 
 const storageService = createLocalStorageService();
@@ -80,10 +80,10 @@ export function App() {
   const adminTestMode = isAdminTestMode(appState.user);
 
   useEffect(() => {
-    if (activeLockdown && !['barry-takeover', 'lockdown', 'share-result', 'previous-overthinks'].includes(currentScreen)) {
+    if (activeLockdown && !['barry-takeover', 'lockdown', 'share-result', 'previous-overthinks', 'about-machine', ...(adminTestMode ? ['admin' as AppScreen] : [])].includes(currentScreen)) {
       setCurrentScreen('lockdown');
     }
-  }, [activeLockdown, currentScreen]);
+  }, [activeLockdown, adminTestMode, currentScreen]);
 
 
   useEffect(() => {
@@ -292,41 +292,36 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} controls={currentScreen !== 'admin-qa-runner' && currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine="Powered by Barry the Honey Badger 🐾" emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
+          {adminTestMode && <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('admin')}>ADMIN</button>}
         </>) : undefined}>
         {error && <p className="error-alert" role="alert">⚠ {error}</p>}
 
-        {adminTestMode && currentScreen !== 'share-result' && (
+        {adminTestMode && currentScreen === 'admin' && (
           <section className="admin-panel" aria-label="Admin Test Controls">
-            <h2>Admin Test Controls</h2>
+            <h2>ADMIN</h2>
+            <p>Testing controls. Hidden from normal operators.</p>
             <button type="button" onClick={handleClearActiveDecision}>Clear active decision / lockdown</button>
-            <button type="button" onClick={handleClearPreviousOverthinks}>Clear previous overthinks</button>
+            <button type="button" onClick={handleClearPreviousOverthinks}>Clear Previous Overthinks</button>
             <button type="button" onClick={handleClearAllAppData}>Clear all local app data</button>
-            <button type="button" onClick={() => setCurrentScreen('admin-qa-runner')}>Admin QA Runner</button>
-            <button type="button" onClick={() => setCurrentScreen('about-machine')}>About The Machine</button>
-          </section>
-        )}
-
-
-        {adminTestMode && currentScreen === 'admin-qa-runner' && (
-          <section className="admin-panel" aria-label="Admin QA Runner">
-            <h2>Admin QA Runner</h2>
-            <button type="button" onClick={handleRunAdminQaSimulation}>Run Full QA Simulation</button>
-            <button type="button" onClick={handleResetAdminQaData}>Reset Test Data</button>
-            {adminQaResults.length > 0 && (
-              <div>
-                <p>Test name | Pass/fail | Notes | Failed state/branch</p>
-                <ul>{adminQaResults.map((result) => (
-                  <li key={result.testName}>
-                    {result.testName} | {result.passed ? 'PASS' : 'FAIL'} | {result.notes} | {result.failedBranch ?? ''}
-                  </li>
-                ))}</ul>
-              </div>
-            )}
-            <button type="button" onClick={() => setCurrentScreen('home')}>MACHINE</button>
+            <div className="admin-qa-deck" aria-label="Admin QA Runner">
+              <h3>Admin QA Runner</h3>
+              <button type="button" onClick={handleRunAdminQaSimulation}>Run Full QA Simulation</button>
+              <button type="button" onClick={handleResetAdminQaData}>Reset Test Data</button>
+              {adminQaResults.length > 0 && (
+                <div>
+                  <p>Test name | Pass/fail | Notes | Failed state/branch</p>
+                  <ul>{adminQaResults.map((result) => (
+                    <li key={result.testName}>
+                      {result.testName} | {result.passed ? 'PASS' : 'FAIL'} | {result.notes} | {result.failedBranch ?? ''}
+                    </li>
+                  ))}</ul>
+                </div>
+              )}
+            </div>
           </section>
         )}
 

@@ -83,14 +83,19 @@ describe('P6 text user journey', () => {
     const { container, root } = await renderApp();
     await setupUser(container, 'Sam');
     expect(container.textContent).not.toContain('Admin Test Controls');
+    expect(container.textContent).not.toContain('ADMIN');
     act(() => root.unmount());
   });
 
-  it('admin controls are visible for adminjohn', async () => {
+  it('admin button only appears for adminjohn and opens admin controls', async () => {
     const { container, root } = await renderApp();
     await setupUser(container, ' Admin John ');
-    expect(container.textContent).toContain('Admin Test Controls');
+    expect(container.textContent).toContain('ADMIN');
+    expect(container.textContent).not.toContain('Clear active decision / lockdown');
+    await clickButton(container, 'ADMIN');
+    expect(container.querySelector('[aria-label="Admin Test Controls"]')).not.toBe(null);
     expect(container.textContent).toContain('Clear active decision / lockdown');
+    expect(container.textContent).toContain('Admin QA Runner');
     act(() => root.unmount());
   });
 
@@ -103,6 +108,7 @@ describe('P6 text user journey', () => {
 
     const { container, root } = await renderApp();
     expect(container.textContent).toContain('DECISION LOCKED');
+    await clickButton(container, 'ADMIN');
     await clickButton(container, 'Clear active decision / lockdown');
 
     expect(localStorage.getItem('overthink-o-matic:current-decision')).toBe(null);
@@ -119,6 +125,7 @@ describe('P6 text user journey', () => {
     localStorage.setItem('overthink-o-matic:previous-decisions', JSON.stringify([previous]));
 
     const { container, root } = await renderApp();
+    await clickButton(container, 'ADMIN');
     await clickButton(container, 'Clear all local app data');
 
     expect(localStorage.getItem('overthink-o-matic:user-profile')).toBe(null);
@@ -246,6 +253,50 @@ describe('P6 text user journey', () => {
     act(() => root.unmount());
   });
 
+
+
+
+  it('about machine can be opened during lockdown while machine remains blocked', async () => {
+    const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    decision.status = DecisionStatus.Lockdown;
+    decision.lockdown = { startedAt: new Date().toISOString(), endsAt: new Date(Date.now() + 300000).toISOString(), finalOptionId: decision.options[0].id, finalAnswer: 'Pizza', rotatingMessageIndex: 0 };
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex')));
+    localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
+    const { container, root } = await renderApp();
+
+    await clickButton(container, 'ABOUT THE MACHINE');
+    expect(container.textContent).toContain('The OVERTHINK-O-MATIC 5000 was discovered behind an arcade in 1987.');
+    await clickButton(container, 'MACHINE');
+    expect(container.textContent).toContain('DECISION LOCKED');
+    expect(container.textContent).not.toContain('STATE YOUR OVERTHINK');
+    act(() => root.unmount());
+  });
+
+  it('admin controls are accessible from admin deck during lockdown for admin mode', async () => {
+    const decision = createLockedDecision('Pick dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Tacos')]);
+    decision.status = DecisionStatus.Lockdown;
+    decision.lockdown = { startedAt: new Date().toISOString(), endsAt: new Date(Date.now() + 300000).toISOString(), finalOptionId: decision.options[0].id, finalAnswer: 'Pizza', rotatingMessageIndex: 0 };
+    localStorage.setItem('overthink-o-matic:user-profile', JSON.stringify(createUserSetup('Alex', 'adminjohn')));
+    localStorage.setItem('overthink-o-matic:current-decision', JSON.stringify(decision));
+    const { container, root } = await renderApp();
+
+    await clickButton(container, 'ADMIN');
+    expect(container.textContent).toContain('Clear active decision / lockdown');
+    expect(container.textContent).toContain('Admin QA Runner');
+    act(() => root.unmount());
+  });
+
+  it('protocol modules keep run buttons and accessible labels after compacting', async () => {
+    const { container, root } = await renderApp();
+    await setupUser(container);
+    await enterProblem(container);
+    await lockTwoOptions(container);
+
+    expect(button(container, 'RUN Coin Toss').getAttribute('disabled')).toBe(null);
+    expect(container.textContent).toContain('Coin Toss Protocol');
+    expect(container.textContent).toContain('Module eligible and loaded.');
+    act(() => root.unmount());
+  });
 
   it('goalpost warning appears after locking a decision with repeated option and does not block game selection', async () => {
     const previous = createLockedDecision('Old dinner', [createDecisionOption('Option', 'Pizza'), createDecisionOption('Option', 'Soup')]);
