@@ -335,10 +335,20 @@ export function App() {
         )}
 
         {currentScreen === 'home' && appState.user && (
-          <form className="home-input-form" onSubmit={submitProblem}>
-            <MachineDecor kind="gauge" />
-            <h2>STATE YOUR OVERTHINK</h2><BarryWindow art><BarryStatus>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</BarryStatus></BarryWindow><BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
-            <MachineLcdFrame><label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label></MachineLcdFrame>
+          <form className="home-input-form home-machine-home" onSubmit={submitProblem}>
+            <h2>STATE YOUR OVERTHINK</h2>
+            <BarryWindow art><BarryStatus>OPERATOR WINDOW: Barry is behind the glass pretending this is science.</BarryStatus></BarryWindow>
+            <MachineLcdFrame>
+              <section className="home-main-lcd" aria-label="Decision input display">
+                <MachineDecor kind="gauge" />
+                <div className="home-main-lcd__prompt">
+                  <p className="module-label">Main decision display</p>
+                  <p>Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
+                </div>
+                <BarryCommentary><p>Feed Barry one low-stakes decision. He will pretend this is science.</p></BarryCommentary>
+                <label>Decision input<textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} /></label>
+              </section>
+            </MachineLcdFrame>
             <MachinePrimaryCta type="submit">INSERT INTO MACHINE</MachinePrimaryCta>
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>

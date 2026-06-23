@@ -80,7 +80,7 @@ export function MachineLcdFrame({ children }: { children: ReactNode }) {
         '--machine-art-lcd-bottom-image': `url(${machineAssets.inputLcdBottom})`,
       } as Record<string, string>}
     >
-      {children}
+      <div className="machine-art-lcd__body">{children}</div>
     </div>
   );
 }
