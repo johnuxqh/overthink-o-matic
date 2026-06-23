@@ -365,16 +365,28 @@ export function App() {
         )}
 
         {currentScreen === 'options' && (
-          <form onSubmit={lockOptions}>
-            <h2>OPTIONS DETECTED</h2><BarryStatus>Barry only chooses from what you feed him. Do not blame the badger.</BarryStatus>
-            {optionRows.map((option, index) => (
-              <div key={option.id}>
-                <label>{option.label}<input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} /></label>
-                <button type="button" onClick={() => removeOption(index)} disabled={optionTexts.length <= 2}>Remove</button>
-              </div>
-            ))}
-            <button className="machine-button machine-button--secondary" type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
-            <button className="machine-button machine-button--primary" type="submit">LOCK IN OPTIONS</button>
+          <form className="options-master-blueprint" onSubmit={lockOptions}>
+            <div className="options-master-blueprint__header">
+              <h2>OPTIONS DETECTED</h2>
+              <p>Barry only chooses from what you feed him. Do not blame the badger.</p>
+            </div>
+
+            <div className="options-master-blueprint__list">
+              {optionRows.map((option, index) => (
+                <div className="options-master-blueprint__row" key={option.id}>
+                  <label className="options-master-blueprint__field">
+                    {option.label}
+                    <input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} />
+                  </label>
+                  <button type="button" onClick={() => removeOption(index)} disabled={optionTexts.length <= 2}>Remove</button>
+                </div>
+              ))}
+            </div>
+
+            <div className="options-master-blueprint__actions">
+              <button className="machine-button machine-button--secondary" type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
+              <button className="machine-button machine-button--primary" type="submit">LOCK IN OPTIONS</button>
+            </div>
           </form>
         )}
 

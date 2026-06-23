@@ -188,6 +188,54 @@ a:focus-visible {
   font-weight: 700;
 }
 
+.options-master-blueprint {
+  display: grid;
+  gap: 12px;
+  border: 1px solid #999;
+  padding: 12px;
+}
+
+.options-master-blueprint__header,
+.options-master-blueprint__list,
+.options-master-blueprint__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.options-master-blueprint__header > *,
+.options-master-blueprint__row > *,
+.options-master-blueprint__actions > * {
+  margin: 0;
+}
+
+.options-master-blueprint__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.options-master-blueprint__field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font-weight: 700;
+}
+
+.options-master-blueprint__field input {
+  font-weight: 400;
+}
+
+.options-master-blueprint__row button {
+  width: auto;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.options-master-blueprint__actions {
+  grid-template-columns: 1fr;
+}
+
 .protocol-grid {
   gap: 4px;
 }
@@ -251,6 +299,10 @@ a:focus-visible {
   }
 
   .machine-control-deck {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .options-master-blueprint__actions {
     grid-template-columns: 1fr 1fr;
   }
 }
