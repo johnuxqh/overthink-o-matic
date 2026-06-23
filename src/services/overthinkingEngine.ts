@@ -24,7 +24,7 @@ const LOCKDOWN_MESSAGES = [
   'Barry is cooling down.',
   'The answer is still the answer.',
   'No new evidence has been discovered.',
-  'Nice try.',
+  'Barry has entered mandatory recovery.',
   'Touch grass gently.',
 ] as const;
 
