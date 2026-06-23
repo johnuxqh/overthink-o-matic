@@ -7,23 +7,24 @@ interface MachineShellProps {
   controls?: ReactNode;
   emergency?: boolean;
   homeArt?: boolean;
+  homeReset?: boolean;
 }
 
-export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false, homeArt = false }: MachineShellProps) {
+export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false, homeArt = false, homeReset = false }: MachineShellProps) {
   const shellStyle = homeArt ? {
     '--machine-art-side-left-image': `url(${machineAssets.pageSideLeft})`,
     '--machine-art-side-right-image': `url(${machineAssets.pageSideRight})`,
   } as Record<string, string> : undefined;
 
   return (
-    <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}${homeArt ? ' machine-art-shell' : ''}`} style={shellStyle} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
+    <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}${homeArt ? ' machine-art-shell' : ''}${homeReset ? ' machine-shell--home-reset' : ''}`} style={shellStyle} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
       {homeArt && <><span className="machine-art-side-left" aria-hidden="true" /><span className="machine-art-side-right" aria-hidden="true" /></>}
       <MachineMarquee statusLine={statusLine} art={homeArt} />
       <div className="machine-operator-strip" aria-label="Machine operator status">
         <span>OPERATOR: BARRY</span>
         <span>{emergency ? 'CONTAINMENT ALERT' : 'CABINET ONLINE'}</span>
       </div>
-      <MachineDisplay>{children}</MachineDisplay>
+      <MachineDisplay homeReset={homeReset}>{children}</MachineDisplay>
       {controls && <MachineControlDeck art={homeArt}>{controls}</MachineControlDeck>}
     </section>
   );
@@ -45,11 +46,11 @@ export function MachineMarquee({ statusLine = "Let's Underthink This", art = fal
   );
 }
 
-export function MachineDisplay({ children }: { children: ReactNode }) {
+export function MachineDisplay({ children, homeReset = false }: { children: ReactNode; homeReset?: boolean }) {
   return (
-    <div className="machine-display-frame">
+    <div className={`machine-display-frame${homeReset ? ' machine-display-frame--home-reset' : ''}`}>
       <div className="machine-display-label" aria-hidden="true">PRIMARY DECISION DISPLAY</div>
-      <div className="machine-display" role="region" aria-label="Machine display">{children}</div>
+      <div className={`machine-display${homeReset ? ' machine-display--home-reset' : ''}`} role="region" aria-label="Machine display">{children}</div>
     </div>
   );
 }
