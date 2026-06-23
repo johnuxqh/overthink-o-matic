@@ -396,3 +396,69 @@ a:focus-visible {
   font-size: 0.95rem;
   overflow-wrap: anywhere;
 }
+
+.lockdown-master-blueprint {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #999;
+  padding: 12px;
+}
+
+.lockdown-master-blueprint--takeover {
+  gap: 10px;
+}
+
+.lockdown-master-blueprint__header,
+.lockdown-master-blueprint__decision,
+.lockdown-master-blueprint__timer,
+.lockdown-master-blueprint__actions {
+  display: grid;
+  gap: 6px;
+}
+
+.lockdown-master-blueprint__header > *,
+.lockdown-master-blueprint__decision > *,
+.lockdown-master-blueprint__timer > *,
+.lockdown-master-blueprint__actions > * {
+  margin: 0;
+}
+
+.lockdown-master-blueprint__header h2 {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.lockdown-master-blueprint__decision,
+.lockdown-master-blueprint__timer {
+  border-top: 1px solid #999;
+  padding-top: 10px;
+}
+
+.lockdown-master-blueprint__decision p:first-child,
+.lockdown-master-blueprint__timer p:first-child,
+.lockdown-master-blueprint__timer p:nth-child(2) {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.lockdown-master-blueprint__answer {
+  font-size: 1.75rem;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.lockdown-master-blueprint__countdown {
+  display: block;
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.lockdown-master-blueprint__actions {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 390px) {
+  .lockdown-master-blueprint__actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
