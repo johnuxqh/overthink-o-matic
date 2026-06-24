@@ -78,10 +78,10 @@ a:focus-visible {
 .app-shell {
   position: relative;
   z-index: 1;
-  width: min(100%, 450px);
-  max-width: 450px;
+  width: min(100%, 470px);
+  max-width: 470px;
   margin: 0 auto;
-  padding: 10px;
+  padding: 7px 4vw 8px;
 }
 
 .machine-page-decor {
@@ -98,21 +98,21 @@ a:focus-visible {
   position: absolute;
   top: -12px;
   bottom: -12px;
-  width: clamp(78px, 24vw, 240px);
+  width: clamp(58px, 18vw, 220px);
   background-repeat: repeat-y;
   background-size: contain;
-  opacity: 0.58;
+  opacity: 0.44;
   filter: drop-shadow(0 0 14px rgba(0, 0, 0, 0.88));
 }
 
 .machine-page-decor::before {
-  left: max(-86px, calc(50% - 520px));
+  left: max(-98px, calc(50% - 540px));
   background-image: var(--machine-page-left);
   background-position: left top;
 }
 
 .machine-page-decor::after {
-  right: max(-86px, calc(50% - 520px));
+  right: max(-98px, calc(50% - 540px));
   background-image: var(--machine-page-right);
   background-position: right top;
 }
@@ -324,8 +324,8 @@ button:disabled,
   position: relative;
   overflow: hidden;
   display: grid;
-  gap: 7px;
-  padding: 8px;
+  gap: 5px;
+  padding: 6px;
   border-radius: 24px 24px 16px 16px;
   background:
     radial-gradient(circle at 50% 0%, rgba(57, 245, 255, 0.08), transparent 16rem),
@@ -346,38 +346,38 @@ button:disabled,
 }
 
 .machine-home__header {
-  gap: 2px;
+  gap: 0;
 }
 
 .machine-home__header .machine-marquee {
-  padding: 2px 4px 0;
+  padding: 0 2px;
 }
 
 .machine-home__header .machine-marquee__logo {
-  width: min(100%, 356px);
+  width: min(100%, 386px);
 }
 
 .machine-home__header .machine-powered-strip {
-  min-height: 38px;
-  padding: 8px 18px;
-  margin-top: -2px;
+  min-height: 35px;
+  padding: 7px 18px;
+  margin-top: -3px;
 }
 
 .machine-home__main {
-  gap: 8px;
+  gap: 6px;
 }
 
 .machine-home__footer {
-  margin-top: -1px;
+  margin-top: -4px;
 }
 
 .machine-home__lcd {
-  gap: 8px;
+  gap: 5px;
 }
 
 .machine-home__barry {
-  min-height: 92px;
-  padding: 16px 39% 14px 20px;
+  min-height: 104px;
+  padding: 17px 38% 15px 22px;
   align-content: center;
   gap: 5px;
   background-image: var(--machine-barry-window-frame);
@@ -404,14 +404,14 @@ button:disabled,
 }
 
 .machine-home__barry p:last-child {
-  max-width: 18rem;
-  font-size: 0.9rem;
-  line-height: 1.25;
+  max-width: 19rem;
+  font-size: 0.93rem;
+  line-height: 1.22;
 }
 
 .machine-home__lcd-display {
-  gap: 7px;
-  padding: 24px 18px 22px;
+  gap: 6px;
+  padding: 25px 20px 23px;
   border-radius: 14px;
   background:
     var(--machine-lcd-top) top center / 100% 31px no-repeat,
@@ -423,8 +423,8 @@ button:disabled,
 
 .machine-home__lcd-display h2 {
   color: #eaffff;
-  font-size: clamp(1.24rem, 6vw, 1.46rem);
-  line-height: 1.05;
+  font-size: clamp(1.38rem, 6.4vw, 1.68rem);
+  line-height: 1.02;
   letter-spacing: 0.015em;
   text-shadow: 0 0 8px rgba(57, 245, 255, 0.62);
 }
@@ -435,14 +435,14 @@ button:disabled,
 }
 
 .machine-home__notes h3 {
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   color: var(--machine-brass);
 }
 
 .machine-home__notes p,
 .machine-home__lcd-display > p:not(.machine-home__lcd-label) {
-  font-size: 0.94rem;
-  line-height: 1.3;
+  font-size: 0.91rem;
+  line-height: 1.24;
 }
 
 .machine-home__input {
@@ -456,7 +456,7 @@ button:disabled,
 }
 
 .machine-home__input textarea {
-  min-height: 106px;
+  min-height: 112px;
   border-color: rgba(57, 245, 255, 0.58);
   border-radius: 10px;
   font-weight: 400;
@@ -467,8 +467,8 @@ button:disabled,
 
 .machine-home__cta {
   width: 100%;
-  min-height: 58px;
-  padding: 12px 22px;
+  min-height: 64px;
+  padding: 13px 24px;
   border: 0;
   border-radius: 12px;
   font-weight: 900;
@@ -476,9 +476,9 @@ button:disabled,
 
 .machine-home__controls.machine-control-deck {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
+  gap: 6px;
   margin-top: 0;
-  padding-inline: 10px;
+  padding: 18px 9px 16px;
 }
 
 .machine-home__controls .machine-button {
@@ -492,7 +492,8 @@ button:disabled,
 @media (max-width: 389px) {
   .machine-page-decor::before,
   .machine-page-decor::after {
-    opacity: 0.34;
+    opacity: 0.25;
+    width: 58px;
   }
 
   .machine-home__controls.machine-control-deck {
@@ -607,7 +608,7 @@ button:disabled,
 
 @media (min-width: 390px) {
   .app-shell {
-    padding: 12px;
+    padding: 8px;
   }
 
   .machine-control-deck {
