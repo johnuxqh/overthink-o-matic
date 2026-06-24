@@ -25,7 +25,25 @@ const machineAssetStyle = {
   '--machine-panel-right': `url(${machineAssets.buttonPanelFrameRight})`,
 };
 
-export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false }: MachineShellProps) {
+export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false, homeArt = false }: MachineShellProps) {
+  if (homeArt) {
+    return (
+      <>
+        <MachineDecor />
+        <section className="machine-home" style={machineAssetStyle} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
+          <div className="machine-home__header" role="banner">
+            <MachineMarquee compact />
+            <MachinePoweredStrip>{statusLine}</MachinePoweredStrip>
+          </div>
+          <main className="machine-home__main" role="region" aria-label="Machine home display">
+            {children}
+          </main>
+          {controls && <div className="machine-home__footer" role="contentinfo"><MachineControlDeck className="machine-home__controls">{controls}</MachineControlDeck></div>}
+        </section>
+      </>
+    );
+  }
+
   return (
     <>
       <MachineDecor />
@@ -39,13 +57,13 @@ export function MachineShell({ children, statusLine = 'Machine containment accep
   );
 }
 
-export function MachineMarquee() {
+export function MachineMarquee({ compact = false }: { compact?: boolean }) {
   return (
     <div className="machine-marquee" aria-label="Machine marquee">
-      <p className="machine-marquee__kicker">Questionable Arcade Oracle</p>
-      <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
+      {!compact && <p className="machine-marquee__kicker">Questionable Arcade Oracle</p>}
+      <h1 id="app-title">OVERTHINK-O-MATIC 5000 — Let's Underthink This</h1>
       <img className="machine-marquee__logo" src={machineAssets.logoHeading} alt="" aria-hidden="true" />
-      <p className="machine-marquee__tagline">Let's Underthink This</p>
+      {!compact && <p className="machine-marquee__tagline">Let's Underthink This</p>}
     </div>
   );
 }
@@ -98,8 +116,8 @@ export function BarryCommentary({ children }: { children: ReactNode }) {
   return <section className="barry-commentary"><h3>Barry's Notes</h3>{children}</section>;
 }
 
-export function MachineControlDeck({ children }: { children: ReactNode; art?: boolean }) {
-  return <nav className="machine-control-deck" aria-label="Machine controls">{children}</nav>;
+export function MachineControlDeck({ children, className = '' }: { children: ReactNode; art?: boolean; className?: string }) {
+  return <nav className={`machine-control-deck ${className}`.trim()} aria-label="Machine controls">{children}</nav>;
 }
 
 interface ProtocolModuleCardProps {
