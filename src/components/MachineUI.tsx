@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { machineAssets } from '../assets/machineAssets';
 
 interface MachineShellProps {
   children: ReactNode;
@@ -9,14 +10,32 @@ interface MachineShellProps {
   homeReset?: boolean;
 }
 
+const machineAssetStyle = {
+  '--machine-page-left': `url(${machineAssets.pageSideLeft})`,
+  '--machine-page-right': `url(${machineAssets.pageSideRight})`,
+  '--machine-powered-frame': `url(${machineAssets.poweredByFrame})`,
+  '--machine-barry-window-frame': `url(${machineAssets.barryWindowFrame})`,
+  '--machine-lcd-top': `url(${machineAssets.inputLcdTop})`,
+  '--machine-lcd-middle': `url(${machineAssets.inputLcdMiddle})`,
+  '--machine-lcd-bottom': `url(${machineAssets.inputLcdBottom})`,
+  '--machine-primary-cta': `url(${machineAssets.primaryCtaPink})`,
+  '--machine-panel-top': `url(${machineAssets.buttonPanelFrameTop})`,
+  '--machine-panel-bottom': `url(${machineAssets.buttonPanelFrameBottom})`,
+  '--machine-panel-left': `url(${machineAssets.buttonPanelFrameLeft})`,
+  '--machine-panel-right': `url(${machineAssets.buttonPanelFrameRight})`,
+};
+
 export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false }: MachineShellProps) {
   return (
-    <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}`} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
-      <MachineMarquee />
-      <MachinePoweredStrip>{statusLine}</MachinePoweredStrip>
-      <MachineDisplay>{children}</MachineDisplay>
-      {controls && <MachineControlDeck>{controls}</MachineControlDeck>}
-    </section>
+    <>
+      <MachineDecor />
+      <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}`} style={machineAssetStyle} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
+        <MachineMarquee />
+        <MachinePoweredStrip>{statusLine}</MachinePoweredStrip>
+        <MachineDisplay>{children}</MachineDisplay>
+        {controls && <MachineControlDeck>{controls}</MachineControlDeck>}
+      </section>
+    </>
   );
 }
 
@@ -25,13 +44,14 @@ export function MachineMarquee() {
     <div className="machine-marquee" aria-label="Machine marquee">
       <p className="machine-marquee__kicker">Questionable Arcade Oracle</p>
       <h1 id="app-title">OVERTHINK-O-MATIC 5000</h1>
+      <img className="machine-marquee__logo" src={machineAssets.logoHeading} alt="" aria-hidden="true" />
       <p className="machine-marquee__tagline">Let's Underthink This</p>
     </div>
   );
 }
 
 export function MachinePoweredStrip({ children }: { children: ReactNode }) {
-  return <div className="machine-powered-strip" aria-label="Powered-by strip">{children}</div>;
+  return <div className="machine-powered-strip" aria-label="Powered-by strip"><span>{children}</span></div>;
 }
 
 export function MachineDisplay({ children }: { children: ReactNode; homeReset?: boolean }) {
@@ -63,7 +83,7 @@ export function MachineLcdFrame({ children }: { children: ReactNode }) {
 }
 
 export function MachineDecor() {
-  return null;
+  return <div className="machine-page-decor" aria-hidden="true" style={machineAssetStyle} />;
 }
 
 export function MachinePrimaryCta({ children, type = 'button', disabled = false }: { children: ReactNode; type?: 'button' | 'submit'; disabled?: boolean }) {
