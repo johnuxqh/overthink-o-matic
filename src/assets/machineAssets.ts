@@ -3,7 +3,6 @@ import buttonPanelFrameBottom from './images/machine/button_pannel_frame_bottom.
 import buttonPanelFrameLeft from './images/machine/button_pannel_frameLHS(main).png';
 import buttonPanelFrameRight from './images/machine/button_pannel_frameRHS(main).png';
 import buttonPanelFrameTop from './images/machine/button_pannel_frame_top.png';
-import gauge from './images/machine/guage.png';
 import inputLcdBottom from './images/machine/input_lcd_bottom.png';
 import inputLcdMiddle from './images/machine/input_lcd_middle.png';
 import inputLcdTop from './images/machine/inout_lcd_top.png';
@@ -19,7 +18,6 @@ export const machineAssets = {
   buttonPanelFrameLeft,
   buttonPanelFrameRight,
   buttonPanelFrameTop,
-  gauge,
   inputLcdBottom,
   inputLcdMiddle,
   inputLcdTop,

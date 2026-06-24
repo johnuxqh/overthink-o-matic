@@ -340,29 +340,29 @@ export function App() {
         )}
 
         {currentScreen === 'home' && appState.user && (
-          <form className="home-master-blueprint" onSubmit={submitProblem} aria-label="State your overthink">
-            <section className="home-master-blueprint__operator" aria-label="Barry operator window">
+          <form className="machine-home__lcd" onSubmit={submitProblem} aria-label="State your overthink">
+            <section className="machine-home__barry" aria-label="Barry operator window">
               <p>OPERATOR WINDOW</p>
               <p>Barry is behind the glass pretending this is science.</p>
             </section>
 
-            <section className="home-master-blueprint__display" aria-label="Main LCD decision display">
-              <p className="home-master-blueprint__display-label">Main LCD Display</p>
+            <section className="machine-home__lcd-display" aria-label="Main LCD decision display">
+              <p className="machine-home__lcd-label">Main LCD Display</p>
               <h2>STATE YOUR OVERTHINK</h2>
               <p>Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
 
-              <div className="home-master-blueprint__notes" aria-label="Barry notes">
+              <div className="machine-home__notes" aria-label="Barry notes">
                 <h3>Barry's Notes</h3>
                 <p>Feed Barry one low-stakes decision. He will pretend this is science.</p>
               </div>
 
-              <label className="home-master-blueprint__input">
+              <label className="machine-home__input">
                 Decision input
                 <textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} />
               </label>
             </section>
 
-            <button className="home-master-blueprint__cta" type="submit">INSERT INTO MACHINE</button>
+            <button className="machine-home__cta" type="submit">INSERT INTO MACHINE</button>
 
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>
