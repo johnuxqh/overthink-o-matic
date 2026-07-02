@@ -37,47 +37,32 @@ const machineAssetStyle = {
   '--machine-panel-right': `url(${machineAssets.buttonPanelFrameRight})`,
 };
 
-export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false, homeArt = false, footerStatusPanels }: MachineShellProps) {
-  if (homeArt) {
-    return (
-      <MachineLayout>
+export function MachineShell({ children, statusLine = 'POWERED BY BARRY THE HONEY BADGER', controls, emergency = false, footerStatusPanels }: MachineShellProps) {
+  return (
+    <div className="machine-stage" style={machineAssetStyle}>
+      <div className="machine-stage__rail machine-stage__rail--left" aria-hidden="true" />
+      <div className="machine-stage__rail machine-stage__rail--right" aria-hidden="true" />
+
+      <section className={`machine${emergency ? ' machine--emergency' : ''}`} aria-label="Overthink-O-Matic 5000">
         <MachineHeader statusLine={statusLine} />
         <main className="machine-main" role="region" aria-label="Machine display">
           {children}
         </main>
         <MachineFooter controls={controls} statusPanels={footerStatusPanels} />
-      </MachineLayout>
-    );
-  }
-
-  return (
-    <>
-      <MachineDecor />
-      <section className={`machine-shell${emergency ? ' machine-shell--emergency' : ''}`} style={machineAssetStyle} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
-        <MachineMarquee />
-        <MachinePoweredStrip>{statusLine}</MachinePoweredStrip>
-        <MachineDisplay>{children}</MachineDisplay>
-        {controls && <MachineControlDeck>{controls}</MachineControlDeck>}
       </section>
-    </>
+    </div>
   );
 }
 
 export function MachineLayout({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <MachineDecor />
-      <section className="machine" style={machineAssetStyle} aria-label="OVERTHINK-O-MATIC 5000 machine cabinet">
-        {children}
-      </section>
-    </>
-  );
+  return <div className="machine-stage" style={machineAssetStyle}><section className="machine" aria-label="Overthink-O-Matic 5000">{children}</section></div>;
 }
 
 export function MachineHeader({ statusLine = 'POWERED BY BARRY THE HONEY BADGER' }: { statusLine?: ReactNode }) {
   return (
     <div className="machine-header" role="banner">
-      <MachineMarquee compact />
+      <h1 id="app-title" className="sr-only">OVERTHINK-O-MATIC 5000</h1>
+      <img className="machine-logo" src={machineAssets.logoHeading} alt="" aria-hidden="true" />
       <PoweredStrip>{statusLine}</PoweredStrip>
     </div>
   );
@@ -95,17 +80,13 @@ export function MachineMarquee({ compact = false }: { compact?: boolean }) {
 }
 
 export function PoweredStrip({ children }: { children: ReactNode }) {
-  return <div className="powered-strip machine-powered-strip" aria-label="Powered-by strip"><span>{children}</span></div>;
+  return <div className="powered-strip" aria-label="Powered-by strip"><span>{children}</span></div>;
 }
 
 export const MachinePoweredStrip = PoweredStrip;
 
 export function MachineDisplay({ children }: { children: ReactNode; homeReset?: boolean }) {
-  return (
-    <main className="machine-display" role="region" aria-label="Machine display">
-      {children}
-    </main>
-  );
+  return <main className="machine-display" role="region" aria-label="Machine display">{children}</main>;
 }
 
 export function MachinePanel({ children, className = '', ariaLabel }: { children: ReactNode; className?: string; ariaLabel?: string }) {
@@ -121,7 +102,7 @@ export function MachineWarning({ children, className = '' }: { children: ReactNo
 }
 
 export function BarryWindow({ children }: { children: ReactNode; art?: boolean }) {
-  return <section className="barry-frame barry-window" aria-label="Barry operator window"><div className="barry-left">{children}</div><div className="barry-right" aria-hidden="true" /></section>;
+  return <section className="barry-frame" aria-label="Barry operator window"><div className="barry-frame__copy">{children}</div><div className="barry-frame__portrait" aria-hidden="true" /></section>;
 }
 
 export function MachineLcd({ children }: { children: ReactNode }) {
@@ -154,11 +135,11 @@ export function MachineFooter({ controls, statusPanels = defaultFooterStatusPane
 }
 
 export function MachineFooterNav({ children }: { children: ReactNode }) {
-  return <nav className="footer-nav machine-control-deck" aria-label="Machine controls">{children}</nav>;
+  return <nav className="footer-nav" aria-label="Machine controls">{children}</nav>;
 }
 
 export function MachineFooterStatus({ panels = defaultFooterStatusPanels }: { panels?: FooterStatusPanel[] }) {
-  return <section className="footer-status" aria-label="Machine footer status">{panels.map((panel, index) => <div className="footer-status__panel" key={`${panel.label ?? 'panel'}-${index}`}>{panel.label && <span>{panel.label}</span>}{panel.text && <p>{panel.text}</p>}</div>)}</section>;
+  return <section className="footer-status" aria-label="Machine status">{panels.map((panel, index) => <div className="footer-status__panel" key={`${panel.label ?? 'panel'}-${index}`}>{panel.label && <span>{panel.label}</span>}{panel.text && <p>{panel.text}</p>}</div>)}</section>;
 }
 
 export function BarryStatus({ children }: { children: ReactNode }) {
