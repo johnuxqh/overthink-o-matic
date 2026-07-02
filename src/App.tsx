@@ -389,19 +389,23 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <p className="machine-home__lcd-label">Main LCD Display</p>
-              <h2>STATE YOUR OVERTHINK</h2>
-              <p>Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
+              <div className="lcd-content lcd-content--compact">
+                <div className="lcd-content__header">
+                  <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                  <h2 className="lcd-content__title">STATE YOUR OVERTHINK</h2>
+                  <p className="lcd-content__body">Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
+                </div>
 
-              <div className="machine-home__notes" aria-label="Barry notes">
-                <h3>Barry's Notes</h3>
-                <p>Feed Barry one low-stakes decision. He will pretend this is science.</p>
+                <div className="machine-home__notes" aria-label="Barry notes">
+                  <h3>Barry's Notes</h3>
+                  <p>Feed Barry one low-stakes decision. He will pretend this is science.</p>
+                </div>
+
+                <label className="machine-home__input">
+                  Decision input
+                  <textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} />
+                </label>
               </div>
-
-              <label className="machine-home__input">
-                Decision input
-                <textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} />
-              </label>
             </MachineLcd>
 
             <MachinePrimaryCta className="machine-home__cta" type="submit">INSERT INTO MACHINE</MachinePrimaryCta>
@@ -418,15 +422,15 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <div className="options-machine-content__header">
-                <p className="machine-home__lcd-label">Main LCD Display</p>
-                <h2>OPTIONS DETECTED</h2>
+              <div className="lcd-content__header options-machine-content__header">
+                <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                <h2 className="lcd-content__title">OPTIONS DETECTED</h2>
                 <p>Feed Barry at least two possible outcomes. He will treat them all with inappropriate urgency.</p>
               </div>
 
-              <div className="options-machine-content__list">
+              <div className="lcd-content__list options-machine-content__list">
                 {optionRows.map((option, index) => (
-                  <div className="options-machine-content__row" key={option.id}>
+                  <div className="lcd-content__row options-machine-content__row" key={option.id}>
                     <label className="options-machine-content__field">
                       <span>{option.label}</span>
                       <input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} />
@@ -436,7 +440,7 @@ export function App() {
                 ))}
               </div>
 
-              <div className="options-machine-content__actions">
+              <div className="lcd-content__actions options-machine-content__actions">
                 <button className="machine-button machine-button--secondary" type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
                 <button className="machine-button machine-button--primary" type="submit">LOCK IN OPTIONS</button>
               </div>
@@ -452,9 +456,9 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <div className="protocol-machine-content__header">
-                <p className="machine-home__lcd-label">Main LCD Display</p>
-                <h2>CHOOSE YOUR PROTOCOL</h2>
+              <div className="lcd-content__header protocol-machine-content__header">
+                <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                <h2 className="lcd-content__title">CHOOSE YOUR PROTOCOL</h2>
                 <p>Barry has analysed your terrible options.</p>
               </div>
 
@@ -472,20 +476,20 @@ export function App() {
                 </MachineWarning>
               )}
 
-              <div className="protocol-machine-content__context">
+              <div className="lcd-content__readout protocol-machine-content__context">
                 <p><span>Overthink:</span> {decision.problem}</p>
                 <p><span>Options:</span> {decision.options.map((option) => option.text).join(' / ')}</p>
               </div>
 
               <MachineReadout className="protocol-machine-content__commitment protocol-commitment-readout"><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
 
-              <div className="protocol-machine-content__list">{eligibleGames.map((game, index) => {
+              <div className="lcd-content__list protocol-machine-content__list">{eligibleGames.map((game, index) => {
                 const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
                 const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
                 const detailsId = `protocol-details-${game.id}`;
                 const expanded = expandedProtocolId === game.id;
                 return (
-                  <article className="protocol-machine-content__row" key={game.id}>
+                  <article className="lcd-content__row protocol-machine-content__row" key={game.id}>
                     <div className="protocol-machine-content__summary">
                       <span className="protocol-machine-content__emblem" aria-hidden="true">{emblems[index % emblems.length]}</span>
                       <h3 className="protocol-machine-content__name">{protocolName}</h3>
@@ -516,21 +520,21 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <div className="thinking-machine-content__header">
-                <p className="machine-home__lcd-label">Main LCD Display</p>
-                <h2>BARRY IS THINKING</h2>
+              <div className="lcd-content__header thinking-machine-content__header">
+                <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                <h2 className="lcd-content__title">BARRY IS THINKING</h2>
               </div>
 
-              <div className="thinking-machine-content__readout">
+              <div className="lcd-content__readout thinking-machine-content__readout">
                 <p><span>Protocol:</span> {thinkingRun.protocolName}</p>
                 <p><span>Status:</span> Processing</p>
               </div>
 
-              <section className="thinking-machine-content__status" aria-label="Machine processing status">
+              <section className="lcd-content__section thinking-machine-content__status" aria-label="Machine processing status">
                 <p>Barry is pulling levers, shaking things, and ignoring best practices.</p>
               </section>
 
-              <div className="thinking-machine-content__progress" aria-label="Machine progress">
+              <div className="lcd-content__section thinking-machine-content__progress" aria-label="Machine progress">
                 <p>{thinkingRun.progress}</p>
                 <p>Barry is consulting highly questionable science.</p>
                 <p>Switches are flipping. Gauges are moving. This may or may not help.</p>
@@ -547,13 +551,13 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <div className="result-machine-content__header">
-                <p className="machine-home__lcd-label">Main LCD Display</p>
-                <h2>THE MACHINE SAYS...</h2>
+              <div className="lcd-content__header result-machine-content__header">
+                <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                <h2 className="lcd-content__title">THE MACHINE SAYS...</h2>
                 <p className="result-machine-content__answer">{latestResult.selectedOption}</p>
               </div>
 
-              <section className="result-machine-content__details" aria-label="Result details">
+              <section className="lcd-content__readout result-machine-content__details" aria-label="Result details">
                 <p><span>PROTOCOL:</span> {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId}</p>
                 <p><span>STATUS:</span> OUTPUT STABLE</p>
                 <h3>Barry's Notes</h3>
@@ -563,7 +567,7 @@ export function App() {
                 <p className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</p>
               </section>
 
-              <section className="result-machine-content__spiral" aria-label="Machine audit log">
+              <section className="lcd-content__section result-machine-content__spiral" aria-label="Machine audit log">
                 <p className="module-label">MACHINE AUDIT LOG</p>
                 <h3>OVERTHINK SPIRAL</h3>
                 {decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}
@@ -572,7 +576,7 @@ export function App() {
                 <p>{getEscalationMessage(decision)}</p>
               </section>
 
-              <section className="result-machine-content__actions" aria-label="Result actions">
+              <section className="lcd-content__actions result-machine-content__actions" aria-label="Result actions">
                 <button className="machine-button machine-button--success" type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
                 <button className="machine-button machine-button--protocol" type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
               </section>
@@ -588,19 +592,19 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <div className="lockdown-machine-content__header">
-                <p className="machine-home__lcd-label">Main LCD Display</p>
-                <h2>BARRY HAS TAKEN CONTROL</h2>
+              <div className="lcd-content__header lockdown-machine-content__header">
+                <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                <h2 className="lcd-content__title">BARRY HAS TAKEN CONTROL</h2>
                 <p>Barry has become too committed. Barry made the final decision.</p>
               </div>
 
-              <section className="lockdown-machine-content__decision" aria-label="Final decision">
+              <section className="lcd-content__readout lockdown-machine-content__decision" aria-label="Final decision">
                 <p>Final decision</p>
                 <p className="lockdown-machine-content__answer">{decision.lockdown.finalAnswer}</p>
                 {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
               </section>
 
-              <section className="lockdown-machine-content__timer" aria-label="Lockdown timer">
+              <section className="lcd-content__readout lockdown-machine-content__timer" aria-label="Lockdown timer">
                 <p>DECISION LOCKED</p>
                 <p>LOCKDOWN REMAINING</p>
                 <p className="lockdown-machine-content__countdown">{formatCountdown(lockdownRemainingMs)}</p>
@@ -608,7 +612,7 @@ export function App() {
                 <p>{getLockdownMessage(decision, now)}</p>
               </section>
 
-              <section className="lockdown-machine-content__actions" aria-label="Lockdown actions">
+              <section className="lcd-content__actions lockdown-machine-content__actions" aria-label="Lockdown actions">
                 <button className="machine-button machine-button--primary" type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>
                 <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
               </section>
@@ -624,19 +628,19 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <div className="lockdown-machine-content__header">
-                <p className="machine-home__lcd-label">Main LCD Display</p>
-                <h2>BARRY IS RECOVERING</h2>
+              <div className="lcd-content__header lockdown-machine-content__header">
+                <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                <h2 className="lcd-content__title">BARRY IS RECOVERING</h2>
                 <p>Barry has become too committed. Barry made the final decision.</p>
               </div>
 
-              <section className="lockdown-machine-content__decision" aria-label="Final decision">
+              <section className="lcd-content__readout lockdown-machine-content__decision" aria-label="Final decision">
                 <p>Final decision</p>
                 <p className="lockdown-machine-content__answer">{decision.lockdown.finalAnswer}</p>
                 {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
               </section>
 
-              <section className="lockdown-machine-content__timer" aria-label="Lockdown timer">
+              <section className="lcd-content__readout lockdown-machine-content__timer" aria-label="Lockdown timer">
                 <p>DECISION LOCKED</p>
                 <p>LOCKDOWN REMAINING</p>
                 <p className="lockdown-machine-content__countdown">{formatCountdown(lockdownRemainingMs)}</p>
@@ -644,7 +648,7 @@ export function App() {
                 <p>{getLockdownMessage(decision, now)}</p>
               </section>
 
-              <section className="lockdown-machine-content__actions" aria-label="Lockdown actions">
+              <section className="lcd-content__actions lockdown-machine-content__actions" aria-label="Lockdown actions">
                 {decision.lockdown.finalAnswer && <button className="machine-button machine-button--primary" type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>}
                 <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
                 {lockdownRemainingMs <= 0 && <button className="machine-button machine-button--success" type="button" onClick={goHome}>MACHINE</button>}
@@ -695,9 +699,9 @@ export function App() {
             </BarryWindow>
 
             <MachineLcd>
-              <div className="receipt-machine-content__header">
-                <p className="machine-home__lcd-label">Main LCD Display</p>
-                <h2>SHARE YOUR OVERTHINK</h2>
+              <div className="lcd-content__header receipt-machine-content__header">
+                <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
+                <h2 className="lcd-content__title">SHARE YOUR OVERTHINK</h2>
                 <p>Print a cursed arcade receipt for this overthink.</p>
               </div>
 
@@ -705,7 +709,7 @@ export function App() {
                 <ShareResultCard data={shareData} />
               </div>
 
-              <section className="receipt-machine-content__actions" aria-label="Receipt actions">
+              <section className="lcd-content__actions receipt-machine-content__actions" aria-label="Receipt actions">
                 {canDownloadShareImage ? (
                   <button className="machine-button machine-button--primary" type="button" onClick={downloadShareImage}>DOWNLOAD RECEIPT</button>
                 ) : (
