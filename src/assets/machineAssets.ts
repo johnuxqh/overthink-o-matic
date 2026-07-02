@@ -5,7 +5,7 @@ import buttonPanelFrameRight from './images/machine/button_pannel_frameRHS(main)
 import buttonPanelFrameTop from './images/machine/button_pannel_frame_top.png';
 import inputLcdBottom from './images/machine/input_lcd_bottom.png';
 import inputLcdMiddle from './images/machine/input_lcd_middle.png';
-import inputLcdTop from './images/machine/inout_lcd_top.png';
+import inputLcdTop from './images/machine/input_lcd_top.png';
 import logoHeading from './images/machine/logoheading.png';
 import pageSideLeft from './images/machine/LHSpagebgimage.png';
 import pageSideRight from './images/machine/RHSpagebgimage.png';

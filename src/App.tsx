@@ -9,7 +9,7 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
-import { BarryStatus, BarryWindow, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
+import { BarryStatus, BarryWindow, MachineLcd, MachinePrimaryCta, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin', 'about-machine'] as const;
@@ -341,12 +341,12 @@ export function App() {
 
         {currentScreen === 'home' && appState.user && (
           <form className="machine-home__lcd" onSubmit={submitProblem} aria-label="State your overthink">
-            <section className="machine-home__barry" aria-label="Barry operator window">
+            <BarryWindow>
               <p>OPERATOR WINDOW</p>
               <p>Barry is behind the glass pretending this is science.</p>
-            </section>
+            </BarryWindow>
 
-            <section className="machine-home__lcd-display" aria-label="Main LCD decision display">
+            <MachineLcd>
               <p className="machine-home__lcd-label">Main LCD Display</p>
               <h2>STATE YOUR OVERTHINK</h2>
               <p>Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
@@ -360,9 +360,9 @@ export function App() {
                 Decision input
                 <textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} />
               </label>
-            </section>
+            </MachineLcd>
 
-            <button className="machine-home__cta" type="submit">INSERT INTO MACHINE</button>
+            <MachinePrimaryCta className="machine-home__cta" type="submit">INSERT INTO MACHINE</MachinePrimaryCta>
 
             {shareDecision && <button type="button" onClick={() => openShareResult(shareDecision)}>SHARE YOUR OVERTHINK</button>}
           </form>
