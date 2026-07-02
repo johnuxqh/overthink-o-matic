@@ -1038,3 +1038,100 @@ ul.receipt-card-blueprint__value {
     width: 30px;
   }
 }
+
+/* PASS 5.9B options LCD content: reuses locked machine chrome. */
+.options-machine-content,
+.options-machine-content__header,
+.options-machine-content__list,
+.options-machine-content__row,
+.options-machine-content__field,
+.options-machine-content__actions {
+  display: grid;
+  min-width: 0;
+}
+
+.options-machine-content {
+  gap: 5px;
+}
+
+.options-machine-content__header,
+.options-machine-content__list,
+.options-machine-content__actions {
+  gap: 7px;
+}
+
+.options-machine-content__header > *,
+.options-machine-content__row > *,
+.options-machine-content__actions > * {
+  margin: 0;
+}
+
+.options-machine-content__header p:not(.machine-home__lcd-label) {
+  font-size: 0.91rem;
+  line-height: 1.24;
+}
+
+.options-machine-content__row {
+  grid-template-columns: minmax(0, 1fr) minmax(70px, auto);
+  gap: 6px;
+  align-items: end;
+}
+
+.options-machine-content__field {
+  gap: 4px;
+  color: var(--machine-cyan);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.options-machine-content__field input {
+  min-height: 44px;
+  padding: 8px 9px;
+  border-color: rgba(57, 245, 255, 0.58);
+  border-radius: 9px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  background: rgba(1, 11, 13, 0.86);
+}
+
+.options-machine-content__remove {
+  width: auto;
+  min-width: 70px;
+  min-height: 44px;
+  padding: 7px 8px;
+  font-size: clamp(0.62rem, 2.55vw, 0.72rem);
+  line-height: 1.1;
+}
+
+.options-machine-content__actions {
+  grid-template-columns: 1fr;
+  padding-top: 2px;
+}
+
+.options-machine-content__actions .machine-button {
+  min-height: 48px;
+  padding-inline: 10px;
+  font-size: clamp(0.72rem, 3vw, 0.86rem);
+  line-height: 1.12;
+  white-space: normal;
+}
+
+@media (max-width: 359px) {
+  .options-machine-content__row {
+    grid-template-columns: 1fr;
+  }
+
+  .options-machine-content__remove {
+    width: 100%;
+  }
+}
+
+@media (min-width: 390px) {
+  .options-machine-content__actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
