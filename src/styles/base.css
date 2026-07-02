@@ -17,11 +17,11 @@
   --space-4: 16px;
   --space-5: 20px;
   --space-6: 24px;
-  --type-label: clamp(0.72rem, 2.8vw, 0.78rem);
-  --type-body: clamp(0.88rem, 3.2vw, 0.92rem);
-  --type-title: clamp(1.38rem, 6.4vw, 1.68rem);
-  --type-button: clamp(0.72rem, 3vw, 0.86rem);
-  --machine-cabinet-width: min(100%, 430px);
+  --type-label: clamp(0.62rem, 2.45vw, 0.72rem);
+  --type-body: clamp(0.78rem, 2.85vw, 0.88rem);
+  --type-title: clamp(1.14rem, 5.05vw, 1.44rem);
+  --type-button: clamp(0.68rem, 2.75vw, 0.82rem);
+  --machine-cabinet-width: min(98.5vw, 430px);
   --machine-art-width: 100%;
   --machine-art-join: -3px;
   --machine-inner-gutter: clamp(4px, 1.6vw, 8px);
@@ -95,7 +95,7 @@ a:focus-visible {
   width: 100%;
   max-width: none;
   margin: 0 auto;
-  padding: 0 2px 2px;
+  padding: 0 0 2px;
 }
 
 .machine-page-decor {
@@ -393,7 +393,7 @@ button:disabled,
 
 @media (min-width: 390px) {
   .app-shell {
-    padding: 0 2px 2px;
+    padding: 0 0 2px;
   }
 
   .machine-control-deck {
@@ -589,9 +589,9 @@ button:disabled,
 .barry-frame {
   position: relative;
   width: 100%;
-  min-height: 108px;
-  margin-top: -5px;
-  padding: 16px 35% 14px 24px;
+  min-height: 92px;
+  margin-top: -9px;
+  padding: 13px 35% 11px 22px;
   align-content: center;
   color: var(--machine-cream);
   background-image: var(--machine-barry-window-frame);
@@ -663,8 +663,8 @@ button:disabled,
 .lcd__middle {
   width: 100%;
   margin-block: -2px;
-  gap: var(--space-2);
-  padding: 2px clamp(16px, 5vw, 22px);
+  gap: 5px;
+  padding: 0 clamp(14px, 4.2vw, 20px);
   color: var(--machine-cream);
   background-image: var(--machine-lcd-middle);
   background-repeat: repeat-y;
@@ -681,8 +681,8 @@ button:disabled,
 .lcd h2 {
   color: #eaffff;
   font-size: var(--type-title);
-  line-height: 1.02;
-  letter-spacing: 0.015em;
+  line-height: 0.98;
+  letter-spacing: 0.01em;
   text-shadow: 0 0 8px rgba(57, 245, 255, 0.62);
 }
 
@@ -700,7 +700,36 @@ button:disabled,
 .machine-home__notes p,
 .lcd__middle > p:not(.machine-home__lcd-label) {
   font-size: var(--type-body);
-  line-height: 1.24;
+  line-height: 1.14;
+}
+
+.machine-home__lcd .lcd-content {
+  gap: 5px;
+}
+
+.machine-home__lcd .lcd-content__header {
+  gap: 4px;
+  text-align: center;
+}
+
+.machine-home__lcd-subtitle {
+  justify-self: center;
+  line-height: 1.05;
+}
+
+.machine-home__divider {
+  margin: 0;
+  color: var(--machine-cyan);
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  line-height: 1;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.machine-home__body {
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .machine-home__input {
@@ -715,7 +744,7 @@ button:disabled,
 }
 
 .machine-home__input textarea {
-  min-height: 104px;
+  min-height: 82px;
   border-color: rgba(57, 245, 255, 0.58);
   border-radius: 10px;
   font-weight: 400;
@@ -727,13 +756,15 @@ button:disabled,
 .primary-cta,
 .machine-home__cta {
   width: 100%;
-  min-height: 62px;
-  margin-top: -5px;
-  padding: 13px 24px;
+  min-height: 54px;
+  margin-top: -7px;
+  padding: 10px 22px;
   border: 0;
   border-radius: 0;
   place-items: center;
+  font-size: var(--type-button);
   font-weight: 900;
+  letter-spacing: 0.055em;
   background-color: transparent;
   background-image: var(--machine-primary-cta);
   background-size: 100% 100%;
@@ -744,13 +775,13 @@ button:disabled,
 
 .machine-footer {
   width: 100%;
-  margin-top: -6px;
+  margin-top: -9px;
 }
 
 .footer-frame {
   position: relative;
-  gap: 5px;
-  padding: 18px 8px 16px;
+  gap: 3px;
+  padding: 14px 7px 12px;
   border: 0;
   border-radius: 0 0 18px 18px;
   background: linear-gradient(180deg, rgba(23, 18, 16, 0.92), rgba(7, 6, 6, 0.98));
@@ -808,8 +839,8 @@ button:disabled,
   position: relative;
   z-index: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 5px;
-  padding: 0 14px;
+  gap: 4px;
+  padding: 0 12px;
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -821,9 +852,9 @@ button:disabled,
   justify-content: center;
   gap: 4px;
   min-width: 0;
-  min-height: 44px;
-  padding: 7px 5px;
-  font-size: clamp(0.52rem, 2.35vw, 0.68rem);
+  min-height: 36px;
+  padding: 5px 4px;
+  font-size: clamp(0.48rem, 2.05vw, 0.62rem);
   line-height: 1.05;
   white-space: normal;
   text-align: left;
@@ -845,21 +876,21 @@ button:disabled,
   position: relative;
   z-index: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
-  padding: 0 14px;
+  gap: 3px;
+  padding: 0 12px;
 }
 
 .footer-status__panel {
-  min-height: 39px;
+  min-height: 31px;
   align-content: center;
-  gap: 2px;
-  padding: 6px 4px;
+  gap: 1px;
+  padding: 4px 3px;
   border: 1px solid rgba(57, 245, 255, 0.35);
   border-radius: 7px;
   background: rgba(1, 11, 13, 0.72);
   color: var(--machine-muted-cream);
-  font-size: clamp(0.51rem, 2.15vw, 0.64rem);
-  line-height: 1.08;
+  font-size: clamp(0.46rem, 1.9vw, 0.58rem);
+  line-height: 1.02;
   text-align: center;
   text-transform: uppercase;
 }
@@ -875,8 +906,9 @@ button:disabled,
 }
 
 @media (max-width: 389px) {
-  .machine {
-    width: calc(100vw - 4px);
+  .machine,
+  .machine-stage {
+    width: min(99vw, 430px);
   }
 
   .machine-stage__rail {
@@ -903,11 +935,11 @@ button:disabled,
   }
 
   .footer-nav__button {
-    min-height: 42px;
+    min-height: 34px;
   }
 
   .footer-status__panel {
-    min-height: 36px;
+    min-height: 29px;
   }
 }
 
@@ -1584,8 +1616,8 @@ button:disabled,
   margin: 0;
   color: #eaffff;
   font-size: var(--type-title);
-  line-height: 1.02;
-  letter-spacing: 0.015em;
+  line-height: 0.98;
+  letter-spacing: 0.01em;
   text-shadow: 0 0 8px rgba(57, 245, 255, 0.62);
   overflow-wrap: anywhere;
 }

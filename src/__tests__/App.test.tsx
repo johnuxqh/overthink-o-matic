@@ -48,7 +48,7 @@ async function runCoinTossProtocol(container: HTMLElement) {
 async function changeField(container: HTMLElement, label: string, value: string) {
   const labels = Array.from(container.querySelectorAll('label'));
   const found = labels.find((candidate) => candidate.textContent?.startsWith(label));
-  const field = found?.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement | null;
+  const field = (found?.querySelector('input, textarea') ?? container.querySelector(`input[aria-label^="${label}"], textarea[aria-label^="${label}"]`)) as HTMLInputElement | HTMLTextAreaElement | null;
   if (!field) throw new Error(`Field not found: ${label}`);
   await act(async () => {
     const prototype = field instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
@@ -65,7 +65,7 @@ async function setupUser(container: HTMLElement, realityCheckerName = 'Sam') {
 }
 
 async function enterProblem(container: HTMLElement) {
-  await changeField(container, 'Decision input', 'Pick dinner');
+  await changeField(container, 'State your overthink', 'Pick dinner');
   await clickButton(container, 'INSERT INTO MACHINE');
 }
 
