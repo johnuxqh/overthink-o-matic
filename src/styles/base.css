@@ -885,19 +885,6 @@ button:disabled,
   line-height: 1.1;
 }
 
-.options-machine-content__actions {
-  grid-template-columns: 1fr;
-  padding-top: 2px;
-}
-
-.options-machine-content__actions .machine-button {
-  min-height: 46px;
-  padding-inline: 10px;
-  font-size: clamp(0.72rem, 3vw, 0.86rem);
-  line-height: 1.12;
-  white-space: normal;
-}
-
 @media (max-width: 359px) {
   .options-machine-content__row {
     grid-template-columns: 1fr;
@@ -905,12 +892,6 @@ button:disabled,
 
   .options-machine-content__remove {
     width: 100%;
-  }
-}
-
-@media (min-width: 390px) {
-  .options-machine-content__actions {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -1210,25 +1191,6 @@ button:disabled,
   color: var(--machine-muted-cream);
 }
 
-.result-machine-content__actions {
-  grid-template-columns: 1fr;
-  padding-top: 2px;
-}
-
-.result-machine-content__actions .machine-button {
-  min-height: 46px;
-  padding-inline: 10px;
-  font-size: clamp(0.72rem, 3vw, 0.86rem);
-  line-height: 1.12;
-  white-space: normal;
-}
-
-@media (min-width: 390px) {
-  .result-machine-content__actions {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 /* PASS 5.9F receipt LCD content: reuses locked machine chrome. */
 .receipt-machine-content,
 .receipt-machine-content__header,
@@ -1447,19 +1409,6 @@ button:disabled,
     rgba(1, 11, 13, 0.54);
 }
 
-.lockdown-machine-content__actions {
-  grid-template-columns: 1fr;
-  padding-top: 2px;
-}
-
-.lockdown-machine-content__actions .machine-button {
-  min-height: 46px;
-  padding-inline: 10px;
-  font-size: clamp(0.68rem, 2.8vw, 0.82rem);
-  line-height: 1.12;
-  white-space: normal;
-}
-
 @media (min-width: 390px) {
   .lockdown-machine-content__actions {
     grid-template-columns: 1fr 1fr;
@@ -1467,5 +1416,148 @@ button:disabled,
 
   .lockdown-machine-content__actions .machine-button:nth-child(3) {
     grid-column: 1 / -1;
+  }
+}
+
+/* PHASE 6.0B shared LCD content system. */
+.lcd-content,
+.lcd-content__header,
+.lcd-content__body,
+.lcd-content__section,
+.lcd-content__readout,
+.lcd-content__list,
+.lcd-content__row,
+.lcd-content__actions {
+  display: grid;
+  min-width: 0;
+}
+
+.lcd-content {
+  gap: var(--space-2);
+}
+
+.lcd-content--compact {
+  gap: 7px;
+}
+
+.lcd-content__header {
+  gap: 6px;
+}
+
+.lcd-content__header > *,
+.lcd-content__body > *,
+.lcd-content__section > *,
+.lcd-content__readout > *,
+.lcd-content__list > *,
+.lcd-content__row > *,
+.lcd-content__actions > * {
+  margin: 0;
+}
+
+.lcd-content__eyebrow,
+.lcd-content__readout span,
+.lcd-content__section .module-label {
+  color: var(--machine-cyan);
+  font-size: var(--type-label);
+  font-weight: 900;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.lcd-content__title {
+  margin: 0;
+  color: #eaffff;
+  font-size: var(--type-title);
+  line-height: 1.02;
+  letter-spacing: 0.015em;
+  text-shadow: 0 0 8px rgba(57, 245, 255, 0.62);
+  overflow-wrap: anywhere;
+}
+
+.lcd-content__body,
+.lcd-content__header p:not(.lcd-content__eyebrow),
+.lcd-content__readout,
+.lcd-content__section {
+  font-size: var(--type-body);
+  line-height: 1.24;
+}
+
+.lcd-content__readout,
+.lcd-content__section {
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(57, 245, 255, 0.26);
+  border-radius: 9px;
+  background: rgba(1, 11, 13, 0.54);
+  overflow-wrap: anywhere;
+}
+
+.lcd-content__list {
+  gap: 6px;
+}
+
+.lcd-content__row {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lcd-content__actions {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 142px), 1fr));
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.lcd-content__actions .machine-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding-inline: 10px;
+  font-size: var(--type-button);
+  line-height: 1.12;
+  white-space: normal;
+}
+
+.lcd-content__primary {
+  font-weight: 900;
+}
+
+.lcd-content__secondary {
+  color: var(--machine-cream);
+}
+
+.protocol-machine-content__commitment,
+.protocol-commitment-readout {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.protocol-machine-content__context,
+.thinking-machine-content__readout,
+.result-machine-content__details,
+.lockdown-machine-content__decision,
+.lockdown-machine-content__timer {
+  font-size: var(--type-body);
+  line-height: 1.24;
+}
+
+.thinking-machine-content__status,
+.thinking-machine-content__progress,
+.result-machine-content__spiral {
+  font-size: var(--type-body);
+}
+
+@media (max-width: 374px) {
+  .lcd-content {
+    gap: 7px;
+  }
+
+  .lcd-content__readout,
+  .lcd-content__section {
+    padding: 7px;
+  }
+
+  .lcd-content__actions {
+    grid-template-columns: 1fr;
   }
 }
