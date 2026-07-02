@@ -780,13 +780,13 @@ button:disabled,
 
 .footer-frame {
   position: relative;
-  gap: 3px;
-  padding: 14px 7px 12px;
+  gap: 6px;
+  padding: 18px 7px 19px;
   border: 0;
   border-radius: 0 0 18px 18px;
   background: linear-gradient(180deg, rgba(23, 18, 16, 0.92), rgba(7, 6, 6, 0.98));
   box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.72);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .footer-frame__top,
@@ -839,22 +839,28 @@ button:disabled,
   position: relative;
   z-index: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
-  padding: 0 12px;
+  gap: 5px;
+  padding: 1px 12px 0;
   border: 0;
   background: transparent;
   box-shadow: none;
+}
+
+.footer-nav:has(.footer-nav__button:nth-child(4)) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .footer-nav__button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   min-width: 0;
-  min-height: 36px;
+  min-height: 35px;
   padding: 5px 4px;
-  font-size: clamp(0.48rem, 2.05vw, 0.62rem);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 230, 163, 0.18), inset 0 -6px 10px rgba(0, 0, 0, 0.32), 0 2px 0 rgba(0, 0, 0, 0.65);
+  font-size: clamp(0.49rem, 2.15vw, 0.64rem);
   line-height: 1.05;
   white-space: normal;
   text-align: left;
@@ -876,23 +882,24 @@ button:disabled,
   position: relative;
   z-index: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 3px;
-  padding: 0 12px;
+  gap: 4px;
+  padding: 0 12px 1px;
 }
 
 .footer-status__panel {
-  min-height: 31px;
+  min-height: 33px;
   align-content: center;
   gap: 1px;
-  padding: 4px 3px;
-  border: 1px solid rgba(57, 245, 255, 0.35);
+  padding: 4px 4px;
+  border: 1px solid rgba(57, 245, 255, 0.38);
   border-radius: 7px;
-  background: rgba(1, 11, 13, 0.72);
+  background: rgba(1, 11, 13, 0.78);
   color: var(--machine-muted-cream);
-  font-size: clamp(0.46rem, 1.9vw, 0.58rem);
-  line-height: 1.02;
+  font-size: clamp(0.47rem, 2vw, 0.59rem);
+  line-height: 1.03;
   text-align: center;
   text-transform: uppercase;
+  box-shadow: inset 0 0 10px rgba(57, 245, 255, 0.1);
 }
 
 .footer-status__panel span {
@@ -915,9 +922,6 @@ button:disabled,
     width: 78px;
   }
 
-  .footer-nav:has(.footer-nav__button:nth-child(4)) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 374px) {
@@ -1798,13 +1802,13 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .footer-frame {
-  gap: 2px;
-  padding: 10px 7px 8px;
+  gap: 5px;
+  padding: 16px 7px 18px;
 }
 
 .machine:has(.machine-home__lcd) .footer-frame__top,
 .machine:has(.machine-home__lcd) .footer-frame__bottom {
-  height: 15px;
+  height: 17px;
 }
 
 .machine:has(.machine-home__lcd) .footer-frame__side {
@@ -1813,13 +1817,13 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .footer-nav {
-  gap: 3px;
+  gap: 5px;
 }
 
 .machine:has(.machine-home__lcd) .footer-nav__button {
-  min-height: 30px;
-  padding-block: 3px;
-  line-height: 1;
+  min-height: 34px;
+  padding-block: 4px;
+  line-height: 1.03;
 }
 
 .machine:has(.machine-home__lcd) .footer-nav__icon {
@@ -1827,14 +1831,14 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .footer-status {
-  gap: 2px;
+  gap: 4px;
 }
 
 .machine:has(.machine-home__lcd) .footer-status__panel {
-  min-height: 25px;
+  min-height: 32px;
   gap: 0;
-  padding-block: 2px;
-  line-height: 0.98;
+  padding-block: 3px;
+  line-height: 1.02;
 }
 
 @media (max-width: 374px) {
@@ -1852,10 +1856,10 @@ button:disabled,
   }
 
   .machine:has(.machine-home__lcd) .footer-nav__button {
-    min-height: 29px;
+    min-height: 32px;
   }
 
   .machine:has(.machine-home__lcd) .footer-status__panel {
-    min-height: 24px;
+    min-height: 30px;
   }
 }
