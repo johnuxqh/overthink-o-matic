@@ -249,7 +249,7 @@ describe('P6 text user journey', () => {
     const { container, root } = await renderApp();
     expect(container.textContent).toContain('BARRY IS RECOVERING');
     expect(container.textContent).toContain('Final decision');
-    expect(container.querySelector('.lockdown-master-blueprint')).not.toBe(null);
+    expect(container.querySelector('.lockdown-machine-content')).not.toBe(null);
     expect(container.textContent).not.toContain('TRY ANOTHER PROTOCOL');
     expect(container.textContent).not.toContain('New Overthink');
     act(() => root.unmount());
@@ -356,7 +356,7 @@ describe('P6 text user journey', () => {
 
     expect(container.textContent).toContain('BARRY HAS TAKEN CONTROL');
     expect(container.textContent).toContain('Barry has become too committed. Barry made the final decision.');
-    expect(container.querySelector('.lockdown-master-blueprint--takeover')).not.toBe(null);
+    expect(container.querySelector('.lockdown-machine-content--takeover')).not.toBe(null);
     expect(container.textContent).toContain('DECISION LOCKED');
     expect(container.textContent).toContain('LOCKDOWN REMAINING');
     expect(container.textContent).toContain('Barry is recovering.');

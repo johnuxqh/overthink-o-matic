@@ -1535,3 +1535,111 @@ ul.receipt-card-blueprint__value {
     grid-column: 1 / -1;
   }
 }
+
+/* PASS 5.9G takeover and lockdown LCD content: reuses locked machine chrome. */
+.lockdown-machine-content,
+.lockdown-machine-content__header,
+.lockdown-machine-content__decision,
+.lockdown-machine-content__timer,
+.lockdown-machine-content__actions {
+  display: grid;
+  min-width: 0;
+}
+
+.lockdown-machine-content {
+  gap: 5px;
+}
+
+.lockdown-machine-content__header,
+.lockdown-machine-content__decision,
+.lockdown-machine-content__timer,
+.lockdown-machine-content__actions {
+  gap: 6px;
+}
+
+.lockdown-machine-content__header > *,
+.lockdown-machine-content__decision > *,
+.lockdown-machine-content__timer > *,
+.lockdown-machine-content__actions > * {
+  margin: 0;
+}
+
+.lockdown-machine-content__header {
+  text-align: center;
+}
+
+.lockdown-machine-content__header p:not(.machine-home__lcd-label) {
+  color: var(--machine-muted-cream);
+  font-size: 0.91rem;
+  line-height: 1.24;
+}
+
+.lockdown-machine-content__decision,
+.lockdown-machine-content__timer {
+  padding: 8px;
+  border: 1px solid rgba(57, 245, 255, 0.26);
+  border-radius: 9px;
+  background: rgba(1, 11, 13, 0.54);
+  font-size: 0.88rem;
+  line-height: 1.22;
+}
+
+.lockdown-machine-content__decision p:first-child,
+.lockdown-machine-content__timer p:first-child,
+.lockdown-machine-content__timer p:nth-child(2) {
+  color: var(--machine-cyan);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.lockdown-machine-content__answer {
+  color: #ffffff;
+  font-size: clamp(1.35rem, 6.4vw, 1.85rem);
+  font-weight: 900;
+  line-height: 1.04;
+  text-shadow: 0 0 9px rgba(255, 63, 180, 0.58), 0 0 14px rgba(57, 245, 255, 0.28);
+  overflow-wrap: anywhere;
+}
+
+.lockdown-machine-content__countdown {
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: clamp(2rem, 12vw, 3rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(229, 57, 53, 0.72), 0 0 16px rgba(255, 63, 180, 0.38);
+}
+
+.lockdown-machine-content__timer {
+  border-color: rgba(229, 57, 53, 0.36);
+  background:
+    linear-gradient(180deg, rgba(229, 57, 53, 0.1), rgba(1, 11, 13, 0.58)),
+    rgba(1, 11, 13, 0.54);
+}
+
+.lockdown-machine-content__actions {
+  grid-template-columns: 1fr;
+  padding-top: 2px;
+}
+
+.lockdown-machine-content__actions .machine-button {
+  min-height: 48px;
+  padding-inline: 10px;
+  font-size: clamp(0.68rem, 2.8vw, 0.82rem);
+  line-height: 1.12;
+  white-space: normal;
+}
+
+@media (min-width: 390px) {
+  .lockdown-machine-content__actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lockdown-machine-content__actions .machine-button:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}

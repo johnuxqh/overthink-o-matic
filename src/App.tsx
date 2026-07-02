@@ -47,6 +47,18 @@ const receiptFooterStatusPanels: FooterStatusPanel[] = [
   { label: 'SHARE', text: 'Share system ready' },
 ];
 
+const takeoverFooterStatusPanels: FooterStatusPanel[] = [
+  { label: 'STATUS', text: 'Barry takeover' },
+  { label: 'CONTAINMENT', text: 'Containment active' },
+  { label: 'STABILITY', text: 'System unstable' },
+];
+
+const lockdownFooterStatusPanels: FooterStatusPanel[] = [
+  { label: 'STATUS', text: 'Barry recovering' },
+  { label: 'COOLING', text: 'Machine cooling' },
+  { label: 'INPUTS', text: 'Inputs locked' },
+];
+
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.ceil(ms / 1000);
@@ -323,8 +335,8 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' || currentScreen === 'share-result' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' || currentScreen === 'share-result'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : currentScreen === 'thinking' ? thinkingFooterStatusPanels : currentScreen === 'result' ? resultFooterStatusPanels : currentScreen === 'share-result' ? receiptFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
-          <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
+      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' || currentScreen === 'share-result' || currentScreen === 'barry-takeover' || currentScreen === 'lockdown' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' || currentScreen === 'share-result' || currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : currentScreen === 'thinking' ? thinkingFooterStatusPanels : currentScreen === 'result' ? resultFooterStatusPanels : currentScreen === 'share-result' ? receiptFooterStatusPanels : currentScreen === 'barry-takeover' ? takeoverFooterStatusPanels : currentScreen === 'lockdown' ? lockdownFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
+          {((currentScreen !== 'barry-takeover' && currentScreen !== 'lockdown') || lockdownRemainingMs <= 0) && <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>}
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
           {adminTestMode && <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('admin')}>ADMIN</button>}
@@ -569,59 +581,75 @@ export function App() {
         )}
 
         {currentScreen === 'barry-takeover' && decision?.lockdown && (
-          <section className="lockdown-master-blueprint lockdown-master-blueprint--takeover" aria-label="Barry takeover lockdown">
-            <section className="lockdown-master-blueprint__header">
-              <h2>BARRY HAS TAKEN CONTROL</h2>
-              <p>Barry has become too committed. Barry made the final decision.</p>
-            </section>
+          <section className="lockdown-machine-content lockdown-machine-content--takeover" aria-label="Barry takeover lockdown">
+            <BarryWindow>
+              <p>OPERATOR WINDOW</p>
+              <p>Barry has become too committed. Containment procedures are no longer theoretical.</p>
+            </BarryWindow>
 
-            <section className="lockdown-master-blueprint__decision" aria-label="Final decision">
-              <p>Final decision</p>
-              <p className="lockdown-master-blueprint__answer">{decision.lockdown.finalAnswer}</p>
-              {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            </section>
+            <MachineLcd>
+              <div className="lockdown-machine-content__header">
+                <p className="machine-home__lcd-label">Main LCD Display</p>
+                <h2>BARRY HAS TAKEN CONTROL</h2>
+                <p>Barry has become too committed. Barry made the final decision.</p>
+              </div>
 
-            <section className="lockdown-master-blueprint__timer" aria-label="Lockdown timer">
-              <p>DECISION LOCKED</p>
-              <p>LOCKDOWN REMAINING</p>
-              <p className="lockdown-master-blueprint__countdown">{formatCountdown(lockdownRemainingMs)}</p>
-              <p>Barry is recovering.</p>
-              <p>{getLockdownMessage(decision, now)}</p>
-            </section>
+              <section className="lockdown-machine-content__decision" aria-label="Final decision">
+                <p>Final decision</p>
+                <p className="lockdown-machine-content__answer">{decision.lockdown.finalAnswer}</p>
+                {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
+              </section>
 
-            <section className="lockdown-master-blueprint__actions" aria-label="Lockdown actions">
-              <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>
-              <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
-            </section>
+              <section className="lockdown-machine-content__timer" aria-label="Lockdown timer">
+                <p>DECISION LOCKED</p>
+                <p>LOCKDOWN REMAINING</p>
+                <p className="lockdown-machine-content__countdown">{formatCountdown(lockdownRemainingMs)}</p>
+                <p>Barry is recovering.</p>
+                <p>{getLockdownMessage(decision, now)}</p>
+              </section>
+
+              <section className="lockdown-machine-content__actions" aria-label="Lockdown actions">
+                <button className="machine-button machine-button--primary" type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>
+                <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+              </section>
+            </MachineLcd>
           </section>
         )}
 
         {currentScreen === 'lockdown' && decision?.lockdown && (
-          <section className="lockdown-master-blueprint" aria-label="Barry recovery lockdown">
-            <section className="lockdown-master-blueprint__header">
-              <h2>BARRY IS RECOVERING</h2>
-              <p>Barry has become too committed. Barry made the final decision.</p>
-            </section>
+          <section className="lockdown-machine-content" aria-label="Barry recovery lockdown">
+            <BarryWindow>
+              <p>OPERATOR WINDOW</p>
+              <p>Barry has become too committed. Containment procedures are no longer theoretical.</p>
+            </BarryWindow>
 
-            <section className="lockdown-master-blueprint__decision" aria-label="Final decision">
-              <p>Final decision</p>
-              <p className="lockdown-master-blueprint__answer">{decision.lockdown.finalAnswer}</p>
-              {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
-            </section>
+            <MachineLcd>
+              <div className="lockdown-machine-content__header">
+                <p className="machine-home__lcd-label">Main LCD Display</p>
+                <h2>BARRY IS RECOVERING</h2>
+                <p>Barry has become too committed. Barry made the final decision.</p>
+              </div>
 
-            <section className="lockdown-master-blueprint__timer" aria-label="Lockdown timer">
-              <p>DECISION LOCKED</p>
-              <p>LOCKDOWN REMAINING</p>
-              <p className="lockdown-master-blueprint__countdown">{formatCountdown(lockdownRemainingMs)}</p>
-              <p>No new overthinks until Barry recovers.</p>
-              <p>{getLockdownMessage(decision, now)}</p>
-            </section>
+              <section className="lockdown-machine-content__decision" aria-label="Final decision">
+                <p>Final decision</p>
+                <p className="lockdown-machine-content__answer">{decision.lockdown.finalAnswer}</p>
+                {decision.lockdown.finalMachineQuote && <p>{decision.lockdown.finalMachineQuote}</p>}
+              </section>
 
-            <section className="lockdown-master-blueprint__actions" aria-label="Lockdown actions">
-              {decision.lockdown.finalAnswer && <button type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>}
-              <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
-              {lockdownRemainingMs <= 0 && <button type="button" onClick={goHome}>MACHINE</button>}
-            </section>
+              <section className="lockdown-machine-content__timer" aria-label="Lockdown timer">
+                <p>DECISION LOCKED</p>
+                <p>LOCKDOWN REMAINING</p>
+                <p className="lockdown-machine-content__countdown">{formatCountdown(lockdownRemainingMs)}</p>
+                <p>No new overthinks until Barry recovers.</p>
+                <p>{getLockdownMessage(decision, now)}</p>
+              </section>
+
+              <section className="lockdown-machine-content__actions" aria-label="Lockdown actions">
+                {decision.lockdown.finalAnswer && <button className="machine-button machine-button--primary" type="button" onClick={() => openShareResult(decision)}>SHARE YOUR OVERTHINK</button>}
+                <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
+                {lockdownRemainingMs <= 0 && <button className="machine-button machine-button--success" type="button" onClick={goHome}>MACHINE</button>}
+              </section>
+            </MachineLcd>
           </section>
         )}
 
