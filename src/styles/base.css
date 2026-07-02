@@ -92,10 +92,10 @@ a:focus-visible {
 .app-shell {
   position: relative;
   z-index: 1;
-  width: min(100%, 446px);
-  max-width: 446px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
-  padding: var(--space-1) var(--space-2) var(--space-2);
+  padding: 0 2px 2px;
 }
 
 .machine-page-decor {
@@ -393,7 +393,7 @@ button:disabled,
 
 @media (min-width: 390px) {
   .app-shell {
-    padding: 8px;
+    padding: 0 2px 2px;
   }
 
   .machine-control-deck {
@@ -474,7 +474,7 @@ button:disabled,
   isolation: isolate;
   display: grid;
   justify-items: center;
-  width: min(100%, 430px);
+  width: var(--machine-cabinet-width);
   margin-inline: auto;
   overflow: visible;
 }
@@ -506,9 +506,9 @@ button:disabled,
   position: relative;
   z-index: 1;
   display: grid;
-  width: min(100%, 390px);
+  width: var(--machine-cabinet-width);
   min-width: 0;
-  padding: 0 4px 5px;
+  padding: 0;
   gap: 0;
   overflow: visible;
   background: transparent;
@@ -543,16 +543,16 @@ button:disabled,
 .machine-logo {
   display: block;
   width: 100%;
-  max-width: 386px;
+  max-width: none;
   height: auto;
   justify-self: center;
 }
 
 .powered-strip {
   width: 100%;
-  min-height: 34px;
-  margin-top: -3px;
-  padding: 8px 24px 7px;
+  min-height: 38px;
+  margin-top: -5px;
+  padding: 9px 26px 8px;
   place-items: center;
   color: var(--machine-cream);
   font-size: clamp(0.62rem, 2.5vw, 0.78rem);
@@ -589,9 +589,9 @@ button:disabled,
 .barry-frame {
   position: relative;
   width: 100%;
-  min-height: 100px;
-  margin-top: -3px;
-  padding: 15px 35% 13px 22px;
+  min-height: 108px;
+  margin-top: -5px;
+  padding: 16px 35% 14px 24px;
   align-content: center;
   color: var(--machine-cream);
   background-image: var(--machine-barry-window-frame);
@@ -648,7 +648,7 @@ button:disabled,
 .lcd__top,
 .lcd__bottom {
   width: 100%;
-  min-height: 31px;
+  height: 31px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
@@ -656,16 +656,15 @@ button:disabled,
 }
 
 .lcd__top {
-  margin-top: -3px;
+  margin-top: -5px;
   background-image: var(--machine-lcd-top);
 }
 
 .lcd__middle {
   width: 100%;
-  min-height: 190px;
   margin-block: -2px;
   gap: var(--space-2);
-  padding: 2px clamp(14px, 4.7vw, 20px);
+  padding: 2px clamp(16px, 5vw, 22px);
   color: var(--machine-cream);
   background-image: var(--machine-lcd-middle);
   background-repeat: repeat-y;
@@ -728,8 +727,8 @@ button:disabled,
 .primary-cta,
 .machine-home__cta {
   width: 100%;
-  min-height: 58px;
-  margin-top: -3px;
+  min-height: 62px;
+  margin-top: -5px;
   padding: 13px 24px;
   border: 0;
   border-radius: 0;
@@ -745,13 +744,13 @@ button:disabled,
 
 .machine-footer {
   width: 100%;
-  margin-top: -3px;
+  margin-top: -6px;
 }
 
 .footer-frame {
   position: relative;
   gap: 5px;
-  padding: 17px 8px 15px;
+  padding: 18px 8px 16px;
   border: 0;
   border-radius: 0 0 18px 18px;
   background: linear-gradient(180deg, rgba(23, 18, 16, 0.92), rgba(7, 6, 6, 0.98));
@@ -810,7 +809,7 @@ button:disabled,
   z-index: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 5px;
-  padding: 0 12px;
+  padding: 0 14px;
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -847,7 +846,7 @@ button:disabled,
   z-index: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
-  padding: 0 12px;
+  padding: 0 14px;
 }
 
 .footer-status__panel {
@@ -877,7 +876,7 @@ button:disabled,
 
 @media (max-width: 389px) {
   .machine {
-    width: calc(100vw - 10px);
+    width: calc(100vw - 4px);
   }
 
   .machine-stage__rail {
@@ -914,11 +913,11 @@ button:disabled,
 
 @media (min-width: 520px) {
   .machine-stage {
-    width: 430px;
+    width: var(--machine-cabinet-width);
   }
 
   .machine {
-    width: 390px;
+    width: var(--machine-cabinet-width);
   }
 
   .machine-stage__rail--left {
