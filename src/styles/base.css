@@ -1710,7 +1710,7 @@ button:disabled,
   }
 }
 
-/* PIXEL PASS 2 — Home vertical geometry match against locked HTML. */
+/* PIXEL PASS 3 — Home LCD flex and Barry proportion correction. */
 .machine:has(.machine-home__lcd) .powered-strip {
   min-height: 34px;
   margin-top: -7px;
@@ -1718,21 +1718,21 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .barry-frame {
-  min-height: 78px;
+  min-height: 86px;
   margin-top: -11px;
-  padding: 8px 34% 8px 20px;
+  padding: 10px 34% 10px 20px;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__copy {
-  gap: 2px;
+  gap: 3px;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
-  line-height: 1.12;
+  line-height: 1.16;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__portrait {
-  inset-block: 18%;
+  inset-block: 16%;
 }
 
 .machine:has(.machine-home__lcd) .lcd__top,
@@ -1745,17 +1745,17 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .lcd__middle {
-  gap: 3px;
+  gap: 4px;
   margin-block: -3px;
-  padding-inline: clamp(14px, 4.2vw, 20px);
+  padding: 2px clamp(15px, 4.4vw, 21px) 3px;
 }
 
 .machine-home__lcd .lcd-content {
-  gap: 3px;
+  gap: 4px;
 }
 
 .machine-home__lcd .lcd-content__header {
-  gap: 2px;
+  gap: 3px;
 }
 
 .machine:has(.machine-home__lcd) .lcd h2 {
@@ -1777,8 +1777,8 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .machine-home__input textarea {
-  min-height: 70px;
-  padding-block: 8px;
+  min-height: 78px;
+  padding-block: 9px;
 }
 
 .machine:has(.machine-home__lcd) .primary-cta,
@@ -1839,8 +1839,8 @@ button:disabled,
 
 @media (max-width: 374px) {
   .machine:has(.machine-home__lcd) .barry-frame {
-    min-height: 80px;
-    padding: 9px 34% 8px 17px;
+    min-height: 84px;
+    padding: 10px 34% 9px 17px;
   }
 
   .machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
@@ -1848,7 +1848,7 @@ button:disabled,
   }
 
   .machine:has(.machine-home__lcd) .machine-home__input textarea {
-    min-height: 68px;
+    min-height: 74px;
   }
 
   .machine:has(.machine-home__lcd) .footer-nav__button {
