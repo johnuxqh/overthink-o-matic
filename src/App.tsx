@@ -35,6 +35,12 @@ const thinkingFooterStatusPanels: FooterStatusPanel[] = [
   { label: 'BARRY', text: 'Barry engaged' },
 ];
 
+const resultFooterStatusPanels: FooterStatusPanel[] = [
+  { label: 'STATUS', text: 'Decision generated' },
+  { label: 'QUEUE', text: 'Awaiting acceptance' },
+  { label: 'STABILITY', text: 'Machine stable' },
+];
+
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.ceil(ms / 1000);
@@ -311,7 +317,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : currentScreen === 'thinking' ? thinkingFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : currentScreen === 'thinking' ? thinkingFooterStatusPanels : currentScreen === 'result' ? resultFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -516,35 +522,43 @@ export function App() {
         )}
 
         {currentScreen === 'result' && latestResult && decision && (
-          <section className="result-master-blueprint" aria-label="Machine result">
-            <section className="result-master-blueprint__hero">
-              <h2>THE MACHINE SAYS...</h2>
-              <p className="result-master-blueprint__answer">{latestResult.selectedOption}</p>
-            </section>
+          <section className="result-machine-content" aria-label="Machine result">
+            <BarryWindow>
+              <p>OPERATOR WINDOW</p>
+              <p>Barry has completed the highly questionable analysis.</p>
+            </BarryWindow>
 
-            <section className="result-master-blueprint__details" aria-label="Result details">
-              <p><span>PROTOCOL:</span> {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId}</p>
-              <p><span>STATUS:</span> OUTPUT STABLE</p>
-              <h3>Barry's Notes</h3>
-              <p>{latestResult.machineQuote}</p>
-              <p><span>COMMITMENT LEVEL:</span> {getBarryCommitment(decision).stage}</p>
-              <p><span>ATTEMPTS REMAINING:</span> {attemptsRemaining}</p>
-              <p className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</p>
-            </section>
+            <MachineLcd>
+              <div className="result-machine-content__header">
+                <p className="machine-home__lcd-label">Main LCD Display</p>
+                <h2>THE MACHINE SAYS...</h2>
+                <p className="result-machine-content__answer">{latestResult.selectedOption}</p>
+              </div>
 
-            <section className="result-master-blueprint__spiral" aria-label="Machine audit log">
-              <p className="module-label">MACHINE AUDIT LOG</p>
-              <h3>OVERTHINK SPIRAL</h3>
-              {decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}
-              {decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}
-              {decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}
-              <p>{getEscalationMessage(decision)}</p>
-            </section>
+              <section className="result-machine-content__details" aria-label="Result details">
+                <p><span>PROTOCOL:</span> {latestGame?.id === GameId.ChaosGoblin ? 'Chaos Engine' : latestGame?.name ?? latestResult.gameId}</p>
+                <p><span>STATUS:</span> OUTPUT STABLE</p>
+                <h3>Barry's Notes</h3>
+                <p>{latestResult.machineQuote}</p>
+                <p><span>COMMITMENT LEVEL:</span> {getBarryCommitment(decision).stage}</p>
+                <p><span>ATTEMPTS REMAINING:</span> {attemptsRemaining}</p>
+                <p className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</p>
+              </section>
 
-            <section className="result-master-blueprint__actions" aria-label="Result actions">
-              <button className="machine-button machine-button--success" type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
-              <button className="machine-button machine-button--protocol" type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
-            </section>
+              <section className="result-machine-content__spiral" aria-label="Machine audit log">
+                <p className="module-label">MACHINE AUDIT LOG</p>
+                <h3>OVERTHINK SPIRAL</h3>
+                {decision.gamesPlayed.map((attempt, index) => { const commitment = getBarryCommitment({ ...decision, gamesPlayed: decision.gamesPlayed.slice(0, index + 1) }); const rejected = decision.rejectedResultIds.includes(attempt.id); return <p key={attempt.id}>Attempt {index + 1}: {attempt.gameId === GameId.ChaosGoblin ? 'Chaos Engine' : attempt.gameId} → {attempt.selectedOptionText} — {rejected ? 'Rejected' : 'Current result'} — Barry is {commitment.stage}</p>; })}
+                {decision.gamesPlayed.length >= 3 && <p>You appear to be circling the bowl.</p>}
+                {decision.gamesPlayed.length >= 5 && <p>Barry has reviewed the spiral and is now taking control.</p>}
+                <p>{getEscalationMessage(decision)}</p>
+              </section>
+
+              <section className="result-machine-content__actions" aria-label="Result actions">
+                <button className="machine-button machine-button--success" type="button" onClick={acceptLatestDecision}>ACCEPT THE ANSWER</button>
+                <button className="machine-button machine-button--protocol" type="button" onClick={rejectLatestDecision} disabled={!canTryAgain}>TRY ANOTHER PROTOCOL</button>
+              </section>
+            </MachineLcd>
           </section>
         )}
 
