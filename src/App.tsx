@@ -391,19 +391,17 @@ export function App() {
             <MachineLcd>
               <div className="lcd-content lcd-content--compact">
                 <div className="lcd-content__header">
-                  <p className="lcd-content__eyebrow machine-home__lcd-label">Main LCD Display</p>
                   <h2 className="lcd-content__title">STATE YOUR OVERTHINK</h2>
-                  <p className="lcd-content__body">Type the tiny crisis. Barry will inflate it to machine-grade importance.</p>
+                  <p className="lcd-content__eyebrow machine-home__lcd-subtitle">- WHAT ARE WE OVERTHINKING TODAY? -</p>
                 </div>
 
-                <div className="machine-home__notes" aria-label="Barry notes">
-                  <h3>Barry's Notes</h3>
-                  <p>Feed Barry one low-stakes decision. He will pretend this is science.</p>
-                </div>
+                <p className="machine-home__divider" aria-hidden="true">◆ ◆ ◆</p>
+
+                <p className="lcd-content__body machine-home__body">FEED THE MACHINE YOUR CRISIS, BARRY IS READY AND WAITING TO DO HIS THING AND PULL THE LEVERS, PUSH THE BUTTONS AND PRETEND THIS IS SUPER SCIENTIFIC!</p>
 
                 <label className="machine-home__input">
-                  Decision input
-                  <textarea value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} />
+                  <span className="sr-only">State your overthink</span>
+                  <textarea aria-label="State your overthink" placeholder="Today’s decision is?" value={problemText} onChange={(event: Event) => setProblemText((event.target as HTMLTextAreaElement).value)} />
                 </label>
               </div>
             </MachineLcd>
