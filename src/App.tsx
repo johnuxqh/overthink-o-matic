@@ -41,6 +41,12 @@ const resultFooterStatusPanels: FooterStatusPanel[] = [
   { label: 'STABILITY', text: 'Machine stable' },
 ];
 
+const receiptFooterStatusPanels: FooterStatusPanel[] = [
+  { label: 'STATUS', text: 'Receipt printed' },
+  { label: 'ARCHIVE', text: 'Decision archived' },
+  { label: 'SHARE', text: 'Share system ready' },
+];
+
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.ceil(ms / 1000);
@@ -317,7 +323,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : currentScreen === 'thinking' ? thinkingFooterStatusPanels : currentScreen === 'result' ? resultFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' || currentScreen === 'share-result' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' || currentScreen === 'result' || currentScreen === 'share-result'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : currentScreen === 'thinking' ? thinkingFooterStatusPanels : currentScreen === 'result' ? resultFooterStatusPanels : currentScreen === 'share-result' ? receiptFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -654,27 +660,35 @@ export function App() {
         )}
 
         {currentScreen === 'share-result' && shareData && (
-          <section className="receipt-master-blueprint">
-            <div className="receipt-master-blueprint__header">
-              <h2>SHARE YOUR OVERTHINK</h2>
-              <p>Print a cursed arcade receipt for this overthink.</p>
-            </div>
+          <section className="receipt-machine-content" aria-label="Share your overthink receipt">
+            <BarryWindow>
+              <p>OPERATOR WINDOW</p>
+              <p>Barry printed a receipt because apparently this needed documentation.</p>
+            </BarryWindow>
 
-            <div ref={(element: HTMLDivElement | null) => { shareCardElement = element; }}>
-              <ShareResultCard data={shareData} />
-            </div>
+            <MachineLcd>
+              <div className="receipt-machine-content__header">
+                <p className="machine-home__lcd-label">Main LCD Display</p>
+                <h2>SHARE YOUR OVERTHINK</h2>
+                <p>Print a cursed arcade receipt for this overthink.</p>
+              </div>
 
-            <section className="receipt-master-blueprint__actions" aria-label="Receipt actions">
-              {canDownloadShareImage ? (
-                <button type="button" onClick={downloadShareImage}>DOWNLOAD RECEIPT</button>
-              ) : (
-                <p>{shareFallbackMessage}</p>
-              )}
-              <p>Receipt fallback: {shareFallbackMessage}.</p>
-              <button type="button" onClick={() => setCurrentScreen('previous-overthinks')}>BACK TO PREVIOUS OVERTHINKS</button>
-              {!activeLockdown && <button className="machine-button machine-button--success" type="button" onClick={goHome}>NEW OVERTHINK</button>}
-              {!activeLockdown && <button type="button" onClick={goHome}>MACHINE</button>}
-            </section>
+              <div className="receipt-machine-content__card" ref={(element: HTMLDivElement | null) => { shareCardElement = element; }}>
+                <ShareResultCard data={shareData} />
+              </div>
+
+              <section className="receipt-machine-content__actions" aria-label="Receipt actions">
+                {canDownloadShareImage ? (
+                  <button className="machine-button machine-button--primary" type="button" onClick={downloadShareImage}>DOWNLOAD RECEIPT</button>
+                ) : (
+                  <p>{shareFallbackMessage}</p>
+                )}
+                <p>Receipt fallback: {shareFallbackMessage}.</p>
+                <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>BACK TO PREVIOUS OVERTHINKS</button>
+                {!activeLockdown && <button className="machine-button machine-button--success" type="button" onClick={goHome}>NEW OVERTHINK</button>}
+                {!activeLockdown && <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>}
+              </section>
+            </MachineLcd>
           </section>
         )}
 
