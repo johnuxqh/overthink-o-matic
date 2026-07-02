@@ -11,6 +11,8 @@
   --machine-cream: #ffe6a3;
   --machine-muted-cream: #c9b57b;
   --machine-shadow: rgba(0, 0, 0, 0.72);
+  --machine-shared-width: min(100%, 430px);
+  --machine-inner-gutter: clamp(4px, 1.6vw, 8px);
 }
 
 * {
@@ -81,7 +83,7 @@ a:focus-visible {
   width: min(100%, 470px);
   max-width: 470px;
   margin: 0 auto;
-  padding: 7px 4vw 8px;
+  padding: 6px clamp(4px, 2vw, 8px) 8px;
 }
 
 .machine-page-decor {
@@ -690,9 +692,9 @@ ul.receipt-card-blueprint__value {
   position: relative;
   overflow: hidden;
   display: grid;
-  gap: 5px;
+  gap: 4px;
   width: 100%;
-  padding: 6px;
+  padding: var(--machine-inner-gutter);
   border-radius: 24px 24px 16px 16px;
   background:
     radial-gradient(circle at 50% 0%, rgba(57, 245, 255, 0.08), transparent 16rem),
@@ -731,9 +733,11 @@ ul.receipt-card-blueprint__value {
 
 .powered-strip,
 .machine-header .machine-powered-strip {
-  min-height: 35px;
+  min-height: 34px;
+  width: var(--machine-shared-width);
+  justify-self: center;
   padding: 7px 18px;
-  margin-top: -3px;
+  margin-top: -4px;
 }
 
 .machine-main {
@@ -746,8 +750,10 @@ ul.receipt-card-blueprint__value {
 
 .barry-frame,
 .machine .barry-window {
-  min-height: 104px;
-  padding: 17px 38% 15px 22px;
+  width: var(--machine-shared-width);
+  justify-self: center;
+  min-height: 98px;
+  padding: 15px 36% 14px 20px;
   align-content: center;
   gap: 5px;
   border: 0;
@@ -798,8 +804,11 @@ ul.receipt-card-blueprint__value {
 
 .lcd__middle,
 .machine-home__lcd-display {
+  width: var(--machine-shared-width);
+  justify-self: center;
+  min-height: 224px;
   gap: 6px;
-  padding: 25px 20px 23px;
+  padding: 24px clamp(14px, 4.8vw, 20px) 22px;
   border-radius: 14px;
   background:
     var(--machine-lcd-top) top center / 100% 31px no-repeat,
@@ -848,7 +857,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .machine-home__input textarea {
-  min-height: 112px;
+  min-height: 104px;
   border-color: rgba(57, 245, 255, 0.58);
   border-radius: 10px;
   font-weight: 400;
@@ -859,8 +868,9 @@ ul.receipt-card-blueprint__value {
 
 .primary-cta,
 .machine-home__cta {
-  width: 100%;
-  min-height: 64px;
+  width: var(--machine-shared-width);
+  justify-self: center;
+  min-height: 58px;
   padding: 13px 24px;
   border: 0;
   border-radius: 12px;
@@ -868,13 +878,15 @@ ul.receipt-card-blueprint__value {
 }
 
 .machine-footer {
-  margin-top: -4px;
+  width: var(--machine-shared-width);
+  justify-self: center;
+  margin-top: -5px;
 }
 
 .footer-frame {
   position: relative;
-  gap: 6px;
-  padding: 18px 9px 16px;
+  gap: 5px;
+  padding: 16px 8px 14px;
   border: 0;
   border-radius: 16px;
   background:
@@ -946,7 +958,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .footer-status__panel {
-  min-height: 42px;
+  min-height: 39px;
   align-content: center;
   gap: 2px;
   padding: 6px;
@@ -981,6 +993,37 @@ ul.receipt-card-blueprint__value {
   }
 }
 
+
+@media (max-width: 374px) {
+  .machine {
+    --machine-inner-gutter: 4px;
+  }
+
+  .barry-frame,
+  .machine .barry-window {
+    min-height: 94px;
+    padding: 14px 34% 13px 17px;
+  }
+
+  .barry-frame p:last-child {
+    font-size: 0.86rem;
+  }
+
+  .lcd__middle,
+  .machine-home__lcd-display {
+    min-height: 210px;
+    padding: 22px 12px 20px;
+  }
+
+  .footer-nav .machine-button {
+    min-height: 44px;
+  }
+
+  .footer-status__panel {
+    min-height: 36px;
+  }
+}
+
 @media (min-width: 520px) {
   .machine {
     padding: 8px;
@@ -1003,13 +1046,13 @@ ul.receipt-card-blueprint__value {
 }
 
 .options-machine-content {
-  gap: 5px;
+  gap: 4px;
 }
 
 .options-machine-content__header,
 .options-machine-content__list,
 .options-machine-content__actions {
-  gap: 7px;
+  gap: 6px;
 }
 
 .options-machine-content__header > *,
@@ -1039,8 +1082,8 @@ ul.receipt-card-blueprint__value {
 }
 
 .options-machine-content__field input {
-  min-height: 44px;
-  padding: 8px 9px;
+  min-height: 42px;
+  padding: 7px 9px;
   border-color: rgba(57, 245, 255, 0.58);
   border-radius: 9px;
   font-size: 0.95rem;
@@ -1053,8 +1096,8 @@ ul.receipt-card-blueprint__value {
 .options-machine-content__remove {
   width: auto;
   min-width: 70px;
-  min-height: 44px;
-  padding: 7px 8px;
+  min-height: 42px;
+  padding: 5px 8px;
   font-size: clamp(0.62rem, 2.55vw, 0.72rem);
   line-height: 1.1;
 }
@@ -1065,7 +1108,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .options-machine-content__actions .machine-button {
-  min-height: 48px;
+  min-height: 46px;
   padding-inline: 10px;
   font-size: clamp(0.72rem, 3vw, 0.86rem);
   line-height: 1.12;
@@ -1171,8 +1214,8 @@ ul.receipt-card-blueprint__value {
   grid-template-columns: 22px minmax(0, 1fr) auto;
   gap: 6px;
   align-items: center;
-  min-height: 48px;
-  padding: 5px 6px;
+  min-height: 46px;
+  padding: 4px 6px;
 }
 
 .protocol-machine-content__emblem {
@@ -1202,7 +1245,7 @@ ul.receipt-card-blueprint__value {
 .protocol-machine-content__run {
   width: auto;
   min-height: 42px;
-  padding: 6px 8px;
+  padding: 5px 8px;
   font-size: 0.76rem;
   line-height: 1;
 }
@@ -1259,7 +1302,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .thinking-machine-content {
-  gap: 5px;
+  gap: 4px;
 }
 
 .thinking-machine-content__header,
@@ -1324,7 +1367,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .result-machine-content {
-  gap: 5px;
+  gap: 4px;
 }
 
 .result-machine-content__header,
@@ -1390,7 +1433,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .result-machine-content__actions .machine-button {
-  min-height: 48px;
+  min-height: 46px;
   padding-inline: 10px;
   font-size: clamp(0.72rem, 3vw, 0.86rem);
   line-height: 1.12;
@@ -1416,7 +1459,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .receipt-machine-content {
-  gap: 5px;
+  gap: 4px;
 }
 
 .receipt-machine-content__header,
@@ -1511,7 +1554,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .receipt-machine-content__actions .machine-button {
-  min-height: 48px;
+  min-height: 46px;
   padding-inline: 10px;
   font-size: clamp(0.68rem, 2.8vw, 0.82rem);
   line-height: 1.12;
@@ -1547,7 +1590,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .lockdown-machine-content {
-  gap: 5px;
+  gap: 4px;
 }
 
 .lockdown-machine-content__header,
@@ -1627,7 +1670,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .lockdown-machine-content__actions .machine-button {
-  min-height: 48px;
+  min-height: 46px;
   padding-inline: 10px;
   font-size: clamp(0.68rem, 2.8vw, 0.82rem);
   line-height: 1.12;
