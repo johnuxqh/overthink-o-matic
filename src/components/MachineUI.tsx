@@ -8,9 +8,10 @@ interface MachineShellProps {
   emergency?: boolean;
   homeArt?: boolean;
   homeReset?: boolean;
+  footerStatusPanels?: FooterStatusPanel[];
 }
 
-interface FooterStatusPanel {
+export interface FooterStatusPanel {
   label?: string;
   text?: ReactNode;
 }
@@ -36,15 +37,15 @@ const machineAssetStyle = {
   '--machine-panel-right': `url(${machineAssets.buttonPanelFrameRight})`,
 };
 
-export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false, homeArt = false }: MachineShellProps) {
+export function MachineShell({ children, statusLine = 'Machine containment acceptable', controls, emergency = false, homeArt = false, footerStatusPanels }: MachineShellProps) {
   if (homeArt) {
     return (
       <MachineLayout>
         <MachineHeader statusLine={statusLine} />
-        <main className="machine-main" role="region" aria-label="Machine home display">
+        <main className="machine-main" role="region" aria-label="Machine display">
           {children}
         </main>
-        <MachineFooter controls={controls} />
+        <MachineFooter controls={controls} statusPanels={footerStatusPanels} />
       </MachineLayout>
     );
   }

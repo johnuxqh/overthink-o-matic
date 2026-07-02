@@ -9,13 +9,19 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
-import { BarryStatus, BarryWindow, MachineLcd, MachinePrimaryCta, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
+import { BarryStatus, BarryWindow, FooterStatusPanel, MachineLcd, MachinePrimaryCta, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin', 'about-machine'] as const;
 export type AppScreen = (typeof screens)[number];
 
 const storageService = createLocalStorageService();
+
+const optionsFooterStatusPanels: FooterStatusPanel[] = [
+  { label: 'STATUS', text: 'Options detected' },
+  { label: 'QUEUE', text: 'Input queue active' },
+  { label: 'LOCK', text: 'Awaiting lock-in' },
+];
 
 
 function formatCountdown(ms: number): string {
@@ -293,7 +299,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine={currentScreen === 'home' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home'} homeReset={currentScreen === 'home'} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -369,28 +375,36 @@ export function App() {
         )}
 
         {currentScreen === 'options' && (
-          <form className="options-master-blueprint" onSubmit={lockOptions}>
-            <div className="options-master-blueprint__header">
-              <h2>OPTIONS DETECTED</h2>
+          <form className="options-machine-content" onSubmit={lockOptions} aria-label="Options detected">
+            <BarryWindow>
+              <p>OPERATOR WINDOW</p>
               <p>Barry only chooses from what you feed him. Do not blame the badger.</p>
-            </div>
+            </BarryWindow>
 
-            <div className="options-master-blueprint__list">
-              {optionRows.map((option, index) => (
-                <div className="options-master-blueprint__row" key={option.id}>
-                  <label className="options-master-blueprint__field">
-                    {option.label}
-                    <input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} />
-                  </label>
-                  <button type="button" onClick={() => removeOption(index)} disabled={optionTexts.length <= 2}>Remove</button>
-                </div>
-              ))}
-            </div>
+            <MachineLcd>
+              <div className="options-machine-content__header">
+                <p className="machine-home__lcd-label">Main LCD Display</p>
+                <h2>OPTIONS DETECTED</h2>
+                <p>Feed Barry at least two possible outcomes. He will treat them all with inappropriate urgency.</p>
+              </div>
 
-            <div className="options-master-blueprint__actions">
-              <button className="machine-button machine-button--secondary" type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
-              <button className="machine-button machine-button--primary" type="submit">LOCK IN OPTIONS</button>
-            </div>
+              <div className="options-machine-content__list">
+                {optionRows.map((option, index) => (
+                  <div className="options-machine-content__row" key={option.id}>
+                    <label className="options-machine-content__field">
+                      <span>{option.label}</span>
+                      <input value={option.value} onChange={(event: Event) => updateOption(index, (event.target as HTMLInputElement).value)} />
+                    </label>
+                    <button className="machine-button machine-button--secondary options-machine-content__remove" type="button" onClick={() => removeOption(index)} disabled={optionTexts.length <= 2}>Remove</button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="options-machine-content__actions">
+                <button className="machine-button machine-button--secondary" type="button" onClick={() => setOptionTexts((current) => [...current, ''])}>ADD ANOTHER OPTION</button>
+                <button className="machine-button machine-button--primary" type="submit">LOCK IN OPTIONS</button>
+              </div>
+            </MachineLcd>
           </form>
         )}
 
