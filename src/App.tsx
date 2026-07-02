@@ -29,6 +29,12 @@ const protocolFooterStatusPanels: FooterStatusPanel[] = [
   { label: 'QUEUE', text: 'Awaiting protocol' },
 ];
 
+const thinkingFooterStatusPanels: FooterStatusPanel[] = [
+  { label: 'STATUS', text: 'Processing' },
+  { label: 'QUEUE', text: 'Protocol active' },
+  { label: 'BARRY', text: 'Barry engaged' },
+];
+
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.ceil(ms / 1000);
@@ -305,7 +311,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' || currentScreen === 'thinking'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : currentScreen === 'thinking' ? thinkingFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -479,22 +485,33 @@ export function App() {
         )}
 
         {currentScreen === 'thinking' && thinkingRun && (
-          <section className="thinking-master-blueprint" aria-live="polite">
-            <div className="thinking-master-blueprint__header">
-              <h2>BARRY IS THINKING</h2>
-              <p>Protocol: {thinkingRun.protocolName}</p>
-            </div>
+          <section className="thinking-machine-content" aria-live="polite" aria-label="Barry thinking">
+            <BarryWindow>
+              <p>OPERATOR WINDOW</p>
+              <p>Barry is pulling levers, shaking things, and pretending this is a controlled process.</p>
+            </BarryWindow>
 
-            <section className="thinking-master-blueprint__status" aria-label="Machine processing status">
-              <p>Status: Processing</p>
-              <p>Barry is pulling levers, shaking things, and ignoring best practices.</p>
-            </section>
+            <MachineLcd>
+              <div className="thinking-machine-content__header">
+                <p className="machine-home__lcd-label">Main LCD Display</p>
+                <h2>BARRY IS THINKING</h2>
+              </div>
 
-            <div className="thinking-master-blueprint__progress" aria-label="Machine progress">
-              <p>{thinkingRun.progress}</p>
-              <p>Barry is consulting highly questionable science.</p>
-              <p>Switches are flipping. Gauges are moving. This may or may not help.</p>
-            </div>
+              <div className="thinking-machine-content__readout">
+                <p><span>Protocol:</span> {thinkingRun.protocolName}</p>
+                <p><span>Status:</span> Processing</p>
+              </div>
+
+              <section className="thinking-machine-content__status" aria-label="Machine processing status">
+                <p>Barry is pulling levers, shaking things, and ignoring best practices.</p>
+              </section>
+
+              <div className="thinking-machine-content__progress" aria-label="Machine progress">
+                <p>{thinkingRun.progress}</p>
+                <p>Barry is consulting highly questionable science.</p>
+                <p>Switches are flipping. Gauges are moving. This may or may not help.</p>
+              </div>
+            </MachineLcd>
           </section>
         )}
 
