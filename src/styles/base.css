@@ -1709,3 +1709,153 @@ button:disabled,
     grid-template-columns: 1fr;
   }
 }
+
+/* PIXEL PASS 2 — Home vertical geometry match against locked HTML. */
+.machine:has(.machine-home__lcd) .powered-strip {
+  min-height: 34px;
+  margin-top: -7px;
+  padding-block: 7px 6px;
+}
+
+.machine:has(.machine-home__lcd) .barry-frame {
+  min-height: 78px;
+  margin-top: -11px;
+  padding: 8px 34% 8px 20px;
+}
+
+.machine:has(.machine-home__lcd) .barry-frame__copy {
+  gap: 2px;
+}
+
+.machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
+  line-height: 1.12;
+}
+
+.machine:has(.machine-home__lcd) .barry-frame__portrait {
+  inset-block: 18%;
+}
+
+.machine:has(.machine-home__lcd) .lcd__top,
+.machine:has(.machine-home__lcd) .lcd__bottom {
+  height: 25px;
+}
+
+.machine:has(.machine-home__lcd) .lcd__top {
+  margin-top: -6px;
+}
+
+.machine:has(.machine-home__lcd) .lcd__middle {
+  gap: 3px;
+  margin-block: -3px;
+  padding-inline: clamp(14px, 4.2vw, 20px);
+}
+
+.machine-home__lcd .lcd-content {
+  gap: 3px;
+}
+
+.machine-home__lcd .lcd-content__header {
+  gap: 2px;
+}
+
+.machine:has(.machine-home__lcd) .lcd h2 {
+  line-height: 0.94;
+}
+
+.machine:has(.machine-home__lcd) .machine-home__divider {
+  font-size: 0.58rem;
+  line-height: 0.9;
+}
+
+.machine:has(.machine-home__lcd) .machine-home__body {
+  line-height: 1.08;
+}
+
+.machine:has(.machine-home__lcd) .machine-home__input {
+  gap: 4px;
+  padding-top: 1px;
+}
+
+.machine:has(.machine-home__lcd) .machine-home__input textarea {
+  min-height: 70px;
+  padding-block: 8px;
+}
+
+.machine:has(.machine-home__lcd) .primary-cta,
+.machine:has(.machine-home__lcd) .machine-home__cta {
+  min-height: 48px;
+  margin-top: -10px;
+  margin-bottom: -10px;
+  padding-block: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.machine:has(.machine-home__lcd) .machine-footer {
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.machine:has(.machine-home__lcd) .footer-frame {
+  gap: 2px;
+  padding: 10px 7px 8px;
+}
+
+.machine:has(.machine-home__lcd) .footer-frame__top,
+.machine:has(.machine-home__lcd) .footer-frame__bottom {
+  height: 15px;
+}
+
+.machine:has(.machine-home__lcd) .footer-frame__side {
+  top: 6px;
+  bottom: 6px;
+}
+
+.machine:has(.machine-home__lcd) .footer-nav {
+  gap: 3px;
+}
+
+.machine:has(.machine-home__lcd) .footer-nav__button {
+  min-height: 30px;
+  padding-block: 3px;
+  line-height: 1;
+}
+
+.machine:has(.machine-home__lcd) .footer-nav__icon {
+  font-size: 0.9rem;
+}
+
+.machine:has(.machine-home__lcd) .footer-status {
+  gap: 2px;
+}
+
+.machine:has(.machine-home__lcd) .footer-status__panel {
+  min-height: 25px;
+  gap: 0;
+  padding-block: 2px;
+  line-height: 0.98;
+}
+
+@media (max-width: 374px) {
+  .machine:has(.machine-home__lcd) .barry-frame {
+    min-height: 80px;
+    padding: 9px 34% 8px 17px;
+  }
+
+  .machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
+    font-size: 0.8rem;
+  }
+
+  .machine:has(.machine-home__lcd) .machine-home__input textarea {
+    min-height: 68px;
+  }
+
+  .machine:has(.machine-home__lcd) .footer-nav__button {
+    min-height: 29px;
+  }
+
+  .machine:has(.machine-home__lcd) .footer-status__panel {
+    min-height: 24px;
+  }
+}
