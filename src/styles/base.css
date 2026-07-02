@@ -11,7 +11,18 @@
   --machine-cream: #ffe6a3;
   --machine-muted-cream: #c9b57b;
   --machine-shadow: rgba(0, 0, 0, 0.72);
-  --machine-shared-width: min(100%, 430px);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --type-label: clamp(0.72rem, 2.8vw, 0.78rem);
+  --type-body: clamp(0.88rem, 3.2vw, 0.92rem);
+  --type-title: clamp(1.38rem, 6.4vw, 1.68rem);
+  --type-button: clamp(0.72rem, 3vw, 0.86rem);
+  --machine-cabinet-width: min(100%, 430px);
+  --machine-shared-width: var(--machine-cabinet-width);
   --machine-inner-gutter: clamp(4px, 1.6vw, 8px);
 }
 
@@ -80,10 +91,10 @@ a:focus-visible {
 .app-shell {
   position: relative;
   z-index: 1;
-  width: min(100%, 470px);
-  max-width: 470px;
+  width: min(100%, 446px);
+  max-width: 446px;
   margin: 0 auto;
-  padding: 6px clamp(4px, 2vw, 8px) 8px;
+  padding: var(--space-1) var(--space-2) var(--space-2);
 }
 
 .machine-page-decor {
@@ -322,62 +333,14 @@ button:disabled,
   box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.72);
 }
 
-.options-master-blueprint {
-  display: grid;
-  gap: 12px;
-  border: 1px solid #999;
-  padding: 12px;
-}
-
-.options-master-blueprint__header,
-.options-master-blueprint__list,
-.options-master-blueprint__actions {
-  display: grid;
-  gap: 8px;
-}
-
-.options-master-blueprint__header > *,
-.options-master-blueprint__row > *,
-.options-master-blueprint__actions > * {
-  margin: 0;
-}
-
-.options-master-blueprint__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: end;
-}
-
-.options-master-blueprint__field {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-  font-weight: 700;
-}
-
-.options-master-blueprint__field input {
-  font-weight: 400;
-}
-
-.options-master-blueprint__row button {
-  width: auto;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.options-master-blueprint__actions {
-  grid-template-columns: 1fr;
-}
-
 .protocol-grid {
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .protocol-commitment-readout {
   grid-template-columns: 1fr;
   gap: 2px;
-  padding: 8px;
+  padding: var(--space-2);
 }
 
 .protocol-module-card {
@@ -435,201 +398,6 @@ button:disabled,
   .machine-control-deck {
     grid-template-columns: 1fr 1fr;
   }
-
-  .options-master-blueprint__actions {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.thinking-master-blueprint {
-  display: grid;
-  gap: 10px;
-  border: 1px solid #999;
-  padding: 12px;
-}
-
-.thinking-master-blueprint__header,
-.thinking-master-blueprint__status,
-.thinking-master-blueprint__progress {
-  display: grid;
-  gap: 6px;
-}
-
-.thinking-master-blueprint__header > *,
-.thinking-master-blueprint__status > *,
-.thinking-master-blueprint__progress > * {
-  margin: 0;
-}
-
-.thinking-master-blueprint__header h2 {
-  font-size: 1.35rem;
-  line-height: 1.1;
-}
-
-.thinking-master-blueprint__header p,
-.thinking-master-blueprint__status p:first-child {
-  font-weight: 700;
-}
-
-.thinking-master-blueprint__status,
-.thinking-master-blueprint__progress {
-  border-top: 1px solid #999;
-  padding-top: 10px;
-}
-
-.thinking-master-blueprint__progress {
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: 0.95rem;
-  overflow-wrap: anywhere;
-}
-
-.lockdown-master-blueprint {
-  display: grid;
-  gap: 10px;
-  border: 1px solid #999;
-  padding: 12px;
-}
-
-.lockdown-master-blueprint--takeover {
-  gap: 10px;
-}
-
-.lockdown-master-blueprint__header,
-.lockdown-master-blueprint__decision,
-.lockdown-master-blueprint__timer,
-.lockdown-master-blueprint__actions {
-  display: grid;
-  gap: 6px;
-}
-
-.lockdown-master-blueprint__header > *,
-.lockdown-master-blueprint__decision > *,
-.lockdown-master-blueprint__timer > *,
-.lockdown-master-blueprint__actions > * {
-  margin: 0;
-}
-
-.lockdown-master-blueprint__header h2 {
-  font-size: 1.35rem;
-  line-height: 1.1;
-}
-
-.lockdown-master-blueprint__decision,
-.lockdown-master-blueprint__timer {
-  border-top: 1px solid #999;
-  padding-top: 10px;
-}
-
-.lockdown-master-blueprint__decision p:first-child,
-.lockdown-master-blueprint__timer p:first-child,
-.lockdown-master-blueprint__timer p:nth-child(2) {
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.lockdown-master-blueprint__answer {
-  font-size: 1.75rem;
-  line-height: 1.1;
-  overflow-wrap: anywhere;
-}
-
-.lockdown-master-blueprint__countdown {
-  display: block;
-  font-size: 2.25rem;
-  line-height: 1;
-}
-
-.lockdown-master-blueprint__actions {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 390px) {
-  .lockdown-master-blueprint__actions {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.receipt-master-blueprint {
-  display: grid;
-  gap: 12px;
-  border: 1px solid #999;
-  padding: 12px;
-}
-
-.receipt-master-blueprint__header,
-.receipt-master-blueprint__actions {
-  display: grid;
-  gap: 8px;
-}
-
-.receipt-master-blueprint__header > *,
-.receipt-master-blueprint__actions > * {
-  margin: 0;
-}
-
-.receipt-master-blueprint__header h2 {
-  font-size: 1.35rem;
-  line-height: 1.1;
-}
-
-.receipt-card-blueprint {
-  display: grid;
-  gap: 10px;
-  border: 1px solid #999;
-  padding: 12px;
-}
-
-.receipt-card-blueprint__title,
-.receipt-card-blueprint__field,
-.receipt-card-blueprint__actions {
-  display: grid;
-  gap: 4px;
-}
-
-.receipt-card-blueprint__title > *,
-.receipt-card-blueprint__field > *,
-.receipt-card-blueprint__actions > * {
-  margin: 0;
-}
-
-.receipt-card-blueprint__title {
-  text-align: center;
-}
-
-.receipt-card-blueprint__title p,
-.receipt-card-blueprint__label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.receipt-card-blueprint__title h2 {
-  font-size: 1.2rem;
-  line-height: 1.1;
-}
-
-.receipt-card-blueprint__field {
-  border-top: 1px solid #999;
-  padding-top: 8px;
-}
-
-.receipt-card-blueprint__value {
-  overflow-wrap: anywhere;
-}
-
-ul.receipt-card-blueprint__value {
-  padding-left: 20px;
-}
-
-.receipt-card-blueprint__value--decision {
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.receipt-master-blueprint__actions,
-.receipt-card-blueprint__actions {
-  grid-template-columns: 1fr;
 }
 
 .support-master-blueprint {
@@ -692,7 +460,7 @@ ul.receipt-card-blueprint__value {
   position: relative;
   overflow: hidden;
   display: grid;
-  gap: 4px;
+  gap: 0;
   width: 100%;
   padding: var(--machine-inner-gutter);
   border-radius: 24px 24px 16px 16px;
@@ -741,21 +509,22 @@ ul.receipt-card-blueprint__value {
 }
 
 .machine-main {
-  gap: 6px;
+  gap: 0;
 }
 
 .machine-home__lcd {
-  gap: 5px;
+  gap: 0;
 }
 
 .barry-frame,
 .machine .barry-window {
   width: var(--machine-shared-width);
   justify-self: center;
-  min-height: 98px;
-  padding: 15px 36% 14px 20px;
+  min-height: 96px;
+  margin-top: -2px;
+  padding: var(--space-3) 36% var(--space-3) var(--space-5);
   align-content: center;
-  gap: 5px;
+  gap: var(--space-1);
   border: 0;
   background-image: var(--machine-barry-window-frame);
   background-repeat: no-repeat;
@@ -779,7 +548,7 @@ ul.receipt-card-blueprint__value {
 .barry-frame p:first-child,
 .machine-home__lcd-label {
   color: var(--machine-cyan);
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -787,11 +556,14 @@ ul.receipt-card-blueprint__value {
 
 .barry-frame p:last-child {
   max-width: 19rem;
-  font-size: 0.93rem;
+  font-size: var(--type-body);
   line-height: 1.22;
 }
 
 .lcd {
+  width: var(--machine-shared-width);
+  justify-self: center;
+  gap: 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -799,21 +571,33 @@ ul.receipt-card-blueprint__value {
 
 .lcd__top,
 .lcd__bottom {
-  min-height: 0;
+  width: 100%;
+  min-height: 31px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.lcd__top {
+  margin-top: -1px;
+  background-image: var(--machine-lcd-top);
+}
+
+.lcd__bottom {
+  margin-bottom: -1px;
+  background-image: var(--machine-lcd-bottom);
 }
 
 .lcd__middle,
 .machine-home__lcd-display {
-  width: var(--machine-shared-width);
+  width: 100%;
   justify-self: center;
-  min-height: 224px;
-  gap: 6px;
-  padding: 24px clamp(14px, 4.8vw, 20px) 22px;
-  border-radius: 14px;
-  background:
-    var(--machine-lcd-top) top center / 100% 31px no-repeat,
-    var(--machine-lcd-bottom) bottom center / 100% 31px no-repeat,
-    var(--machine-lcd-middle) center / 100% calc(100% - 58px) no-repeat;
+  gap: var(--space-2);
+  margin-block: -1px;
+  padding: 0 clamp(14px, 4.8vw, 20px);
+  border-radius: 0;
+  background: var(--machine-lcd-middle) center / 100% 100%;
   box-shadow: inset 0 0 24px rgba(57, 245, 255, 0.16);
   overflow-wrap: anywhere;
 }
@@ -821,7 +605,7 @@ ul.receipt-card-blueprint__value {
 .lcd h2,
 .machine-home__lcd-display h2 {
   color: #eaffff;
-  font-size: clamp(1.38rem, 6.4vw, 1.68rem);
+  font-size: var(--type-title);
   line-height: 1.02;
   letter-spacing: 0.015em;
   text-shadow: 0 0 8px rgba(57, 245, 255, 0.62);
@@ -841,7 +625,7 @@ ul.receipt-card-blueprint__value {
 .machine-home__notes p,
 .lcd__middle > p:not(.machine-home__lcd-label),
 .machine-home__lcd-display > p:not(.machine-home__lcd-label) {
-  font-size: 0.91rem;
+  font-size: var(--type-body);
   line-height: 1.24;
 }
 
@@ -880,13 +664,13 @@ ul.receipt-card-blueprint__value {
 .machine-footer {
   width: var(--machine-shared-width);
   justify-self: center;
-  margin-top: -5px;
+  margin-top: -7px;
 }
 
 .footer-frame {
   position: relative;
-  gap: 5px;
-  padding: 16px 8px 14px;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-2) var(--space-3);
   border: 0;
   border-radius: 16px;
   background:
@@ -1011,8 +795,7 @@ ul.receipt-card-blueprint__value {
 
   .lcd__middle,
   .machine-home__lcd-display {
-    min-height: 210px;
-    padding: 22px 12px 20px;
+    padding-inline: var(--space-3);
   }
 
   .footer-nav .machine-button {
@@ -1062,7 +845,7 @@ ul.receipt-card-blueprint__value {
 }
 
 .options-machine-content__header p:not(.machine-home__lcd-label) {
-  font-size: 0.91rem;
+  font-size: var(--type-body);
   line-height: 1.24;
 }
 
@@ -1075,7 +858,7 @@ ul.receipt-card-blueprint__value {
 .options-machine-content__field {
   gap: 4px;
   color: var(--machine-cyan);
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.055em;
   text-transform: uppercase;
@@ -1336,7 +1119,7 @@ ul.receipt-card-blueprint__value {
 
 .thinking-machine-content__readout span {
   color: var(--machine-cyan);
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.055em;
   text-transform: uppercase;
@@ -1344,7 +1127,7 @@ ul.receipt-card-blueprint__value {
 
 .thinking-machine-content__status {
   color: var(--machine-cream);
-  font-size: 0.91rem;
+  font-size: var(--type-body);
   line-height: 1.24;
 }
 
@@ -1481,7 +1264,7 @@ ul.receipt-card-blueprint__value {
 
 .receipt-machine-content__header p:not(.machine-home__lcd-label) {
   color: var(--machine-muted-cream);
-  font-size: 0.91rem;
+  font-size: var(--type-body);
   line-height: 1.24;
 }
 
@@ -1613,7 +1396,7 @@ ul.receipt-card-blueprint__value {
 
 .lockdown-machine-content__header p:not(.machine-home__lcd-label) {
   color: var(--machine-muted-cream);
-  font-size: 0.91rem;
+  font-size: var(--type-body);
   line-height: 1.24;
 }
 
