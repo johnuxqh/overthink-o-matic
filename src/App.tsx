@@ -9,7 +9,7 @@ import { createLocalStorageService } from './storage/localStorageService';
 import { acceptDecisionResult, rejectDecisionResult, getAttemptsRemaining, getEscalationMessage, getLockdownMessage, getLockdownRemainingMs, getBarryCommitment } from './services/overthinkingEngine';
 import { AdminQaResult, resetAdminQaTestData, runFullAdminQaSimulation } from './services/adminQaRunner';
 import { getEligibleGames, runGame } from './services/gameRunner';
-import { BarryStatus, BarryWindow, FooterStatusPanel, MachineLcd, MachinePrimaryCta, MachineReadout, MachineShell, MachineWarning, ProtocolModuleCard } from './components/MachineUI';
+import { BarryWindow, FooterStatusPanel, MachineLcd, MachinePrimaryCta, MachineReadout, MachineShell, MachineWarning } from './components/MachineUI';
 import './styles/base.css';
 
 export const screens = ['setup', 'home', 'options', 'game-selection', 'thinking', 'result', 'barry-takeover', 'lockdown', 'previous-overthinks', 'share-result', 'admin', 'about-machine'] as const;
@@ -21,6 +21,12 @@ const optionsFooterStatusPanels: FooterStatusPanel[] = [
   { label: 'STATUS', text: 'Options detected' },
   { label: 'QUEUE', text: 'Input queue active' },
   { label: 'LOCK', text: 'Awaiting lock-in' },
+];
+
+const protocolFooterStatusPanels: FooterStatusPanel[] = [
+  { label: 'STATUS', text: 'Protocols loaded' },
+  { label: 'ENGINE', text: 'Decision engine ready' },
+  { label: 'QUEUE', text: 'Awaiting protocol' },
 ];
 
 
@@ -299,7 +305,7 @@ export function App() {
 
   return (
     <main className="app-shell" aria-labelledby="app-title">
-      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
+      <MachineShell statusLine={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection' ? "POWERED BY BARRY THE HONEY BADGER" : "Powered by Barry the Honey Badger 🐾"} emergency={currentScreen === 'barry-takeover' || currentScreen === 'lockdown'} homeArt={currentScreen === 'home' || currentScreen === 'options' || currentScreen === 'game-selection'} homeReset={currentScreen === 'home'} footerStatusPanels={currentScreen === 'options' ? optionsFooterStatusPanels : currentScreen === 'game-selection' ? protocolFooterStatusPanels : undefined} controls={currentScreen !== 'setup' ? (<>
           <button className="machine-button machine-button--secondary" type="button" onClick={goHome}>MACHINE</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('previous-overthinks')}>PREVIOUS OVERTHINKS</button>
           <button className="machine-button machine-button--secondary" type="button" onClick={() => setCurrentScreen('about-machine')}>ABOUT THE MACHINE</button>
@@ -409,39 +415,66 @@ export function App() {
         )}
 
         {currentScreen === 'game-selection' && decision && (
-          <section>
-            <h2>CHOOSE YOUR PROTOCOL</h2><BarryWindow><BarryStatus>OPERATOR WINDOW: Barry is selecting machinery with unnecessary confidence.</BarryStatus></BarryWindow>
-            {appState.goalpostWarning?.hasShift && (
-              <MachineWarning className="warning-panel">
-                <p>{appState.goalpostWarning.message}</p>
-                <p>Repeated option: {appState.goalpostWarning.repeatedOptions.join(', ')}</p>
-                {appState.goalpostWarning.previousFinalAnswer && <p>The last decision landed on: {appState.goalpostWarning.previousFinalAnswer}.</p>}
-                {(() => {
-                  const previous = getMostRecentDecision(appState);
-                  return previous && !isLockdownActive(previous, now) ? (
-                    <p><button type="button" onClick={resumeMostRecentPreviousDecision}>Resume previous overthink spiral if available</button></p>
-                  ) : null;
-                })()}
-              </MachineWarning>
-            )}
-            <p>Overthink: {decision.problem}</p>
-            <ul>{decision.options.map((option) => <li key={option.id}>{option.text}</li>)}</ul>
-            <MachineReadout className="protocol-commitment-readout"><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
-            <div className="protocol-grid">{eligibleGames.map((game, index) => {
-              const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
-              const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
-              return (
-                <ProtocolModuleCard
-                  key={game.id}
-                  name={protocolName}
-                  description={game.description}
-                  emblem={emblems[index % emblems.length]}
-                  expanded={expandedProtocolId === game.id}
-                  onInfoToggle={() => setExpandedProtocolId((current) => current === game.id ? undefined : game.id)}
-                  onActivate={() => runSelectedGame(game.id)}
-                />
-              );
-            })}</div>
+          <section className="protocol-machine-content" aria-label="Protocol selection">
+            <BarryWindow>
+              <p>OPERATOR WINDOW</p>
+              <p>Barry has absolutely no qualifications. Choose whichever protocol sounds the most scientific.</p>
+            </BarryWindow>
+
+            <MachineLcd>
+              <div className="protocol-machine-content__header">
+                <p className="machine-home__lcd-label">Main LCD Display</p>
+                <h2>CHOOSE YOUR PROTOCOL</h2>
+                <p>Barry has analysed your terrible options.</p>
+              </div>
+
+              {appState.goalpostWarning?.hasShift && (
+                <MachineWarning className="warning-panel protocol-machine-content__warning">
+                  <p>{appState.goalpostWarning.message}</p>
+                  <p>Repeated option: {appState.goalpostWarning.repeatedOptions.join(', ')}</p>
+                  {appState.goalpostWarning.previousFinalAnswer && <p>The last decision landed on: {appState.goalpostWarning.previousFinalAnswer}.</p>}
+                  {(() => {
+                    const previous = getMostRecentDecision(appState);
+                    return previous && !isLockdownActive(previous, now) ? (
+                      <p><button type="button" onClick={resumeMostRecentPreviousDecision}>Resume previous overthink spiral if available</button></p>
+                    ) : null;
+                  })()}
+                </MachineWarning>
+              )}
+
+              <div className="protocol-machine-content__context">
+                <p><span>Overthink:</span> {decision.problem}</p>
+                <p><span>Options:</span> {decision.options.map((option) => option.text).join(' / ')}</p>
+              </div>
+
+              <MachineReadout className="protocol-machine-content__commitment protocol-commitment-readout"><span>COMMITMENT LEVEL:</span><span className="readout-value">{getBarryCommitment(decision).stage}</span><span className="readout-detail">ATTEMPTS REMAINING: {attemptsRemaining}</span><span className="visually-hidden">BARRY COMMITMENT INDEX: {attemptsRemaining}</span></MachineReadout>
+
+              <div className="protocol-machine-content__list">{eligibleGames.map((game, index) => {
+                const protocolName = game.id === GameId.ChaosGoblin ? 'Chaos Engine' : game.name;
+                const emblems = ['◈', '⬡', '✦', '⚙', '◆', '◉', '✹', '▣'];
+                const detailsId = `protocol-details-${game.id}`;
+                const expanded = expandedProtocolId === game.id;
+                return (
+                  <article className="protocol-machine-content__row" key={game.id}>
+                    <div className="protocol-machine-content__summary">
+                      <span className="protocol-machine-content__emblem" aria-hidden="true">{emblems[index % emblems.length]}</span>
+                      <h3 className="protocol-machine-content__name">{protocolName}</h3>
+                      <div className="protocol-machine-content__actions">
+                        <button className="machine-button machine-button--secondary protocol-machine-content__info" type="button" onClick={() => setExpandedProtocolId((current) => current === game.id ? undefined : game.id)} aria-expanded={expanded} aria-controls={detailsId} aria-label={`${expanded ? 'Hide' : 'Show'} ${protocolName} protocol details`}>i</button>
+                        <button className="machine-button machine-button--protocol protocol-machine-content__run" type="button" onClick={() => runSelectedGame(game.id)} aria-label={`Run ${protocolName} protocol`}>RUN</button>
+                      </div>
+                    </div>
+                    {expanded && (
+                      <div id={detailsId} className="protocol-machine-content__details">
+                        <p className="module-label">LOADABLE MACHINE MODULE</p>
+                        <p>{game.description}</p>
+                        <p className="protocol-eligibility">Module eligible and loaded.</p>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}</div>
+            </MachineLcd>
           </section>
         )}
 
