@@ -1725,34 +1725,34 @@ button:disabled,
   }
 }
 
-/* PIXEL PASS 3 — Home LCD flex and Barry proportion correction. */
+/* PIXEL PASS 7 — Home proportion decompression against locked HTML. */
 .machine:has(.machine-home__lcd) .powered-strip {
-  min-height: 34px;
-  margin-top: -7px;
-  padding-block: 7px 6px;
+  min-height: 36px;
+  margin-top: -5px;
+  padding-block: 8px 7px;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame {
-  min-height: 86px;
-  margin-top: -11px;
-  padding: 10px 34% 10px 20px;
+  min-height: 104px;
+  margin-top: -9px;
+  padding: 15px 35% 14px 22px;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__copy {
-  gap: 3px;
+  gap: 5px;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
-  line-height: 1.16;
+  line-height: 1.22;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__portrait {
-  inset-block: 16%;
+  inset-block: 14%;
 }
 
 .machine:has(.machine-home__lcd) .lcd__top,
 .machine:has(.machine-home__lcd) .lcd__bottom {
-  height: 25px;
+  height: 29px;
 }
 
 .machine:has(.machine-home__lcd) .lcd__top {
@@ -1760,48 +1760,48 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .lcd__middle {
-  gap: 4px;
-  margin-block: -3px;
-  padding: 2px clamp(15px, 4.4vw, 21px) 3px;
+  gap: 6px;
+  margin-block: -2px;
+  padding: 8px clamp(16px, 4.6vw, 22px) 10px;
 }
 
 .machine-home__lcd .lcd-content {
-  gap: 4px;
+  gap: 7px;
 }
 
 .machine-home__lcd .lcd-content__header {
-  gap: 3px;
+  gap: 5px;
 }
 
 .machine:has(.machine-home__lcd) .lcd h2 {
-  line-height: 0.94;
+  line-height: 0.98;
 }
 
 .machine:has(.machine-home__lcd) .machine-home__divider {
-  font-size: 0.58rem;
-  line-height: 0.9;
+  font-size: 0.62rem;
+  line-height: 1;
 }
 
 .machine:has(.machine-home__lcd) .machine-home__body {
-  line-height: 1.08;
+  line-height: 1.14;
 }
 
 .machine:has(.machine-home__lcd) .machine-home__input {
-  gap: 4px;
-  padding-top: 1px;
+  gap: 6px;
+  padding-top: 6px;
 }
 
 .machine:has(.machine-home__lcd) .machine-home__input textarea {
-  min-height: 78px;
-  padding-block: 9px;
+  min-height: 94px;
+  padding-block: 11px;
 }
 
 .machine:has(.machine-home__lcd) .primary-cta,
 .machine:has(.machine-home__lcd) .machine-home__cta {
-  min-height: 48px;
-  margin-top: -10px;
-  margin-bottom: -4px;
-  padding-block: 8px;
+  min-height: 54px;
+  margin-top: -6px;
+  margin-bottom: -1px;
+  padding-block: 10px;
   position: relative;
   z-index: 2;
 }
@@ -1813,21 +1813,21 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .footer-frame {
-  gap: 4px;
-  padding: 19px 8px 10px;
+  gap: 6px;
+  padding: 22px 8px 18px;
 }
 
 .machine:has(.machine-home__lcd) .footer-frame__top {
-  height: 66px;
+  height: 68px;
 }
 
 .machine:has(.machine-home__lcd) .footer-frame__bottom {
-  height: 54px;
+  height: 62px;
 }
 
 .machine:has(.machine-home__lcd) .footer-frame__side {
-  top: 6px;
-  bottom: 2px;
+  top: 8px;
+  bottom: 7px;
 }
 
 .machine:has(.machine-home__lcd) .footer-nav {
@@ -1835,9 +1835,9 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .footer-nav__button {
-  min-height: 34px;
-  padding-block: 4px;
-  line-height: 1.03;
+  min-height: 36px;
+  padding-block: 5px;
+  line-height: 1.06;
 }
 
 .machine:has(.machine-home__lcd) .footer-nav__icon {
@@ -1849,31 +1849,31 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .footer-status__panel {
-  min-height: 32px;
-  gap: 0;
-  padding-block: 3px;
-  line-height: 1.02;
+  min-height: 34px;
+  gap: 1px;
+  padding-block: 4px;
+  line-height: 1.05;
 }
 
 @media (max-width: 374px) {
   .machine:has(.machine-home__lcd) .barry-frame {
-    min-height: 84px;
-    padding: 10px 34% 9px 17px;
+    min-height: 98px;
+    padding: 14px 34% 13px 18px;
   }
 
   .machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
-    font-size: 0.8rem;
+    font-size: 0.84rem;
   }
 
   .machine:has(.machine-home__lcd) .machine-home__input textarea {
-    min-height: 74px;
+    min-height: 88px;
   }
 
   .machine:has(.machine-home__lcd) .footer-nav__button {
-    min-height: 32px;
+    min-height: 34px;
   }
 
   .machine:has(.machine-home__lcd) .footer-status__panel {
-    min-height: 30px;
+    min-height: 32px;
   }
 }
