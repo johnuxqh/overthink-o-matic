@@ -26,6 +26,7 @@ declare namespace JSX {
     h2: Record<string, unknown>;
     h3: Record<string, unknown>;
     article: Record<string, unknown>;
+    footer: Record<string, unknown>;
     nav: Record<string, unknown>;
     button: Record<string, unknown>;
     div: Record<string, unknown>;
