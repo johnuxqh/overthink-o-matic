@@ -1814,17 +1814,20 @@ button:disabled,
 
 .machine:has(.machine-home__lcd) .footer-frame {
   gap: 4px;
-  padding: 19px 8px 20px;
+  padding: 19px 8px 10px;
 }
 
-.machine:has(.machine-home__lcd) .footer-frame__top,
-.machine:has(.machine-home__lcd) .footer-frame__bottom {
+.machine:has(.machine-home__lcd) .footer-frame__top {
   height: 66px;
+}
+
+.machine:has(.machine-home__lcd) .footer-frame__bottom {
+  height: 54px;
 }
 
 .machine:has(.machine-home__lcd) .footer-frame__side {
   top: 6px;
-  bottom: 6px;
+  bottom: 2px;
 }
 
 .machine:has(.machine-home__lcd) .footer-nav {
