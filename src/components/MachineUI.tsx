@@ -121,16 +121,14 @@ export function MachinePrimaryCta({ children, type = 'button', disabled = false,
 
 export function MachineFooter({ controls, statusPanels = defaultFooterStatusPanels }: { controls?: ReactNode; statusPanels?: FooterStatusPanel[] }) {
   return (
-    <div className="machine-footer" role="contentinfo">
+    <footer className="machine-footer">
       <div className="footer-frame">
-        <div className="footer-frame__side footer-frame__side--left" aria-hidden="true" />
         <div className="footer-frame__top" aria-hidden="true" />
         {controls && <MachineFooterNav>{controls}</MachineFooterNav>}
         <MachineFooterStatus panels={statusPanels} />
         <div className="footer-frame__bottom" aria-hidden="true" />
-        <div className="footer-frame__side footer-frame__side--right" aria-hidden="true" />
       </div>
-    </div>
+    </footer>
   );
 }
 
