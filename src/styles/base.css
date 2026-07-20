@@ -25,6 +25,8 @@
   --machine-art-width: 100%;
   --machine-art-join: -3px;
   --machine-inner-gutter: clamp(4px, 1.6vw, 8px);
+  --lcd-safe-inline: clamp(24px, 7.2vw, 34px);
+  --footer-safe-inline: clamp(18px, 5.4vw, 26px);
 }
 
 * {
@@ -1735,11 +1737,13 @@ button:disabled,
 .machine:has(.machine-home__lcd) .barry-frame {
   min-height: 104px;
   margin-top: -9px;
-  padding: 15px 35% 14px 22px;
+  padding: 15px 39% 14px clamp(20px, 5.8vw, 26px);
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__copy {
   gap: 5px;
+  width: min(100%, 228px);
+  justify-self: start;
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
@@ -1747,7 +1751,8 @@ button:disabled,
 }
 
 .machine:has(.machine-home__lcd) .barry-frame__portrait {
-  inset-block: 14%;
+  inset: 14% 8% 14% auto;
+  width: 24%;
 }
 
 .machine:has(.machine-home__lcd) .lcd__top,
@@ -1762,11 +1767,15 @@ button:disabled,
 .machine:has(.machine-home__lcd) .lcd__middle {
   gap: 6px;
   margin-block: -2px;
-  padding: 8px clamp(16px, 4.6vw, 22px) 10px;
+  padding: 8px var(--lcd-safe-inline) 10px;
 }
 
 .machine-home__lcd .lcd-content {
+  width: 100%;
+  max-width: 100%;
   gap: 7px;
+  justify-self: center;
+  overflow-wrap: break-word;
 }
 
 .machine-home__lcd .lcd-content__header {
@@ -1788,12 +1797,17 @@ button:disabled,
 
 .machine:has(.machine-home__lcd) .machine-home__input {
   gap: 6px;
+  width: 100%;
+  max-width: 100%;
   padding-top: 6px;
 }
 
 .machine:has(.machine-home__lcd) .machine-home__input textarea {
+  width: 100%;
+  max-width: 100%;
   min-height: 94px;
-  padding-block: 11px;
+  padding: 11px 10px;
+  box-sizing: border-box;
 }
 
 .machine:has(.machine-home__lcd) .primary-cta,
@@ -1801,7 +1815,10 @@ button:disabled,
   min-height: 54px;
   margin-top: -6px;
   margin-bottom: -1px;
-  padding-block: 10px;
+  padding: 10px clamp(30px, 9vw, 42px);
+  line-height: 1.08;
+  text-align: center;
+  white-space: normal;
   position: relative;
   z-index: 2;
 }
@@ -1832,33 +1849,46 @@ button:disabled,
 
 .machine:has(.machine-home__lcd) .footer-nav {
   gap: 3px;
+  padding-inline: var(--footer-safe-inline);
 }
 
 .machine:has(.machine-home__lcd) .footer-nav__button {
   min-height: 36px;
-  padding-block: 5px;
+  padding: 5px 1px;
+  justify-content: center;
   line-height: 1.06;
+  overflow: hidden;
 }
 
 .machine:has(.machine-home__lcd) .footer-nav__icon {
-  font-size: 0.9rem;
+  font-size: 0.86rem;
+}
+
+.machine:has(.machine-home__lcd) .footer-nav__label {
+  overflow-wrap: anywhere;
 }
 
 .machine:has(.machine-home__lcd) .footer-status {
   gap: 3px;
+  padding-inline: var(--footer-safe-inline);
 }
 
 .machine:has(.machine-home__lcd) .footer-status__panel {
   min-height: 34px;
   gap: 1px;
-  padding-block: 4px;
+  padding: 4px 2px;
   line-height: 1.05;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 374px) {
   .machine:has(.machine-home__lcd) .barry-frame {
     min-height: 98px;
-    padding: 14px 34% 13px 18px;
+    padding: 14px 38% 13px 18px;
+  }
+
+  .machine:has(.machine-home__lcd) .barry-frame__copy {
+    width: min(100%, 210px);
   }
 
   .machine:has(.machine-home__lcd) .barry-frame__copy p:last-child {
